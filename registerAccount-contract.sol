@@ -1,5 +1,4 @@
 pragma solidity ^0.8.0;
-
 contract LandRegistrationSystem {
     address public deployer;
 
@@ -8,13 +7,15 @@ contract LandRegistrationSystem {
         bool isVerified;
         uint8 designation; // 0: no authority, 1: land inspector, 2: second-level authority, 3: deployer
         uint registrationDate; // Registration date as a Unix timestamp
+        uint256 aadharNumber;
     }
 
     mapping(address => UserAccount) public userAccounts;
+    mapping(uint256 => address) public aadharToUser;
 
     constructor() {
         deployer = msg.sender;
-        userAccounts[msg.sender] = UserAccount("Deployer", true, 3, block.timestamp); 
+        userAccounts[msg.sender] = UserAccount("Deployer", true, 3, block.timestamp, 0); 
     }
 
     modifier onlyDeployer() {
@@ -32,26 +33,55 @@ contract LandRegistrationSystem {
         _;
     }
 
-    function addLandInspector(address _inspector, string memory _username) public onlyDeployerOrSecondLevelAuthority {
-        userAccounts[_inspector] = UserAccount(_username, true, 1, block.timestamp);
+    function addLandInspector(address _inspector, string memory _username, uint256 _aadhar) public onlyDeployerOrSecondLevelAuthority {
+        require(aadharToUser[_aadhar] == address(0), "Aadhar number already registered.");
+        userAccounts[_inspector] = UserAccount(_username, false, 1, block.timestamp, _aadhar);
+        aadharToUser[_aadhar] = _inspector;
     }
 
-    function addSecondLevelAuthority(address _authority, string memory _username) public onlyDeployer {
-        userAccounts[_authority] = UserAccount(_username, true, 2, block.timestamp);
+    function addSecondLevelAuthority(address _authority, string memory _username, uint256 _aadhar) public onlyDeployer {
+        require(aadharToUser[_aadhar] == address(0), "Aadhar number already registered.");
+        userAccounts[_authority] = UserAccount(_username, false, 2, block.timestamp, _aadhar);
+        aadharToUser[_aadhar] = _authority;
     }
 
     function removeSecondLevelAuthority(address _authority) public onlyDeployer {
         require(_authority != deployer, "Cannot remove deployer's Second-level Authority privileges.");
-        userAccounts[_authority] = UserAccount("", false, 0, block.timestamp);
+        aadharToUser[userAccounts[_authority].aadharNumber] = address(0);
+        delete userAccounts[_authority];
     }
 
     function removeLandInspector(address _inspector) public onlyDeployerOrSecondLevelAuthority {
-        require(_inspector != deployer , "Cannot remove deployer's privileges.");
-        userAccounts[_inspector] = UserAccount("", false, 0, block.timestamp);
+        require(_inspector != deployer, "Cannot remove deployer's privileges.");
+        aadharToUser[userAccounts[_inspector].aadharNumber] = address(0);
+        delete userAccounts[_inspector];
+    }
+    
+    /* For Aadhaar validation
+        It should have 12 digits.
+        It should not start with 0 and 1.
+        It should not contain any alphabet and special char */
+        
+    function validateAadhar(uint256 _aadharNumber) public pure returns (bool) {
+        uint aadharLength = 0;
+        uint aadharCopy = _aadharNumber;
+        
+        while (aadharCopy != 0) {
+            aadharCopy /= 10;
+            aadharLength++;
+        }
+        
+        return aadharLength == 12 && _aadharNumber > 101 && _aadharNumber < 1000000000000;
     }
 
-    function verifyAccount(uint256 _aadharNumber, string memory _panNumber) public onlyDeployerOrSecondLevelAuthorityOrLandInspector {
-        // Add logic to verify the account here.
+    function verifyAccount(uint256 _aadharNumber) public onlyDeployerOrSecondLevelAuthorityOrLandInspector {
+        require(validateAadhar(_aadharNumber), "Invalid Aadhaar number");
+        
+        require(aadharToUser[_aadharNumber] == address(0), "Aadhar number already registered.");
+        
+        userAccounts[msg.sender].aadharNumber = _aadharNumber;
+        userAccounts[msg.sender].isVerified = true;
+        aadharToUser[_aadharNumber] = msg.sender;
     }
 
     function isVerified(address _account) public view returns (bool) {
