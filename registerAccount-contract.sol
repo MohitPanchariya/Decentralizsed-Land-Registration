@@ -1,62 +1,68 @@
 pragma solidity ^0.8.0;
 
-//contract Accounts
 contract LandRegistrationSystem {
     address public deployer;
-    
 
     struct UserAccount {
         string username;
         bool isVerified;
-        uint256 authority; // 0: no authority, 1: land inspector: 2: second level authority
+        uint8 designation; // 0: no authority, 1: land inspector, 2: second-level authority, 3: deployer
+        uint registrationDate; // Registration date as a Unix timestamp
     }
 
     mapping(address => UserAccount) public userAccounts;
-    
+
     constructor() {
         deployer = msg.sender;
-        userAccounts[msg.sender] = UserAccount("Deployer", true);
+        userAccounts[msg.sender] = UserAccount("Deployer", true, 3, block.timestamp); 
     }
 
     modifier onlyDeployer() {
-        require(msg.sender == deployer, "Only the deployer can perform this action");
+        require(userAccounts[msg.sender].designation == 3, "Only the deployer can perform this action");
+        _;
     }
 
-    modifier onlyLandInspector() {
-        require(userAccounts[msg.sender].authority == 1, "Only land inspectors can perform this action");
+    modifier onlyDeployerOrSecondLevelAuthority() {
+        require(userAccounts[msg.sender].designation >= 2, "Only the deployer or second-level authority can perform this action");
+        _;
     }
 
-    function addLandInspector(address _inspector, string memory _username) public onlyDeployer {
-        userAccounts[_inspector] = UserAccount(_username, true);
+    modifier onlyDeployerOrSecondLevelAuthorityOrLandInspector() {
+        require(userAccounts[msg.sender].designation >= 1, "Only the deployer, second level authority, or land inspector can perform this action");
+        _;
     }
 
-    function removeLandInspector(address _inspector) public onlyDeployer {
-        require(_inspector != deployer, "Cannot remove deployer's privileges.");
-        userAccounts[_inspector] = UserAccount("", false);
+    function addLandInspector(address _inspector, string memory _username) public onlyDeployerOrSecondLevelAuthority {
+        userAccounts[_inspector] = UserAccount(_username, true, 1, block.timestamp);
     }
 
-    function isLandInspector(address _account) public view returns (bool) {
-        return userAccounts[_account].authority == 1;
+    function addSecondLevelAuthority(address _authority, string memory _username) public onlyDeployer {
+        userAccounts[_authority] = UserAccount(_username, true, 2, block.timestamp);
     }
 
-    function verifyAccount(uint256 _aadharNumber, string panNumber) public {
-        //Make sure aadhar is valid, pan is valid. Try to search online how this can be done.
-        //Make sure no person can register twice, i.e no two different addresses should have same
-        //aadhar or pan number.
+    function removeSecondLevelAuthority(address _authority) public onlyDeployer {
+        require(_authority != deployer, "Cannot remove deployer's Second-level Authority privileges.");
+        userAccounts[_authority] = UserAccount("", false, 0, block.timestamp);
     }
-    
-    /*
-        Returns a boolean for whether the account is verified.
-    */
-    function isVerified(address _account) public view returns(bool){
+
+    function removeLandInspector(address _inspector) public onlyDeployerOrSecondLevelAuthority {
+        require(_inspector != deployer , "Cannot remove deployer's privileges.");
+        userAccounts[_inspector] = UserAccount("", false, 0, block.timestamp);
+    }
+
+    function verifyAccount(uint256 _aadharNumber, string memory _panNumber) public onlyDeployerOrSecondLevelAuthorityOrLandInspector {
+        // Add logic to verify the account here.
+    }
+
+    function isVerified(address _account) public view returns (bool) {
         return userAccounts[_account].isVerified;
     }
-    
-    /*
-        Allowing first and second level authorities to grant inspector status to an account.
-    */
-    function grantLandInspectorStatus(address _account) public {
-        if (userAccounts[msg.sender].authority == 1 || userAccounts[msg.sender].authority == 2)
-            userAccounts[_account].authority = 1;
+
+    function grantLandInspectorStatus(address _account) public onlyDeployerOrSecondLevelAuthority {
+        userAccounts[_account].designation = 1;
+    }
+
+    function grantSecondLevelAuthorityStatus(address _account) public onlyDeployer {
+        userAccounts[_account].designation = 2;
     }
 }
