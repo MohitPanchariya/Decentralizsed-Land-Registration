@@ -116,6 +116,9 @@ contract LandRegistration {
     //Mapping of land ids to land records.
     mapping(uint => LandRecord) public landMapping;
 
+    //A list of land ids which have been marked for sale
+    uint[] landsForSale;
+
     //A list of lands which are to be verified by an inspector
     uint[] verificationRequired;
 
@@ -181,4 +184,22 @@ contract LandRegistration {
         landMapping[_landId].isVerified = true;
     }
 
+    //List land for sale
+    function listLandForSale(uint _landId) public onlyOwner(_landId) {
+        //Check if land actually exists
+        //Mapping in solidity always exists and maps to a zero value
+        //Hence, this check is needed.
+        require(landMapping[_landId].landId > 0);
+
+        //Mark the land for Sale
+        landMapping[_landId].isForSale = true;
+
+        //Add the land to the landsForSale list
+        landsForSale.push(_landId);
+    }
+
+    //Get all land ids which have been listed for sale
+    function getLandsForSale() public view returns (uint[] memory) {
+        return landsForSale;
+    }
 }
