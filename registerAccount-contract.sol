@@ -9,11 +9,9 @@ contract LandRegistrationSystem {
         string username;
         bool isVerified;
         uint256 authority; // 0: no authority, 1: land inspector: 2: second level authority
-        
     }
 
     mapping(address => UserAccount) public userAccounts;
-    mapping(uint256 => Land) public lands;
     
     constructor() {
         deployer = msg.sender;
