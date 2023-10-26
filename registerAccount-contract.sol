@@ -43,38 +43,10 @@ contract LandRegistrationSystem {
         _;
     }
 
-    // Function to add a Land Inspector
-    function addLandInspector(address _inspector, string memory _username, uint256 _aadhar) public onlyDeployerOrSecondLevelAuthority {
-        require(aadharToUser[_aadhar] == address(0), "Aadhar number already registered.");
-        userAccounts[_inspector] = UserAccount(_username, false, 1, block.timestamp, _aadhar);
-        aadharToUser[_aadhar] = _inspector;
-    }
-
-    // Function to add a Second-Level Authority
-    function addSecondLevelAuthority(address _authority, string memory _username, uint256 _aadhar) public onlyDeployer {
-        require(aadharToUser[_aadhar] == address(0), "Aadhar number already registered.");
-        userAccounts[_authority] = UserAccount(_username, false, 2, block.timestamp, _aadhar);
-        aadharToUser[_aadhar] = _authority;
-    }
-
-    // Function to remove a Second-Level Authority
-    function removeSecondLevelAuthority(address _authority) public onlyDeployer {
-        require(_authority != deployer, "Cannot remove deployer's Second-level Authority privileges.");
-        aadharToUser[userAccounts[_authority].aadharNumber] = address(0);
-        delete userAccounts[_authority];
-    }
-
-    // Function to remove a Land Inspector
-    function removeLandInspector(address _inspector) public onlyDeployerOrSecondLevelAuthority {
-        require(_inspector != deployer, "Cannot remove deployer's privileges.");
-        aadharToUser[userAccounts[_inspector].aadharNumber] = address(0);
-        delete userAccounts[_inspector];
-    }
-    
     /* For Aadhaar validation
         It should have 12 digits.
         It should not start with 0 and 1.
-        It should not contain any alphabet and special char */  
+        It should not contain any alphabet and special characters */
     function validateAadhar(uint256 _aadharNumber) public pure returns (bool) {
         uint aadharLength = 0;
         uint aadharCopy = _aadharNumber;
@@ -87,10 +59,41 @@ contract LandRegistrationSystem {
         return aadharLength == 12 && _aadharNumber > 101 && _aadharNumber < 1000000000000;
     }
 
+    // Function to add a Land Inspector
+    function addLandInspector(address _inspector, string memory _username, uint256 _aadhar) public onlyDeployerOrSecondLevelAuthority {
+        require(aadharToUser[_aadhar] == address(0), "Aadhar number already registered.");
+        
+        userAccounts[_inspector] = UserAccount(_username, false, 1, block.timestamp, _aadhar);
+        aadharToUser[_aadhar] = _inspector;
+    }
+
+    // Function to add a Second-Level Authority
+    function addSecondLevelAuthority(address _authority, string memory _username, uint256 _aadhar) public onlyDeployer {
+        require(aadharToUser[_aadhar] == address(0), "Aadhar number already registered.");
+        
+        userAccounts[_authority] = UserAccount(_username, false, 2, block.timestamp, _aadhar);
+        aadharToUser[_aadhar] = _authority;
+    }
+
+    // Function to remove a Second-Level Authority
+    function removeSecondLevelAuthority(address _authority) public onlyDeployer {
+        require(_authority != deployer, "Cannot remove deployer's Second-level Authority privileges.");
+        
+        aadharToUser[userAccounts[_authority].aadharNumber] = address(0);
+        delete userAccounts[_authority];
+    }
+
+    // Function to remove a Land Inspector
+    function removeLandInspector(address _inspector) public onlyDeployerOrSecondLevelAuthority {
+        require(_inspector != deployer, "Cannot remove deployer's privileges.");
+
+        aadharToUser[userAccounts[_inspector].aadharNumber] = address(0);
+        delete userAccounts[_inspector];
+    }
+    
     // Function to verify an account with an Aadhar number
     function verifyAccount(uint256 _aadharNumber) public onlyDeployerOrSecondLevelAuthorityOrLandInspector {
         require(validateAadhar(_aadharNumber), "Invalid Aadhaar number");
-        
         require(aadharToUser[_aadharNumber] == address(0), "Aadhar number already registered.");
         
         userAccounts[msg.sender].aadharNumber = _aadharNumber;
@@ -103,16 +106,6 @@ contract LandRegistrationSystem {
         return userAccounts[_account].isUserVerified;
     }
 
-    // Function to grant Land Inspector status
-    function grantLandInspectorStatus(address _account) public onlyDeployerOrSecondLevelAuthority {
-        userAccounts[_account].designation = 1;
-    }
-
-    // Function to grant Second-Level Authority status
-    function grantSecondLevelAuthorityStatus(address _account) public onlyDeployer {
-        userAccounts[_account].designation = 2;
-    }
-
     // Function to check if a user is a Land Inspector
     function isLandInspector(address _account) public view returns (bool) {
         return userAccounts[_account].designation == 1;
@@ -121,5 +114,15 @@ contract LandRegistrationSystem {
     // Function to check if a user is a Second-Level Authority
     function isSecondLevelAuthority(address _account) public view returns (bool) {
         return userAccounts[_account].designation == 2;
+    }
+
+    // Function to grant Land Inspector status
+    function grantLandInspectorStatus(address _account) public onlyDeployerOrSecondLevelAuthority {
+        userAccounts[_account].designation = 1;
+    }
+
+    // Function to grant Second-Level Authority status
+    function grantSecondLevelAuthorityStatus(address _account) public onlyDeployer {
+        userAccounts[_account].designation = 2;
     }
 }
