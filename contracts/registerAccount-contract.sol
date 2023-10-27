@@ -140,6 +140,11 @@ contract AccountRegistration {
         return userAccounts[_account].designation == 2;
     }
 
+    // Function to check if a user is a Sdeployer
+    function isDeployer(address _account) public view returns (bool) {
+        return userAccounts[_account].designation == 3;
+    }
+
     // Function to grant Land Inspector status
     function grantLandInspectorStatus(address _account) public onlyDeployerOrSecondLevelAuthority {
         userAccounts[_account].designation = 1;
