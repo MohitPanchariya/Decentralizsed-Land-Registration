@@ -10,9 +10,9 @@ interface IAccountRegistration {
 contract LandRegistration {
 
     //Address which deployed this smart contract
-    address deployer;
+    address public deployer;
     //AccountRegistration Contract
-    address accountRegistrationContract;
+    address public accountRegistrationContract;
 
     constructor(address _accountRegistrationContract) {
         deployer = msg.sender;
