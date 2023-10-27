@@ -11,6 +11,29 @@ contract LandRegistrationSystem {
         uint256 aadharNumber;
     }
 
+    function setUserDetails(string memory _username, uint8 _designation, uint256 _aadharNumber) public {
+        // Check if the user has not set their details before
+        require(userAccounts[msg.sender].designation == 0, "User details can only be set once.");
+
+        // Check if the provided designation is valid (0, 1, or 2)
+        require(_designation >= 0 && _designation <= 2, "Invalid designation.");
+
+        // Check if the provided Aadhar number is valid
+        require(validateAadhar(_aadharNumber), "Invalid Aadhar number");
+
+        // Check if the provided Aadhar number is not already registered
+        require(aadharToUser[_aadharNumber] == address(0), "Aadhar number already registered.");
+
+        // Update the user's details
+        userAccounts[msg.sender].username = _username;
+        userAccounts[msg.sender].designation = _designation;
+        userAccounts[msg.sender].registrationDate = block.timestamp;
+        userAccounts[msg.sender].aadharNumber = _aadharNumber;
+        
+        // Update the Aadhar mapping
+        aadharToUser[_aadharNumber] = msg.sender;
+    }
+
     // Mapping to store user accounts using their Ethereum addresses as keys
     mapping(address => UserAccount) public userAccounts;
 
