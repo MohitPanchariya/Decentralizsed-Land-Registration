@@ -94,7 +94,7 @@ contract LandRegistration {
         bool isRegisteredUser = IAccountRegistration(
             accountRegistrationContract
         ).isUserVerified(msg.sender);
-        
+
         require(isRegisteredUser, "Only registered user can perform this action.");
         _;
     }
@@ -139,12 +139,11 @@ contract LandRegistration {
         verificationRequired.push(_landId);
     }
 
-    function landRecordExists(
-        string calldata _state , string calldata _division, 
-        string calldata _district, string calldata _taluka,
-        string calldata _village
-    ) private view returns (bool, uint) {
-        uint landId = landMapToId[_state][_division][_district][_taluka][_village];
+    function landRecordExists(LandRecord memory _record) 
+                                private view returns (bool, uint) {
+        uint landId = landMapToId[_record.state][_record.divison]
+                                [_record.district][_record.taluka]
+                                [_record.village];
         if (landId == 0) {
             return (false, 0);
         }
@@ -152,17 +151,10 @@ contract LandRegistration {
     }
 
     //This function is used to add a land record
-    function addLandRecord  (
-        string calldata _state , string calldata _division, 
-        string calldata _district, string calldata _taluka,
-        string calldata _village, uint _surveyNumber, 
-        string calldata _subDivison, uint _area, uint _purchaseDate,
-        uint _purchasePrice, uint _landValueAtPurchase, 
-        address[] calldata _previousOwners
-    ) public onlyRegisteredUser returns (uint) {
-        (bool recordExists, uint landId) = landRecordExists(
-            _state, _division, _district, _taluka, _village
-        );
+    function addLandRecord  (LandRecord memory _record) public 
+                            onlyRegisteredUser returns (uint) {
+
+        (bool recordExists, uint landId) = landRecordExists(_record);
 
         //If land record already exists, return the land id
         if (recordExists) {
@@ -171,11 +163,7 @@ contract LandRegistration {
 
         //If the land record doesn't already exist, add it to the mapping
         //and return land id
-        landMapping[landRecordsCount] = LandRecord(
-            landId, msg.sender, _state, _division, _district, _taluka, _village,
-            _surveyNumber, _subDivison, _area, _purchaseDate, _purchasePrice,
-            _landValueAtPurchase, _previousOwners, false, false
-        );
+        landMapping[landRecordsCount] = _record;
 
         uint addedLandId = landRecordsCount;
         landRecordsCount++;
