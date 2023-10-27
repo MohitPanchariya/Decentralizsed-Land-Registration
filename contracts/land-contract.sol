@@ -2,13 +2,21 @@
 
 pragma solidity ^0.8.0;
 
+interface IAccountRegistration {
+    function isUserVerified(address _account) external returns (bool);
+    function isLandInspector(address _account) external returns (bool);
+}
+
 contract LandRegistration {
 
     //Address which deployed this smart contract
     address deployer;
+    //AccountRegistration Contract
+    address accountRegistrationContract;
 
-    constructor() {
+    constructor(address _accountRegistrationContract) {
         deployer = msg.sender;
+        accountRegistrationContract = _accountRegistrationContract;
     }
 
     struct LandRecord {
@@ -72,17 +80,21 @@ contract LandRegistration {
     }
 
     modifier onylInspector() {
-        //This will be a function call to the other contract once thats
-        //available
-        bool isInspector = true;
+        //Call the isInspector function from the accountRegistration contract
+        bool isInspector = IAccountRegistration(
+            accountRegistrationContract
+        ).isLandInspector(msg.sender);
+
         require(isInspector, "Only inspector can perform this action.");
         _;
     }
 
     modifier onlyRegisteredUser() {
-        //This will be a function call to the other contract once thats
-        //available
-        bool isRegisteredUser = true;
+        //Call the isVerified function from the accountRegistration contract
+        bool isRegisteredUser = IAccountRegistration(
+            accountRegistrationContract
+        ).isUserVerified(msg.sender);
+        
         require(isRegisteredUser, "Only registered user can perform this action.");
         _;
     }
