@@ -2,6 +2,8 @@
 
 pragma solidity ^0.8.0;
 
+import "./registerAccount-contract.sol";
+
 interface IAccountRegistration {
     function isUserVerified(address _account) external returns (bool);
     function isLandInspector(address _account) external returns (bool);
@@ -73,6 +75,33 @@ contract LandRegistration {
         bool isForSale;
     }
 
+//A structure that represents the Land requests made by buyer to seller along with the status of the request
+     struct LandRequest {
+        uint reqId;
+        address payable sellerId;
+        address payable buyerId;
+        uint landId;
+        reqStatus requestStatus;
+        bool isPaymentDone;
+    }
+
+    //An enumeration that shows different stages of the request
+    enum reqStatus {requested,accepted,rejected,paymentdone,completed}
+
+
+//Mapping to different lists and LandRequest
+    mapping(uint => LandRequest) public LandRequestMapping;
+    mapping(address => uint[])  MyReceivedLandRequests;
+    mapping(address => uint[])  MySentLandRequests;
+    mapping(address => uint[])  MyLands;
+    mapping(uint => uint[])  allLandList;
+
+    
+   //Requests counts made from buyers and declaration of  documentId  variable
+    uint public documentId;
+    uint requestCount;
+
+
     uint public landRecordsCount = 1;
 
     modifier onlyOwner(uint _landId) {
@@ -83,7 +112,7 @@ contract LandRegistration {
         _;
     }
 
-    modifier onylInspector() {
+    modifier onlylInspector() {
         //Call the isInspector function from the accountRegistration contract
         bool isInspector = IAccountRegistration(
             accountRegistrationContract
@@ -170,6 +199,7 @@ contract LandRegistration {
         landMapping[landRecordsCount] = _record;
 
         uint addedLandId = landRecordsCount;
+        allLandList[1].push(landRecordsCount);
         landRecordsCount++;
         return addedLandId;
     }
@@ -184,7 +214,7 @@ contract LandRegistration {
     }
 
     //Function to approve a land verification request
-    function verifyLand(uint _landId) public onylInspector {
+    function verifyLand(uint _landId) public onlylInspector {
         landMapping[_landId].isVerified = true;
     }
 
@@ -202,8 +232,98 @@ contract LandRegistration {
         landsForSale.push(_landId);
     }
 
+//Function where a buyer can request and show interest in buying  a land
+ function requestforBuy(uint _landId) public
+    {
+        require(isUserVerified(msg.sender) && verifyLand(_landId));
+
+        requestCount++;
+        LandRequestMapping[requestCount]=LandRequest(requestCount,landMapping[_landId].owner,msg.sender,_landId,reqStatus.requested,false);
+        MyReceivedLandRequests[landMapping[_landId].owner].push(requestCount);
+        MySentLandRequests[msg.sender].push(requestCount);
+    }
+
+//Function that will return a list of received land requests buyers interested for a particular land
+    function receivedLandRequests() public view returns(uint[] memory)
+    {
+        return MyReceivedLandRequests[msg.sender];
+    }
+
+//Function that will return a list of buyers interested for a particular land and have sent requests
+    function sentLandRequests() public view returns(uint[] memory)
+    {
+        return MySentLandRequests[msg.sender];
+    }
+
+//Function where seller accepts the request of the buyer
+    function acceptRequest(uint _requestId) public
+    {
+        require(LandRequestMapping[_requestId].sellerId==msg.sender);
+        LandRequestMapping[_requestId].requestStatus=reqStatus.accepted;
+    }
+
+//Function where seller rejects the request of the buyer
+    function rejectRequest(uint _requestId) public
+    {
+        require(LandRequestMapping[_requestId].sellerId==msg.sender);
+        LandRequestMapping[_requestId].requestStatus=reqStatus.rejected;
+    }
+
+//Function to check the status of payment
+    function requestStatus(uint id) public view returns(bool)
+    {
+        return LandRequestMapping[id].isPaymentDone;
+    }
+
+//Function that requires LandInspector approval before transfer of ownership
+    function LandInspectorApproval(uint id) public view returns(bool)
+    {
+        return true;
+    }
+
+//Function for transferring ownership of land between two parties
+ function transferLandOwnership(uint _requestId,LandIdentifier memory documentUrl) public returns(bool)
+    {
+        require(isLandInspector(msg.sender) && LandInspectorApproval(msg.sender));
+
+        if(LandRequestMapping[_requestId].isPaymentDone==false)
+            return false;
+        documentId++;
+        LandRequestMapping[_requestId].requestStatus=reqStatus.commpleted;
+        MyLands[LandRequestMapping[_requestId].buyerId].push(LandRequestMapping[_requestId].landId);
+
+        uint len=MyLands[LandRequestMapping[_requestId].sellerId].length;
+        for(uint i=0;i<len;i++)
+        {
+            if(MyLands[LandRequestMapping[_requestId].sellerId][i]==LandRequestMapping[_requestId].landId)
+            {
+                MyLands[LandRequestMapping[_requestId].sellerId][i]=MyLands[LandRequestMapping[_requestId].sellerId][len-1];
+                
+                MyLands[LandRequestMapping[_requestId].sellerId].pop();
+                break;
+            }
+        }
+        landMapping[LandRequestMapping[_requestId].landId].identifier=documentUrl;
+        landMapping[LandRequestMapping[_requestId].landId].isForSale=false;
+        landMapping[LandRequestMapping[_requestId].landId].owner=LandRequestMapping[_requestId].buyerId;
+        return true;
+    }
+
+
     //Get all land ids which have been listed for sale
     function getLandsForSale() public view returns (uint[] memory) {
         return landsForSale;
+    }
+
+//Function to view the list of lands of a particular owner
+    function myLandsList(address owner) public view returns( uint[] memory){
+        return MyLands[owner];
+    }
+
+
+//Function that returns a list of all lands
+    function ReturnAllLandList() public view returns(uint[] memory)
+    {
+        return allLandList[1];
     }
 }
