@@ -19,15 +19,7 @@ contract LandRegistration {
         accountRegistrationContract = _accountRegistrationContract;
     }
 
-    struct LandRecord {
-        uint landId;
-        //Address of the account(person) that owns this piece of land
-        /* 
-            Note: There can be multiple owners of a single piece of land.
-            This is being ignored for now.
-        */
-        address owner;
-
+    struct LandIdentifier {
         /*
             Fields needed to identify the piece of land
             A state has divisions.
@@ -48,6 +40,18 @@ contract LandRegistration {
         string village;
         uint surveyNumber;
         string subdivision;
+    }
+
+    struct LandRecord {
+        uint landId;
+        //Address of the account(person) that owns this piece of land
+        /* 
+            Note: There can be multiple owners of a single piece of land.
+            This is being ignored for now.
+        */
+        address owner;
+
+        LandIdentifier identifier;
 
         uint area;
 
@@ -139,7 +143,7 @@ contract LandRegistration {
         verificationRequired.push(_landId);
     }
 
-    function landRecordExists(LandRecord memory _record) 
+    function landRecordExists(LandIdentifier memory _record) 
                                 private view returns (bool, uint) {
         uint landId = landMapToId[_record.state][_record.divison]
                                 [_record.district][_record.taluka]
@@ -154,7 +158,7 @@ contract LandRegistration {
     function addLandRecord  (LandRecord memory _record) public 
                             onlyRegisteredUser returns (uint) {
 
-        (bool recordExists, uint landId) = landRecordExists(_record);
+        (bool recordExists, uint landId) = landRecordExists(_record.identifier);
 
         //If land record already exists, return the land id
         if (recordExists) {
