@@ -137,6 +137,14 @@ contract LandRegistration {
         _;
     }
 
+    modifier onlyVerifiedLand(uint _landId) {
+        require(
+            landMapping[_landId].isVerified == true,
+            "Only verified lands can be put up for sale."
+        );
+        _;
+    }
+
     /*
         Mapping of land records by hierarchy. Mapping is as follows:
         state => {
@@ -241,7 +249,8 @@ contract LandRegistration {
     }
 
     //List land for sale
-    function listLandForSale(uint _landId) public onlyOwner(_landId) {
+    function listLandForSale(uint _landId) public onlyOwner(_landId) 
+    onlyVerifiedLand (_landId) {
         //Check if land actually exists
         //Mapping in solidity always exists and maps to a zero value
         //Hence, this check is needed.
