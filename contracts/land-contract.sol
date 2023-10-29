@@ -75,11 +75,16 @@ contract LandRegistration {
         bool isForSale;
     }
 
+    //Event to be emitted after adding a land record
+    event LandRecordAdded(uint landId);
+    //Event to be emitted if the land record already exists
+    event LandRecordExists(uint landId);
+
 //A structure that represents the Land requests made by buyer to seller along with the status of the request
      struct LandRequest {
         uint reqId;
-        address payable sellerId;
-        address payable buyerId;
+        address sellerId;
+        address buyerId;
         uint landId;
         reqStatus requestStatus;
         bool isPaymentDone;
@@ -138,7 +143,11 @@ contract LandRegistration {
             division => {
                 district => {
                     taluka => {
-                        village => id
+                        village => {
+                            survery number => {
+                                subdivision => id
+                            }
+                        }
                     }
                 }
             }
@@ -151,7 +160,11 @@ contract LandRegistration {
             string => mapping(
                 string => mapping(
                     string => mapping(
-                        string => uint
+                        string => mapping(
+                            uint => mapping(
+                                string => uint
+                            )
+                        )
                     )
                 )
             )
@@ -176,7 +189,7 @@ contract LandRegistration {
                                 private view returns (bool, uint) {
         uint landId = landMapToId[_record.state][_record.divison]
                                 [_record.district][_record.taluka]
-                                [_record.village];
+                                [_record.village][_record.surveyNumber][_record.subdivision];
         if (landId == 0) {
             return (false, 0);
         }
@@ -191,26 +204,35 @@ contract LandRegistration {
 
         //If land record already exists, return the land id
         if (recordExists) {
+            emit LandRecordExists(landId);
             return landId;
         }
 
+        _record.landId = landRecordsCount;
+        _record.isVerified = false;
+        _record.isForSale = false;
         //If the land record doesn't already exist, add it to the mapping
         //and return land id
         landMapping[landRecordsCount] = _record;
 
+        //Also add it to the landMapToId mapping
+        landMapToId[_record.identifier.state][_record.identifier.divison]
+        [_record.identifier.district][_record.identifier.taluka]
+        [_record.identifier.village][_record.identifier.surveyNumber]
+        [_record.identifier.subdivision] = landRecordsCount;
+
         uint addedLandId = landRecordsCount;
         allLandList[1].push(landRecordsCount);
         landRecordsCount++;
+        emit LandRecordAdded(addedLandId);
         return addedLandId;
     }
 
     //Get land id
-    function getLandId(
-        string calldata _state , string calldata _division, 
-        string calldata _district, string calldata _taluka,
-        string calldata _village
-    ) public view returns (uint){
-        return landMapToId[_state][_division][_district][_taluka][_village];
+    function getLandId(LandIdentifier memory _identifier) public view returns (uint){
+        return landMapToId[_identifier.state][_identifier.divison]
+        [_identifier.district][_identifier.taluka][_identifier.village]
+        [_identifier.surveyNumber][_identifier.subdivision];
     }
 
     //Function to approve a land verification request
@@ -233,9 +255,9 @@ contract LandRegistration {
     }
 
 //Function where a buyer can request and show interest in buying  a land
- function requestforBuy(uint _landId) public
+ function requestforBuy(uint _landId) public onlyRegisteredUser
     {
-        require(isUserVerified(msg.sender) && verifyLand(_landId));
+        // require(isUserVerified(msg.sender) && verifyLand(_landId));
 
         requestCount++;
         LandRequestMapping[requestCount]=LandRequest(requestCount,landMapping[_landId].owner,msg.sender,_landId,reqStatus.requested,false);
@@ -282,14 +304,14 @@ contract LandRegistration {
     }
 
 //Function for transferring ownership of land between two parties
- function transferLandOwnership(uint _requestId,LandIdentifier memory documentUrl) public returns(bool)
+ function transferLandOwnership(uint _requestId,LandIdentifier memory documentUrl) onlylInspector public returns(bool)
     {
-        require(isLandInspector(msg.sender) && LandInspectorApproval(msg.sender));
+        // require(isLandInspector(msg.sender) && LandInspectorApproval(msg.sender));
 
         if(LandRequestMapping[_requestId].isPaymentDone==false)
             return false;
         documentId++;
-        LandRequestMapping[_requestId].requestStatus=reqStatus.commpleted;
+        LandRequestMapping[_requestId].requestStatus=reqStatus.completed;
         MyLands[LandRequestMapping[_requestId].buyerId].push(LandRequestMapping[_requestId].landId);
 
         uint len=MyLands[LandRequestMapping[_requestId].sellerId].length;
