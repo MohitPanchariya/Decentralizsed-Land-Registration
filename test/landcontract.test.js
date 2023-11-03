@@ -484,18 +484,26 @@ contract("LandRegistration", async (accounts) => {
 
         })
 
-        it("Ensures that only a verified user can respond to the request", async () => {
+         it("Ensures that only a verified user can accept the request", async () => {
             try {
                 await landRegistrationInstance.acceptRequest(reqId, {from: owner});
-            } 
-            catch (error) {
+            } catch (error) {
                 assert(
-                    error.message.include("Only verified user can request for buying the land.")
+                    error.message.include("Only verified user can accept the request for land.")
                 )
             }
-            finally {
+           
+        })
+
+        it("Ensures that only a verified user can reject to the request", async () => {
+            try {
                 await landRegistrationInstance.rejectRequest(reqId, {from: owner});
+            } catch (error) {
+                assert(
+                    error.message.include("Only verified user can reject the request for land.")
+                )
             }
+           
         })
 
         it("Ensures that a user cannot accept requests of two different buyers at the same time for the same land", async () => {
