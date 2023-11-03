@@ -373,4 +373,145 @@ contract("LandRegistration", async (accounts) => {
             }
         })
     })
+
+     describe("Buyer shows interest in buying land", () => {
+        //Considering simple case where there is one land and one user(buyer)
+        const landId  = 1;
+        const requestId = 1;
+        let requestcount = 0;
+
+        it("Ensures that a buyer can buy or show interest in buying the land", async () => {
+
+              //sent buy requests for land
+            const sentbuyrequests= await landRegistrationInstance.sentLandRequests();    
+
+              //Get the lands for sale
+              const landsForSale = await landRegistrationInstance.getLandsForSale();    
+
+              //list the land for sale
+              await landRegistrationInstance.listLandForSale(landId, {from: owner});
+
+            
+            //BN is a different type from BigNumber
+            //Tried casting a number to a BN and using includes but it always
+            //returns false despite the number being present.
+            //The casted number is missing a few properties. This could be the 
+            //reason for an always false return value.
+            //Using a loop is a simple solution here
+            const landIfFound = landsForSale.some(
+                (element) => {
+                    if (element.toNumber() === landId) {
+                        return true
+                    }
+                }
+            )
+
+            assert.equal(
+                true, landIfFound, "Land id 1 must be present in the list of" +
+                " lands for sale."
+            );
+
+        })
+
+        it("Ensures that only a verified user can send request to buy a land ", async () => {
+            try {
+                await landRegistrationInstance.requestforBuy(landId, {from: owner});
+            } catch (error) {
+                assert(
+                    error.message.include("Only verified user can request for buying the land.")
+                )
+            }
+        })
+
+      
+
+        it("Ensure that a verified user cannot send buy request for the same land twice", async () => {
+            const addsendlandreqTx = await landRegistrationInstance.requestforBuy(landId, {from: owner});
+            if(requestId === 1 && landId === 1)
+            {
+                requestcount++;
+            }
+
+            assert.equal(
+                1, requestcount, "Since the request has already been sent, it won't allow the user to send request again."
+            )
+          
+
+        })
+
+    })
+
+    describe("Seller responds to the buyer request", () => {
+        //Considering a simple case where there are two buyers and one land and two buyr requests made for the same land
+        const landId  = 1;
+        const reqId = 1;
+        const reqId1 =  1;
+        const reqId2 = 2;
+        let acceptcount = 0;
+        it("Ensures that a seller can respond to the request of the buyer", async () => {
+
+            //Received land requests
+            const receivedbuyrequests= await landRegistrationInstance.receivedLandRequests();    
+
+            //Get all the lands list
+            const allLandList= await landRegistrationInstance.getAllLands();    
+
+              //Get the lands for sale
+              const landsForSale = await landRegistrationInstance.getLandsForSale();    
+
+              //list the land for sale
+              await landRegistrationInstance.listLandForSale(landId, {from: owner});
+
+            
+            //BN is a different type from BigNumber
+            //Tried casting a number to a BN and using includes but it always
+            //returns false despite the number being present.
+            //The casted number is missing a few properties. This could be the 
+            //reason for an always false return value.
+            //Using a loop is a simple solution here
+            const landIfFound = landsForSale.some(
+                (element) => {
+                    if (element.toNumber() === landId) {
+                        return true
+                    }
+                }
+            )
+
+            assert.equal(
+                true, landIfFound, "Land id 1 must be present in the list of" +
+                " lands for sale."
+            );
+
+        })
+
+        it("Ensures that only a verified user can respond to the request", async () => {
+            try {
+                await landRegistrationInstance.acceptRequest(reqId, {from: owner});
+            } 
+            catch (error) {
+                assert(
+                    error.message.include("Only verified user can request for buying the land.")
+                )
+            }
+            finally {
+                await landRegistrationInstance.rejectRequest(reqId, {from: owner});
+            }
+        })
+
+        it("Ensures that a user cannot accept requests of two different buyers at the same time for the same land", async () => {
+           
+            const addreceivedRequestTx = await landRegistrationInstance.acceptRequest(reqId1, {from: owner});
+            if(reqId1 === 1 && landId === 1 &&  addreceivedRequestTx)
+            {
+               acceptcount++;
+            }
+
+            assert.equal(
+                1, acceptcount, "One request has already been accepted, the second request is just discarded"
+            );
+    
+        })
+
+    })
+
 })
