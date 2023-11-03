@@ -505,6 +505,10 @@ contract("LandRegistration", async (accounts) => {
             {
                acceptcount++;
             }
+            if(reqId2 === 1 && landId === 1)
+            {
+                addreceivedRequestTx = await landRegistrationInstance.rejectRequest(reqId2, {from: owner});
+            }
 
             assert.equal(
                 1, acceptcount, "One request has already been accepted, the second request is just discarded"
