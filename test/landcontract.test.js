@@ -454,7 +454,7 @@ contract("LandRegistration", async (accounts) => {
             const receivedbuyrequests= await landRegistrationInstance.receivedLandRequests();    
 
             //Get all the lands list
-            const allLandList= await landRegistrationInstance.getAllLands();    
+            const allLandList= await landRegistrationInstance.ReturnAllLandList();    
 
               //Get the lands for sale
               const landsForSale = await landRegistrationInstance.getLandsForSale();    
@@ -522,6 +522,71 @@ contract("LandRegistration", async (accounts) => {
                 1, acceptcount, "One request has already been accepted, the second request is just discarded"
             );
     
+        })
+
+    })
+
+    describe("Transfer of ownership of land between seller and buyer" , () => {
+        //Considering a simple case where there are two buyers and one land and two buyer requests made for the same land
+        const reqId = 1;
+        const reqId1 =  1;
+        const reqId2 = 2;
+        let acceptcount = 0;
+
+
+        let landRecord;
+
+        before(async () => {
+            const area = 100, purchaseDate = 1698568923, landValueAtPurchase = 100;
+            const purchasePrice = 100, surveryNumber = 123;
+            
+            landRecord = {
+                landId: 0,
+                owner: owner,
+                identifier: {
+                    state: "sample state",
+                    divison: "sample division",
+                    district: "sample district",
+                    taluka: "sample taluka",
+                    village: "sample village",
+                    surveyNumber: surveryNumber,
+                    subdivision: "1/A"
+                },
+                area: area,
+                purchaseDate: purchaseDate,
+                purchasePrice: purchasePrice,
+                landValueAtPurchase: landValueAtPurchase,
+                previousOwners: [],
+                isVerified: false,
+                isForSale: false
+            }
+        })
+
+        it("Ensures that only a verified lands' ownership can be transferred between seller and buyer !", async () => {
+            const acceptedreq = await landRegistrationInstance.acceptRequest(reqId, {from: owner});
+            try { 
+                    if(acceptcount === 1)
+                    {
+                        await landRegistrationInstance.transferLandOwnership(reqId, landRecord, {
+                            from: inspector
+                        })
+                    }
+            } catch (error) {
+                assert(
+                    error.message.include("Only verified lands' ownership can be transferred")
+                )
+            }
+        })
+
+        it("Ensures that user can change the status of the land : whether its for sale or not after ownership is granted and its set not for sale !", async () => {
+            
+            try { 
+                const acceptedreq = await landRegistrationInstance.listLandForSale(reqId, {from: owner});
+            } catch (error) {
+                assert(
+                    error.message.include("Allows only not for sale land to change status to sale")
+                )
+            }
         })
 
     })
