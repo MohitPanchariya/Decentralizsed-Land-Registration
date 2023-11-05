@@ -99,7 +99,9 @@ contract LandRegistration {
     mapping(address => uint[])  MyReceivedLandRequests;
     mapping(address => uint[])  MySentLandRequests;
     mapping(address => uint[])  MyLands;
-    mapping(uint => uint[])  allLandList;
+    
+    //List containing all the lands that are added
+    uint[] allLandList;
 
     
    //Requests counts made from buyers and declaration of  documentId  variable
@@ -230,7 +232,7 @@ contract LandRegistration {
         [_record.identifier.subdivision] = landRecordsCount;
 
         uint addedLandId = landRecordsCount;
-        allLandList[1].push(landRecordsCount);
+        allLandList.push(landRecordsCount);
         landRecordsCount++;
         emit LandRecordAdded(addedLandId);
         return addedLandId;
@@ -355,6 +357,6 @@ contract LandRegistration {
 //Function that returns a list of all lands
     function ReturnAllLandList() public view returns(uint[] memory)
     {
-        return allLandList[1];
+        return allLandList;
     }
 }
