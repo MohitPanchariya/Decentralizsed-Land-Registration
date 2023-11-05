@@ -308,11 +308,6 @@ contract LandRegistration {
         return LandRequestMapping[id].isPaymentDone;
     }
 
-//Function that requires LandInspector approval before transfer of ownership
-    function LandInspectorApproval(uint id) public view returns(bool)
-    {
-        return true;
-    }
 
 //Function for transferring ownership of land between two parties
  function transferLandOwnership(uint _requestId,LandIdentifier memory documentUrl) onlylInspector public returns(bool)
