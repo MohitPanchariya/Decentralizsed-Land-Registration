@@ -24,8 +24,8 @@
 </div>
 
 <script>
-    const contractAddress = "0xC170D46e9e8c1987e4489000B5f654f4aec3bc28";
-    const ganacheEndpoint = "http://127.0.0.1:8545"; // Assuming Ganache is running on the default port
+    const contractAddress = "contract_address";
+    const ganacheEndpoint = "http://127.0.0.1:8545";
 
     const web3 = new Web3(new Web3.providers.HttpProvider(ganacheEndpoint));
 
@@ -39,8 +39,6 @@
             "stateMutability": "nonpayable",
             "type": "function"
         },
-        // Add other functions from your smart contract ABI
-        // ...
     ];
 
     const accountRegistrationContract = new web3.eth.Contract(contractABI, contractAddress);
@@ -54,7 +52,7 @@
         const tx = await accountRegistrationContract.methods.setUserDetails(username, 0, aadharNumber).send({ from: accounts[0], gas: 2000000, gasPrice: '20000000000' });
         
         alert("User registered!");
-        
+
     } catch (error) {
         console.error("An error occurred during user registration:", error);
         alert("An error occurred during user registration. Check the console for details.");
