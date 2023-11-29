@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Page</title>
+    <link rel="stylesheet" type="text/css" href="/src/style.css">
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/web3@1.5.2/dist/web3.min.js"></script>
+</head>
+<body>
+
+<h1>User Page</h1>
+
+<div class="container">
+    <h2>User Registration</h2>
+    <form id="userForm">
+        <label for="usernameInput">Username:</label>
+        <input type="text" id="usernameInput" placeholder="Enter Username" required>
+        <label for="aadharNumberInput">Aadhar Number:</label>
+        <input type="text" id="aadharNumberInput" placeholder="Enter Aadhar Number" required>
+        <button type="button" onclick="registerUser()">Register User</button>
+    </form>
+</div>
+
+<script>
+    const contractAddress = "0xC170D46e9e8c1987e4489000B5f654f4aec3bc28";
+    const ganacheEndpoint = "http://127.0.0.1:8545"; // Assuming Ganache is running on the default port
+
+    const web3 = new Web3(new Web3.providers.HttpProvider(ganacheEndpoint));
+
+    const contractABI = [
+        {
+            "constant": false,
+            "inputs": [{"name": "_username", "type": "string"}, {"name": "_designation", "type": "uint8"}, {"name": "_aadharNumber", "type": "uint256"}],
+            "name": "setUserDetails",
+            "outputs": [],
+            "payable": false,
+            "stateMutability": "nonpayable",
+            "type": "function"
+        },
+        // Add other functions from your smart contract ABI
+        // ...
+    ];
+
+    const accountRegistrationContract = new web3.eth.Contract(contractABI, contractAddress);
+
+    async function registerUser() {
+    try {
+        const username = $("#usernameInput").val();
+        const aadharNumber = $("#aadharNumberInput").val();
+
+        const accounts = await web3.eth.getAccounts();
+        const tx = await accountRegistrationContract.methods.setUserDetails(username, 0, aadharNumber).send({ from: accounts[0], gas: 2000000, gasPrice: '20000000000' });
+        
+        alert("User registered!");
+        
+    } catch (error) {
+        console.error("An error occurred during user registration:", error);
+        alert("An error occurred during user registration. Check the console for details.");
+    }
+}
+
+</script>
+</body>
+</html>
