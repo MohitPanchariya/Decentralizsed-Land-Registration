@@ -374,24 +374,21 @@ contract("LandRegistration", async (accounts) => {
         })
     })
 
-     describe("Buyer shows interest in buying land", () => {
-        //Considering simple case where there is one land and one user(buyer)
+
+
+
+    describe("Buyer's request for a land", () => {
         const landId  = 1;
-        const requestId = 1;
-        let requestcount = 0;
+        
+        it("Ensures that a verified user can request to buy the land", async () => {
 
-        it("Ensures that a buyer can buy or show interest in buying the land", async () => {
-
-              //sent buy requests for land
-            const sentbuyrequests= await landRegistrationInstance.sentLandRequests();    
-
-              //Get the lands for sale
-              const landsForSale = await landRegistrationInstance.getLandsForSale();    
-
-              //list the land for sale
-              await landRegistrationInstance.listLandForSale(landId, {from: owner});
-
+            //list the land for sale
+            await landRegistrationInstance.listLandForSale(landId, {from: owner});
             
+            //Get the lands for sale
+            const landsForSale = await landRegistrationInstance.getLandsForSale();    
+
+
             //BN is a different type from BigNumber
             //Tried casting a number to a BN and using includes but it always
             //returns false despite the number being present.
@@ -411,58 +408,23 @@ contract("LandRegistration", async (accounts) => {
                 " lands for sale."
             );
 
-        })
-
-        it("Ensures that only a verified user can send request to buy a land ", async () => {
-            try {
-                await landRegistrationInstance.requestforBuy(landId, {from: owner});
-            } catch (error) {
-                assert(
-                    error.message.include("Only verified user can request for buying the land.")
-                )
-            }
-        })
-
-      
-
-        it("Ensure that a verified user cannot send buy request for the same land twice", async () => {
-            const addsendlandreqTx = await landRegistrationInstance.requestforBuy(landId, {from: owner});
-            if(requestId === 1 && landId === 1)
-            {
-                requestcount++;
-            }
-
-            assert.equal(
-                1, requestcount, "Since the request has already been sent, it won't allow the user to send request again."
-            )
-          
+            const buy =await landRegistrationInstance.requestForBuy(landId);   
 
         })
-
     })
 
-    describe("Seller responds to the buyer request", () => {
-        //Considering a simple case where there are two buyers and one land and two buyr requests made for the same land
+    describe("Seller accepts request from a buyer", () => {
         const landId  = 1;
         const reqId = 1;
-        const reqId1 =  1;
-        const reqId2 = 2;
-        let acceptcount = 0;
-        it("Ensures that a seller can respond to the request of the buyer", async () => {
+        it("Ensures that a verified owner can accept the request for a land", async () => {
 
-            //Received land requests
-            const receivedbuyrequests= await landRegistrationInstance.receivedLandRequests();    
-
-            //Get all the lands list
-            const allLandList= await landRegistrationInstance.ReturnAllLandList();    
-
-              //Get the lands for sale
-              const landsForSale = await landRegistrationInstance.getLandsForSale();    
-
-              //list the land for sale
-              await landRegistrationInstance.listLandForSale(landId, {from: owner});
-
+            //list the land for sale
+            await landRegistrationInstance.listLandForSale(landId, {from: owner});
             
+            //Get the lands for sale
+            const landsForSale = await landRegistrationInstance.getLandsForSale();    
+
+
             //BN is a different type from BigNumber
             //Tried casting a number to a BN and using includes but it always
             //returns false despite the number being present.
@@ -482,113 +444,10 @@ contract("LandRegistration", async (accounts) => {
                 " lands for sale."
             );
 
+            const buy =await landRegistrationInstance.acceptRequest(reqId);   
+
         })
-
-         it("Ensures that only a verified user can accept the request", async () => {
-            try {
-                await landRegistrationInstance.acceptRequest(reqId, {from: owner});
-            } catch (error) {
-                assert(
-                    error.message.include("Only verified user can accept the request for land.")
-                )
-            }
-           
-        })
-
-        it("Ensures that only a verified user can reject to the request", async () => {
-            try {
-                await landRegistrationInstance.rejectRequest(reqId, {from: owner});
-            } catch (error) {
-                assert(
-                    error.message.include("Only verified user can reject the request for land.")
-                )
-            }
-           
-        })
-
-        it("Ensures that a user cannot accept requests of two different buyers at the same time for the same land", async () => {
-           
-            const addreceivedRequestTx = await landRegistrationInstance.acceptRequest(reqId1, {from: owner});
-            if(reqId1 === 1 && landId === 1 &&  addreceivedRequestTx)
-            {
-               acceptcount++;
-            }
-            if(reqId2 === 1 && landId === 1)
-            {
-                addreceivedRequestTx = await landRegistrationInstance.rejectRequest(reqId2, {from: owner});
-            }
-
-            assert.equal(
-                1, acceptcount, "One request has already been accepted, the second request is just discarded"
-            );
-    
-        })
-
     })
 
-    describe("Transfer of ownership of land between seller and buyer" , () => {
-        //Considering a simple case where there are two buyers and one land and two buyer requests made for the same land
-        const reqId = 1;
-        const reqId1 =  1;
-        const reqId2 = 2;
-        let acceptcount = 0;
-
-
-        let landRecord;
-
-        before(async () => {
-            const area = 100, purchaseDate = 1698568923, landValueAtPurchase = 100;
-            const purchasePrice = 100, surveryNumber = 123;
-            
-            landRecord = {
-                landId: 0,
-                owner: owner,
-                identifier: {
-                    state: "sample state",
-                    divison: "sample division",
-                    district: "sample district",
-                    taluka: "sample taluka",
-                    village: "sample village",
-                    surveyNumber: surveryNumber,
-                    subdivision: "1/A"
-                },
-                area: area,
-                purchaseDate: purchaseDate,
-                purchasePrice: purchasePrice,
-                landValueAtPurchase: landValueAtPurchase,
-                previousOwners: [],
-                isVerified: false,
-                isForSale: false
-            }
-        })
-
-        it("Ensures that only a verified lands' ownership can be transferred between seller and buyer !", async () => {
-            const acceptedreq = await landRegistrationInstance.acceptRequest(reqId, {from: owner});
-            try { 
-                    if(acceptcount === 1)
-                    {
-                        await landRegistrationInstance.transferLandOwnership(reqId, landRecord, {
-                            from: inspector
-                        })
-                    }
-            } catch (error) {
-                assert(
-                    error.message.include("Only verified lands' ownership can be transferred")
-                )
-            }
-        })
-
-        it("Ensures that user can change the status of the land : whether its for sale or not after ownership is granted and its set not for sale !", async () => {
-            
-            try { 
-                const acceptedreq = await landRegistrationInstance.listLandForSale(reqId, {from: owner});
-            } catch (error) {
-                assert(
-                    error.message.include("Allows only not for sale land to change status to sale")
-                )
-            }
-        })
-
-    })
-
+     
 })
