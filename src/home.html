@@ -19,8 +19,8 @@
     <p>Aadhar Number: <span id="aadharNumber"></span></p>
     <p>User Verified: <span id="userVerified"></span></p>
 
-    <!-- Add the verification button -->
-    <button onclick="requestVerification()">Request Verification</button>
+    <!-- Add the verification button conditionally -->
+    <button id="verificationButton" onclick="requestVerification()" style="display: none;">Request Verification</button>
 </div>
 
 <script>
@@ -38,6 +38,11 @@
     document.getElementById('registrationDate').innerText = new Date(registrationDate * 1000); // Convert to date format
     document.getElementById('aadharNumber').innerText = aadharNumber;
     document.getElementById('userVerified').innerText = isUserVerified === 'true' ? 'Yes' : 'No'; // Assuming isUserVerified is a string 'true' or 'false'
+
+    // Check if the user is not verified and show the button accordingly
+    if (isUserVerified !== 'true') {
+        document.getElementById('verificationButton').style.display = 'block';
+    }
 
     const contractAddress = "0x9bc39a4a1f3e87cC46CB04bf6d05E53F33BcC110";
     const ganacheEndpoint = "http://127.0.0.1:8545";
