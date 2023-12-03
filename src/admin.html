@@ -98,6 +98,31 @@
             "stateMutability": "view",
             "type": "function"
         },
+        {
+            "constant": true, 
+            "inputs": [
+                {"name": "_account", "type": "address"}
+            ],
+            "name": "grantLandInspectorStatus",
+            "outputs": [
+            ],
+            "payable": false,
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "constant": true, 
+            "inputs": [
+                {"name": "_account", "type": "address"}
+            ],
+            "name": "grantSecondLevelAuthorityStatus",
+            "outputs": [
+            ],
+            "payable": false,
+            "stateMutability": "view",
+            "type": "function"
+        },
+        
     ];
 
     const accountRegistrationContract = new web3.eth.Contract(contractABI, contractAddress);
@@ -129,6 +154,27 @@
         }
     }
     
+    async function grantAuthorityStatus(level) {
+        try {
+            if (level == 2) 
+            {
+                await accountRegistrationContract.methods.grantSecondLevelAuthorityStatus(
+                    $("#secondLevelAuthorityStatusAddressInput").val()
+                ).call();
+            }
+            else
+            {
+                await accountRegistrationContract.methods.grantLandInspectorStatus(
+                    $("#landInspectorStatusAddressInput").val()
+                ).call();
+            }
+            alert("Successfully granted!");
+
+        } catch (error) {
+            console.error("An error occurred:", error);
+            alert("An error occurred. Check the console for details.");
+        }
+    }
     
     
 </script>
