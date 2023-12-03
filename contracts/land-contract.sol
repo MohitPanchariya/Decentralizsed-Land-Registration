@@ -217,6 +217,7 @@ contract LandRegistration {
         //If land record already exists, return the land id
         if (recordExists) {
             emit LandRecordExists(landId);
+            allLandList.push(landId);
             return landId;
         }
 
@@ -234,7 +235,7 @@ contract LandRegistration {
         [_record.identifier.subdivision] = landRecordsCount;
 
         uint addedLandId = landRecordsCount;
-        allLandList.push(landRecordsCount);
+        allLandList.push(addedLandId);
         landRecordsCount++;
         emit LandRecordAdded(addedLandId);
         return addedLandId;
