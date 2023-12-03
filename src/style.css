@@ -2,11 +2,13 @@ body {
     font-family: 'Arial', sans-serif;
     margin: 0;
     padding: 0;
-    background-color: #f4f4f4; /* Set your desired background color */
+    background-color: #f4f4f4;
+    /* Set your desired background color */
 }
 
 header {
-    background-color: #333; /* Set your desired background color */
+    background-color: #333;
+    /* Set your desired background color */
     color: #fff;
     padding: 10px 20px;
 }
@@ -41,23 +43,27 @@ nav {
 
 /* Add a hover effect for the navigation links */
 .navbar a:hover {
-    color: #ffcc00; /* Set your desired hover color */
+    color: #ffcc00;
+    /* Set your desired hover color */
 }
 
 .container {
     max-width: 800px;
     margin: 20px auto;
     padding: 20px;
-    background-color: #fff; /* Set your desired background color */
+    background-color: #fff;
+    /* Set your desired background color */
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
 h2 {
-    color: #333; /* Set your desired text color */
+    color: #333;
+    /* Set your desired text color */
 }
 
 button {
-    background-color: #333; /* Set your desired background color */
+    background-color: #333;
+    /* Set your desired background color */
     color: #fff;
     padding: 8px 15px;
     border: none;
@@ -65,14 +71,15 @@ button {
 }
 
 button:hover {
-    background-color: #555; /* Set your desired hover color */
+    background-color: #555;
+    /* Set your desired hover color */
 }
 
 
 #login {
-    background-color: #04AA6D; 
+    background-color: #04AA6D;
 }
 
-button{
-    background-color: #04AA6D; 
+button {
+    background-color: #04AA6D;
 }

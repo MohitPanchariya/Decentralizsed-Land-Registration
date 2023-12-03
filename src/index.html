@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,7 +13,7 @@
 <header>
     <nav>
         <div class="logo">
-            <a href="#">Blockchain Dapp</a>
+            <a href="#">Land Registration Dapp</a>
         </div>
         <div class="navbar">
             <ul>
@@ -25,53 +26,55 @@
 
 <body>
 
-<div class="container">
-    <h2>User Registration</h2>
-    <form id="userForm">
-        <label for="usernameInput">Username:</label>
-        <input type="text" id="usernameInput" placeholder="Enter Username" required>
-        <label for="aadharNumberInput">Aadhar Number:</label>
-        <input type="text" id="aadharNumberInput" placeholder="Enter Aadhar Number" required>
-        <button type="button" onclick="registerUser()">Register User</button>
-        <p>Already have an account? <button id="login" href="login.html">Login</button></p>
-    </form>
-</div>
+    <div class="container">
+        <h2>User Registration</h2>
+        <form id="userForm">
+            <label for="usernameInput">Username:</label>
+            <input type="text" id="usernameInput" placeholder="Enter Username" required>
+            <label for="aadharNumberInput">Aadhar Number:</label>
+            <input type="text" id="aadharNumberInput" placeholder="Enter Aadhar Number" required>
+            <button type="button" onclick="registerUser()">Register User</button>
+            <p>Already have an account? <a href="login.html">Login</a></p>
+        </form>
+        
+    </div>
 
-<script>
-    const contractAddress = "0x9bc39a4a1f3e87cC46CB04bf6d05E53F33BcC110";
-    const ganacheEndpoint = "http://127.0.0.1:8545";
+    <script>
+        const contractAddress = "0x6C3D60eA0f3796A93D18e2E75Ca440B9f8AbaCd6";
+        const ganacheEndpoint = "http://127.0.0.1:8545";
 
-    const web3 = new Web3(new Web3.providers.HttpProvider(ganacheEndpoint));
+        const web3 = new Web3(new Web3.providers.HttpProvider(ganacheEndpoint));
 
-    const contractABI = [
-        {
-            "constant": false,
-            "inputs": [{"name": "_username", "type": "string"}, {"name": "_designation", "type": "uint8"}, {"name": "_aadharNumber", "type": "uint256"}],
-            "name": "setUserDetails",
-            "outputs": [],
-            "payable": false,
-            "stateMutability": "nonpayable",
-            "type": "function"
-        },
-    ];
+        const contractABI = [
+            {
+                "constant": false,
+                "inputs": [{ "name": "_username", "type": "string" }, { "name": "_designation", "type": "uint8" }, { "name": "_aadharNumber", "type": "uint256" }],
+                "name": "setUserDetails",
+                "outputs": [],
+                "payable": false,
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+        ];
 
-    const accountRegistrationContract = new web3.eth.Contract(contractABI, contractAddress);
+        const accountRegistrationContract = new web3.eth.Contract(contractABI, contractAddress);
 
-    async function registerUser() {
-        try {
-            const username = $("#usernameInput").val();
-            const aadharNumber = $("#aadharNumberInput").val();
+        async function registerUser() {
+            try {
+                const username = $("#usernameInput").val();
+                const aadharNumber = $("#aadharNumberInput").val();
 
-            const accounts = await web3.eth.getAccounts();
-            const tx = await accountRegistrationContract.methods.setUserDetails(username, 0, aadharNumber).send({ from: accounts[0], gas: 2000000, gasPrice: '20000000000' });
+                const accounts = await web3.eth.getAccounts();
+                const tx = await accountRegistrationContract.methods.setUserDetails(username, 0, aadharNumber).send({ from: accounts[0], gas: 2000000, gasPrice: '20000000000' });
 
-            alert("User registered!");
+                alert("User registered!");
 
-        } catch (error) {
-            console.error("An error occurred during user registration:", error);
-            alert("An error occurred during user registration. Check the console for details.");
+            } catch (error) {
+                console.error("An error occurred during user registration:", error);
+                alert("An error occurred during user registration. Check the console for details.");
+            }
         }
-    }
-</script>
+    </script>
 </body>
+
 </html>
