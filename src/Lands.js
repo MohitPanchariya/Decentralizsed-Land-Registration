@@ -180,7 +180,7 @@ const abi =
 
 // Connect to the smart contract
 const web3 = new Web3(new Web3.providers.HttpProvider('http://localhost:8545'));
-const contractAddress = '0x3CE4DE73fFF52084CD1d05b813a5999065B5158A'; // Replace with your contract address
+const contractAddress = '0x3CE4DE73fFF52084CD1d05b813a5999065B5158A';
 const landContract = new web3.eth.Contract(abi, contractAddress);
 const requestBuyButton = document.getElementById('request-buy-button');
 const buyerRequestsList = document.getElementById('buyer-requests-list');
