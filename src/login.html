@@ -24,66 +24,63 @@
 </header>
 
 <body>
+    <div class="container">
+        <h2>User Login</h2>
+        <form id="loginForm">
+            <label for="loginAadharNumberInput">Aadhar Number:</label>
+            <input type="text" id="loginAadharNumberInput" placeholder="Enter Aadhar Number" required>
+            <button type="button" onclick="loginUser()">Login</button>
+        </form>
+    </div>
 
-    <body>
+    <script>
+        const contractAddress = "0x6C3D60eA0f3796A93D18e2E75Ca440B9f8AbaCd6";
+        const ganacheEndpoint = "http://127.0.0.1:8545";
 
-        <div class="container">
-            <h2>User Login</h2>
-            <form id="loginForm">
-                <label for="loginAadharNumberInput">Aadhar Number:</label>
-                <input type="text" id="loginAadharNumberInput" placeholder="Enter Aadhar Number" required>
-                <button type="button" onclick="loginUser()">Login</button>
-            </form>
-        </div>
+        const web3 = new Web3(new Web3.providers.HttpProvider(ganacheEndpoint));
 
-        <script>
-            const contractAddress = "0x6C3D60eA0f3796A93D18e2E75Ca440B9f8AbaCd6";
-            const ganacheEndpoint = "http://127.0.0.1:8545";
+        const contractABI = [
+            {
+                "constant": true,
+                "inputs": [{ "name": "_aadharNumber", "type": "uint256" }],
+                "name": "getUserDetails",
+                "outputs": [
+                    { "name": "username", "type": "string" },
+                    { "name": "isUserVerified", "type": "bool" },
+                    { "name": "designation", "type": "uint8" },
+                    { "name": "registrationDate", "type": "uint" },
+                    { "name": "aadharNumber", "type": "uint256" }
+                ],
+                "payable": false,
+                "stateMutability": "view",
+                "type": "function"
+            },
+        ];
 
-            const web3 = new Web3(new Web3.providers.HttpProvider(ganacheEndpoint));
+        const accountRegistrationContract = new web3.eth.Contract(contractABI, contractAddress);
 
-            const contractABI = [
-                {
-                    "constant": true,
-                    "inputs": [{ "name": "_aadharNumber", "type": "uint256" }],
-                    "name": "getUserDetails",
-                    "outputs": [
-                        { "name": "username", "type": "string" },
-                        { "name": "isUserVerified", "type": "bool" },
-                        { "name": "designation", "type": "uint8" },
-                        { "name": "registrationDate", "type": "uint" },
-                        { "name": "aadharNumber", "type": "uint256" }
-                    ],
-                    "payable": false,
-                    "stateMutability": "view",
-                    "type": "function"
-                },
-            ];
+        async function loginUser() {
+            try {
+                const aadharNumber = $("#loginAadharNumberInput").val();
 
-            const accountRegistrationContract = new web3.eth.Contract(contractABI, contractAddress);
+                // Call the getUserDetails function from the smart contract
+                const userDetails = await accountRegistrationContract.methods.getUserDetails(aadharNumber).call();
 
-            async function loginUser() {
-                try {
-                    const aadharNumber = $("#loginAadharNumberInput").val();
+                // Check if the user details are correct
+                if (userDetails[0]) {  // Assuming username is not empty
+                    alert("Login successful!");
 
-                    // Call the getUserDetails function from the smart contract
-                    const userDetails = await accountRegistrationContract.methods.getUserDetails(aadharNumber).call();
-
-                    // Check if the user details are correct
-                    if (userDetails[0]) {  // Assuming username is not empty
-                        alert("Login successful!");
-
-                        // Redirect to the dynamic home page
-                        window.location.href = `home.html?username=${userDetails[0]}&designation=${userDetails[2]}&registrationDate=${userDetails[3]}&aadharNumber=${userDetails[4]}`;
-                    } else {
-                        alert("Invalid Aadhar Number. Please try again.");
-                    }
-                } catch (error) {
-                    console.error("An error occurred during user login:", error);
-                    alert("An error occurred during user login. Check the console for details.");
+                    // Redirect to the dynamic home page
+                    window.location.href = `home.html?username=${userDetails[0]}&designation=${userDetails[2]}&registrationDate=${userDetails[3]}&aadharNumber=${userDetails[4]}`;
+                } else {
+                    alert("Invalid Aadhar Number. Please try again.");
                 }
+            } catch (error) {
+                console.error("An error occurred during user login:", error);
+                alert("An error occurred during user login. Check the console for details.");
             }
-        </script>
-    </body>
+        }
+    </script>
+</body>
 
 </html>
