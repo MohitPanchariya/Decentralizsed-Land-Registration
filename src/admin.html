@@ -64,7 +64,7 @@
 </div>
 
 <script>
-    const contractAddress = "0x9bc39a4a1f3e87cC46CB04bf6d05E53F33BcC110";
+    const contractAddress = "0x33cE1A396e11D625F696893073dB285c622B872F";
     const ganacheEndpoint = "http://127.0.0.1:8545";
 
     const web3 = new Web3(new Web3.providers.HttpProvider(ganacheEndpoint));
@@ -121,14 +121,14 @@
             "payable": false,
             "stateMutability": "view",
             "type": "function"
-        },
-        
+        },  
     ];
 
     const accountRegistrationContract = new web3.eth.Contract(contractABI, contractAddress);
-
+    
     
     async function addAuthority(level) {
+        const accounts = await web3.eth.getAccounts();
         try {
             if (level == 2) 
             {
@@ -136,7 +136,7 @@
                     $("#secondLevelAuthorityAddressInput").val(), 
                     $("#secondLevelAuthorityUsernameInput").val(), 
                     $("#secondLevelAuthorityAadhaarInput").val()
-                ).call();
+                ).send({ from: accounts[0], gas: 2000000, gasPrice: '20000000000' });
             }
             else
             {
@@ -144,7 +144,7 @@
                     $("#landInspectorAddressInput").val(), 
                     $("#landInspectorUsernameInput").val(), 
                     $("#landInspectorAadhaarInput").val()
-                ).call();
+                ).send({ from: accounts[0], gas: 2000000, gasPrice: '20000000000' });
             }
             alert("Successfully added!");
 
@@ -155,18 +155,19 @@
     }
     
     async function grantAuthorityStatus(level) {
+        const accounts = await web3.eth.getAccounts();
         try {
             if (level == 2) 
             {
                 await accountRegistrationContract.methods.grantSecondLevelAuthorityStatus(
                     $("#secondLevelAuthorityStatusAddressInput").val()
-                ).call();
+                ).send({ from: accounts[0], gas: 2000000, gasPrice: '20000000000' });
             }
             else
             {
                 await accountRegistrationContract.methods.grantLandInspectorStatus(
                     $("#landInspectorStatusAddressInput").val()
-                ).call();
+                ).send({ from: accounts[0], gas: 2000000, gasPrice: '20000000000' });
             }
             alert("Successfully granted!");
 
@@ -174,9 +175,8 @@
             console.error("An error occurred:", error);
             alert("An error occurred. Check the console for details.");
         }
+        
     }
-    
-    
 </script>
 </body>
 </html>
