@@ -83,15 +83,14 @@ contract AccountRegistration {
     function verifyAccount(
         uint256 _aadharNumber
     ) public onlyDeployerOrSecondLevelAuthorityOrLandInspector {
-        require(validateAadhar(_aadharNumber), "Invalid Aadhaar number");
-        require(
-            aadharToUser[_aadharNumber] == address(0),
-            "Aadhar number already registered."
-        );
-
-        userAccountsMap[msg.sender].aadharNumber = _aadharNumber;
+        // require(validateAadhar(_aadharNumber), "Invalid Aadhaar number");
+        // require(
+        //     aadharToUser[_aadharNumber] == address(0),
+        //     "Aadhar number already registered."
+        // );
+        // userAccountsMap[msg.sender].aadharNumber = _aadharNumber;
         userAccountsMap[msg.sender].isUserVerified = true;
-        aadharToUser[_aadharNumber] = msg.sender;
+        // aadharToUser[_aadharNumber] = msg.sender;
 
         // Remove from pending verifications if Land Inspector verified the account
         for (uint i = 0; i < pendingVerifications.length; i++) {
@@ -186,6 +185,7 @@ contract AccountRegistration {
             aadharToUser[_aadhar] == address(0),
             "Aadhar number already registered"
         );
+        require(validateAadhar(_aadhar), "Invalid Aadhar number");
 
         userAccounts.push(
             UserAccount(_username, false, 1, block.timestamp, _aadhar)
@@ -204,7 +204,7 @@ contract AccountRegistration {
             aadharToUser[_aadhar] == address(0),
             "Aadhar number already registered"
         );
-
+        require(validateAadhar(_aadhar), "Invalid Aadhar number");
         userAccounts.push(
             UserAccount(_username, false, 2, block.timestamp, _aadhar)
         );

@@ -1,86 +1,101 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>User Home Page</title>
-    <link rel="stylesheet" type="text/css" href="/src/style.css">
+    <link rel="stylesheet" type="text/css" href="style.css">
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/web3@1.5.2/dist/web3.min.js"></script>
 </head>
+
+<header>
+    <nav>
+        <div class="logo">
+            <a href="#">Land Registration Dapp</a>
+        </div>
+        <div class="navbar">
+            <ul>
+
+                <li><a href="index.html">Logout</a></li>
+            </ul>
+        </div>
+    </nav>
+</header>
+
 <body>
+    <div class="container">
+        <h2>Welcome, <span id="username"></span>!</h2>
+        <p>Designation: <span id="designation"></span></p>
+        <p>Registration Date: <span id="registrationDate"></span></p>
+        <p>Aadhar Number: <span id="aadharNumber"></span></p>
+        <p>User Verified: <span id="userVerified"></span></p>
 
-<h1>User Home Page</h1>
+        <!-- Add the verification button conditionally -->
+        <button id="verificationButton" onclick="requestVerification()" style="display: none;">Request
+            Verification</button>
+    </div>
 
-<div class="container">
-    <h2>Welcome, <span id="username"></span>!</h2>
-    <p>Designation: <span id="designation"></span></p>
-    <p>Registration Date: <span id="registrationDate"></span></p>
-    <p>Aadhar Number: <span id="aadharNumber"></span></p>
-    <p>User Verified: <span id="userVerified"></span></p>
+    <script>
+        // Parse query parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        const username = urlParams.get('username');
+        const designation = urlParams.get('designation');
+        const registrationDate = urlParams.get('registrationDate');
+        const aadharNumber = urlParams.get('aadharNumber');
+        const isUserVerified = urlParams.get('isUserVerified'); // Assuming isUserVerified is a string 'true' or 'false'
 
-    <!-- Add the verification button conditionally -->
-    <button id="verificationButton" onclick="requestVerification()" style="display: none;">Request Verification</button>
-</div>
+        // Display user details
+        document.getElementById('username').innerText = username;
+        document.getElementById('designation').innerText = designation;
+        document.getElementById('registrationDate').innerText = new Date(registrationDate * 1000); // Convert to date format
+        document.getElementById('aadharNumber').innerText = aadharNumber;
+        document.getElementById('userVerified').innerText = isUserVerified === 'true' ? 'Yes' : 'No'; // Assuming isUserVerified is a string 'true' or 'false'
 
-<script>
-    // Parse query parameters
-    const urlParams = new URLSearchParams(window.location.search);
-    const username = urlParams.get('username');
-    const designation = urlParams.get('designation');
-    const registrationDate = urlParams.get('registrationDate');
-    const aadharNumber = urlParams.get('aadharNumber');
-    const isUserVerified = urlParams.get('isUserVerified'); // Assuming isUserVerified is a string 'true' or 'false'
-
-    // Display user details
-    document.getElementById('username').innerText = username;
-    document.getElementById('designation').innerText = designation;
-    document.getElementById('registrationDate').innerText = new Date(registrationDate * 1000); // Convert to date format
-    document.getElementById('aadharNumber').innerText = aadharNumber;
-    document.getElementById('userVerified').innerText = isUserVerified === 'true' ? 'Yes' : 'No'; // Assuming isUserVerified is a string 'true' or 'false'
-
-    // Check if the user is not verified and show the button accordingly
-    if (isUserVerified !== 'true') {
-        document.getElementById('verificationButton').style.display = 'block';
-    }
-
-    const contractAddress = "0x9bc39a4a1f3e87cC46CB04bf6d05E53F33BcC110";
-    const ganacheEndpoint = "http://127.0.0.1:8545";
-
-    const web3 = new Web3(new Web3.providers.HttpProvider(ganacheEndpoint));
-    
-    const contractABI = [
-        {
-            "constant": false,
-            "inputs": [{"name": "_aadharNumber", "type": "uint256"}],
-            "name": "requestVerification",
-            "outputs": [],
-            "payable": false,
-            "stateMutability": "nonpayable",
-            "type": "function"
-        },
-    ];
-
-    const accountRegistrationContract = new web3.eth.Contract(contractABI, contractAddress);
-
-    async function requestVerification() {
-        // Call the smart contract function to request verification
-        try {
-            const accounts = await web3.eth.getAccounts();
-            // Replace with the actual smart contract function call
-            const result = await accountRegistrationContract.methods.requestVerification(aadharNumber).send({ from: accounts[0], gas: 2000000});
-
-            if (result.status) {
-                alert('Verification request submitted successfully.');
-            } else {
-                alert('Error submitting verification request. Check the console for details.');
-                console.error(result);
-            }
-        } catch (error) {
-            console.error('Error submitting verification request:', error);
-            alert('An error occurred. Check the console for details.');
+        // Check if the user is not verified and show the button accordingly
+        if (isUserVerified !== 'true') {
+            document.getElementById('verificationButton').style.display = 'block';
         }
-    }
-</script>
+
+        const contractAddress = "0x6C3D60eA0f3796A93D18e2E75Ca440B9f8AbaCd6";
+        const ganacheEndpoint = "http://127.0.0.1:8545";
+
+        const web3 = new Web3(new Web3.providers.HttpProvider(ganacheEndpoint));
+
+        const contractABI = [
+            {
+                "constant": false,
+                "inputs": [{ "name": "_aadharNumber", "type": "uint256" }],
+                "name": "requestVerification",
+                "outputs": [],
+                "payable": false,
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+        ];
+
+        const accountRegistrationContract = new web3.eth.Contract(contractABI, contractAddress);
+
+        async function requestVerification() {
+            // Call the smart contract function to request verification
+            try {
+                const accounts = await web3.eth.getAccounts();
+                // Replace with the actual smart contract function call
+                const result = await accountRegistrationContract.methods.requestVerification(aadharNumber).send({ from: accounts[0], gas: 2000000 });
+
+                if (result.status) {
+                    alert('Verification request submitted successfully.');
+                } else {
+                    alert('Error submitting verification request. Check the console for details.');
+                    console.error(result);
+                }
+            } catch (error) {
+                console.error('Error submitting verification request:', error);
+                alert('An error occurred. Check the console for details.');
+            }
+        }
+    </script>
 </body>
+
 </html>

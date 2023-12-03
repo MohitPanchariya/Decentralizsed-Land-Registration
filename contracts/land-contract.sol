@@ -99,13 +99,15 @@ contract LandRegistration {
     mapping(address => uint[])  MyReceivedLandRequests;
     mapping(address => uint[])  MySentLandRequests;
     mapping(address => uint[])  MyLands;
+
+// A mapping between land ID, buyer address, and request ID
+    mapping(uint => mapping(address => uint)) public landToBuyerToRequest;
     
     //List containing all the lands that are added
     uint[] allLandList;
 
     
-   //Requests counts made from buyers and declaration of  documentId  variable
-    uint public documentId;
+
     uint requestCount;
 
 
@@ -215,6 +217,7 @@ contract LandRegistration {
         //If land record already exists, return the land id
         if (recordExists) {
             emit LandRecordExists(landId);
+            allLandList.push(landId);
             return landId;
         }
 
@@ -232,7 +235,7 @@ contract LandRegistration {
         [_record.identifier.subdivision] = landRecordsCount;
 
         uint addedLandId = landRecordsCount;
-        allLandList.push(landRecordsCount);
+        allLandList.push(addedLandId);
         landRecordsCount++;
         emit LandRecordAdded(addedLandId);
         return addedLandId;
@@ -265,17 +268,21 @@ contract LandRegistration {
         landsForSale.push(_landId);
     }
 
-//Function where a buyer can request and show interest in buying  a land
- function requestforBuy(uint _landId) public onlyRegisteredUser
-    {
-        // require(isUserVerified(msg.sender) && verifyLand(_landId));
+ // Function where a buyer can request and show interest in buying a land
+    function requestForBuy(uint _landId) public onlyRegisteredUser {
+        require(landMapping[_landId].isForSale, "Land is not for sale");
+
+        // Check if the buyer has not already requested for this land
+        require(landToBuyerToRequest[_landId][msg.sender] == 0, "Already requested for this land");
 
         requestCount++;
-        LandRequestMapping[requestCount]=LandRequest(requestCount,landMapping[_landId].owner,msg.sender,_landId,reqStatus.requested,false);
+        LandRequestMapping[requestCount] = LandRequest(requestCount, landMapping[_landId].owner, msg.sender, _landId, reqStatus.requested, false);
         MyReceivedLandRequests[landMapping[_landId].owner].push(requestCount);
         MySentLandRequests[msg.sender].push(requestCount);
-    }
 
+        // Update the mapping between land ID, buyer address, and request ID
+        landToBuyerToRequest[_landId][msg.sender] = requestCount;
+    }
 //Function that will return a list of received land requests buyers interested for a particular land
     function receivedLandRequests() public view returns(uint[] memory)
     {
@@ -288,17 +295,21 @@ contract LandRegistration {
         return MySentLandRequests[msg.sender];
     }
 
-//Function where seller accepts the request of the buyer
-    function acceptRequest(uint _requestId) public
-    {
-        require(LandRequestMapping[_requestId].sellerId==msg.sender);
-        LandRequestMapping[_requestId].requestStatus=reqStatus.accepted;
+// Function where seller accepts the request of the buyer
+    function acceptRequest(uint _requestId) public {
+        require(LandRequestMapping[_requestId].sellerId == msg.sender, "Not the seller of this land");
+        require(LandRequestMapping[_requestId].requestStatus == reqStatus.requested, "Invalid request status");
+
+        // Update the request status
+        LandRequestMapping[_requestId].requestStatus = reqStatus.accepted;
     }
 
 //Function where seller rejects the request of the buyer
-    function rejectRequest(uint _requestId) public
+    function rejectRequest(uint _requestId) public 
     {
-        require(LandRequestMapping[_requestId].sellerId==msg.sender);
+        require(LandRequestMapping[_requestId].sellerId == msg.sender, "Not the seller of this land");
+        require(LandRequestMapping[_requestId].requestStatus == reqStatus.requested, "Invalid request status");
+
         LandRequestMapping[_requestId].requestStatus=reqStatus.rejected;
     }
 
@@ -309,34 +320,45 @@ contract LandRegistration {
     }
 
 
-//Function for transferring ownership of land between two parties
- function transferLandOwnership(uint _requestId,LandIdentifier memory documentUrl) onlylInspector public returns(bool)
-    {
-        // require(isLandInspector(msg.sender) && LandInspectorApproval(msg.sender));
+ // Function for transferring ownership of land between two parties
+    function transferLandOwnership(uint _requestId, LandIdentifier memory documentUrl) onlylInspector public returns(bool) {
+        require(LandRequestMapping[_requestId].requestStatus == reqStatus.accepted, "Request not accepted");
+        require(LandRequestMapping[_requestId].isPaymentDone, "Payment not done");
 
-        if(LandRequestMapping[_requestId].isPaymentDone==false)
-            return false;
-        documentId++;
-        LandRequestMapping[_requestId].requestStatus=reqStatus.completed;
-        MyLands[LandRequestMapping[_requestId].buyerId].push(LandRequestMapping[_requestId].landId);
+        uint landId = LandRequestMapping[_requestId].landId;
+        address buyer = LandRequestMapping[_requestId].buyerId;
+        address seller = LandRequestMapping[_requestId].sellerId;
 
-        uint len=MyLands[LandRequestMapping[_requestId].sellerId].length;
-        for(uint i=0;i<len;i++)
-        {
-            if(MyLands[LandRequestMapping[_requestId].sellerId][i]==LandRequestMapping[_requestId].landId)
-            {
-                MyLands[LandRequestMapping[_requestId].sellerId][i]=MyLands[LandRequestMapping[_requestId].sellerId][len-1];
-                
-                MyLands[LandRequestMapping[_requestId].sellerId].pop();
-                break;
+        // Transfer ownership only if the land is still for sale and the buyer is valid
+        if (landMapping[landId].isForSale && landToBuyerToRequest[landId][buyer] == _requestId) {
+            LandRequestMapping[_requestId].requestStatus = reqStatus.completed;
+
+            // Update land details
+            landMapping[landId].identifier = documentUrl;
+            landMapping[landId].isForSale = false;
+            landMapping[landId].owner = buyer;
+
+            // Update the buyer's land list
+            MyLands[buyer].push(landId);
+
+            // Remove the land from the seller's land list
+            uint len = MyLands[seller].length;
+            for (uint i = 0; i < len; i++) {
+                if (MyLands[seller][i] == landId) {
+                    MyLands[seller][i] = MyLands[seller][len - 1];
+                    MyLands[seller].pop();
+                    break;
+                }
             }
-        }
-        landMapping[LandRequestMapping[_requestId].landId].identifier=documentUrl;
-        landMapping[LandRequestMapping[_requestId].landId].isForSale=false;
-        landMapping[LandRequestMapping[_requestId].landId].owner=LandRequestMapping[_requestId].buyerId;
-        return true;
-    }
 
+            // Remove the mapping when the land ownership is transferred
+            delete landToBuyerToRequest[landId][buyer];
+
+            return true;
+        } else {
+            return false;
+        }
+    }
 
     //Get all land ids which have been listed for sale
     function getLandsForSale() public view returns (uint[] memory) {
