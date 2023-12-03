@@ -30,6 +30,14 @@
         <button type="button" onclick="addAuthority(2)">Add</button>
     </form>
     
+    <h2>Grant second level authority status</h2>
+    <form id="secondLevelAuthorityStatusForm">
+        <label for="secondLevelAuthorityStatusAddressInput">Address:</label>
+        <input type="text" id="secondLevelAuthorityStatusAddressInput" placeholder="Enter Address" required>
+        
+        <button type="button" onclick="grantAuthorityStatus(2)">Add</button>
+    </form>
+    
     <h2>Add land inspector</h2>
     <form id="landInspectorForm">
         <label for="landInspectorAddressInput">Address:</label>
@@ -42,6 +50,15 @@
         <input type="text" id="landInspectorAadhaarInput" placeholder="Aadhaar" required>
         
         <button type="button" onclick="addAuthority(1)">Add</button>
+    </form>
+    
+    
+    <h2>Grant land inspector status</h2>
+    <form id="landInspectorStatusForm">
+        <label for="landInspectorStatusAddressInput">Address:</label>
+        <input type="text" id="landInspectorStatusAddressInput" placeholder="Enter Address" required>
+        
+        <button type="button" onclick="grantAuthorityStatus(1)">Add</button>
     </form>
     
 </div>
@@ -88,17 +105,22 @@
     
     async function addAuthority(level) {
         try {
-            const address = $("#secondLevelAuthorityAddressInput").val();
-            const username = $("#secondLevelAuthorityUsernameInput").val();
-            const aadhar = $("#secondLevelAuthorityAadhaarInput").val();
-            
-            console.log(address, username, aadhar);
-
-            if (level == 2)
-                await accountRegistrationContract.methods.addSecondLevelAuthority(address, username, aadhar).call();
+            if (level == 2) 
+            {
+                await accountRegistrationContract.methods.addSecondLevelAuthority(
+                    $("#secondLevelAuthorityAddressInput").val(), 
+                    $("#secondLevelAuthorityUsernameInput").val(), 
+                    $("#secondLevelAuthorityAadhaarInput").val()
+                ).call();
+            }
             else
-                await accountRegistrationContract.methods.addLandInspector(address, username, aadhar).call();
-            
+            {
+                await accountRegistrationContract.methods.addLandInspector(
+                    $("#landInspectorAddressInput").val(), 
+                    $("#landInspectorUsernameInput").val(), 
+                    $("#landInspectorAadhaarInput").val()
+                ).call();
+            }
             alert("Successfully added!");
 
         } catch (error) {
@@ -106,6 +128,8 @@
             alert("An error occurred. Check the console for details.");
         }
     }
+    
+    
     
 </script>
 </body>
