@@ -210,7 +210,7 @@ contract LandRegistration {
 
     //This function is used to add a land record
     function addLandRecord  (LandRecord memory _record) public 
-                            onlyRegisteredUser returns (uint) {
+                             returns (uint) {
 
         (bool recordExists, uint landId) = landRecordExists(_record.identifier);
 
