@@ -15,8 +15,7 @@
         </div>
         <div class="navbar">
             <ul>
-                <li><a href="#">Home</a></li>
-                <li><a href="#">My Lands and requests</a></li>
+                <li><a href="Lands.html">My Lands and requests</a></li>
             </ul>
         </div>
     </nav>
@@ -70,11 +69,89 @@
         <input type="number" id="landValueAtPurchase" placeholder="Enter land value at purchase">
     </div>
 
-    <button onclick="addLandRecord()">Add Land Record</button>
+    <button type="button" onclick="addLandRecord()">Add Land Record</button>
 
     <script src="https://cdn.jsdelivr.net/gh/ethereum/web3.js@1.x.x/dist/web3.min.js"></script>
-    <script src="your_smart_contract_abi.js"></script>
-    <script src="app.js"></script>
+    <script>
+    
+            let landRegistrationContract;
+            
+    
+            const contractAddress = '0xC5011D75858E21A2fd38F7E7c29EafB7aBC0200F';
+            const web3 = new Web3(new Web3.providers.HttpProvider('http://localhost:8545'));
+
+            // Load contract ABI from the JSON file
+            const loadContractABI = async () => {
+                try {
+                    const response = await fetch('../build/contracts/LandRegistration.json');
+                    const contractData = await response.json();
+                    return contractData.abi;
+                } catch (error) {
+                    console.error('Error loading contract ABI:', error);
+                    throw error;
+                }
+            }
+    
+            // Use the contract ABI to create an instance of the smart contract
+            loadContractABI().then(contractABI => {
+                landRegistrationContract = new web3.eth.Contract(contractABI, contractAddress);
+            });
+    
+            async function addLandRecord() {
+                const state = document.getElementById('state').value;
+                const division = document.getElementById('division').value;
+                const district = document.getElementById('district').value;
+                const taluka = document.getElementById('taluka').value;
+                const village = document.getElementById('village').value;
+                const surveyNumber = document.getElementById('surveyNumber').value;
+                const subdivision = document.getElementById('subdivision').value;
+                const area = document.getElementById('area').value;
+                const purchaseDate = new Date(document.getElementById('purchaseDate').value).getTime() / 1000; // Convert to UNIX timestamp
+                const purchasePrice = document.getElementById('purchasePrice').value;
+                const landValueAtPurchase = document.getElementById('landValueAtPurchase').value;
+                
+                const accounts = await web3.eth.getAccounts();
+                // Create a LandRecord object with the provided values
+                const landRecord = {
+                    landId: 0, // This will be assigned by the smart contract
+                    owner: '0x03A7A674694Ca34E734AeF699765991dCE966aA8', // The owner will be assigned automatically in the smart contract
+                    identifier: {
+                        state: state,
+                        divison: division,
+                        district: district,
+                        taluka: taluka,
+                        village: village,
+                        surveyNumber: surveyNumber,
+                        subdivision: subdivision,
+                    },
+                    area: area,
+                    purchaseDate: purchaseDate,
+                    purchasePrice: purchasePrice,
+                    landValueAtPurchase: landValueAtPurchase,
+                    previousOwners: [],
+                    isVerified: true, 
+                    isForSale: false,
+                };
+
+               
+                try {
+                    
+                    const result = await landRegistrationContract.methods.addLandRecord(landRecord).send({ from: '0x03A7A674694Ca34E734AeF699765991dCE966aA8',gas: 2000000, gasPrice: '20000000000' });
+    
+                    console.log('Transaction Result:', result);
+                    if(result.status == true) {
+                        alert("Land Record Added!")
+                    }
+    
+                    // Add logic to handle the transaction result
+                } catch (error) {
+                    console.error('Error adding land record:', error);
+                    // Handle the error
+                }
+            }
+        
+    
+    </script>
 </body>
 
 </html>
