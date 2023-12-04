@@ -110,7 +110,6 @@ contract AccountRegistration {
         uint8 _designation,
         uint256 _aadharNumber
     ) public {
-        // require(userAccountsMap[msg.sender].designation == 0, "User details can only be set once.");
         require(_designation >= 0 && _designation <= 2, "Invalid designation.");
         require(validateAadhar(_aadharNumber), "Invalid Aadhar number");
         require(
@@ -118,17 +117,32 @@ contract AccountRegistration {
             "Aadhar number already registered"
         );
 
-        // Assuming you have a mapping where you store user details based on Aadhar number
-        UserAccount storage user = userAccountsByAadharNumber[_aadharNumber];
+        // Check if user details already exist for this Aadhar number
+        require(
+            userAccountsByAadharNumber[_aadharNumber].aadharNumber == 0,
+            "User details for this Aadhar number already exist."
+        );
 
-        user.username = _username;
-        user.isUserVerified = false; // Set to false as per your logic
-        user.designation = _designation;
-        user.registrationDate = block.timestamp;
-        user.aadharNumber = _aadharNumber;
+        // Create a new UserAccount instance
+        UserAccount memory newUser = UserAccount({
+            username: _username,
+            isUserVerified: false,
+            designation: _designation,
+            registrationDate: block.timestamp,
+            aadharNumber: _aadharNumber
+        });
 
-        userAccountsMap[msg.sender] = user;
+        // Store user details in the mapping
+        userAccountsByAadharNumber[_aadharNumber] = newUser;
+
+        // Store user details in the userAccounts array (optional)
+        userAccounts.push(newUser);
+
+        // Link Aadhar number to the Ethereum address
         aadharToUser[_aadharNumber] = msg.sender;
+
+        // Link Ethereum address to the user details
+        userAccountsMap[msg.sender] = newUser;
     }
 
     function getUserDetails(
@@ -175,42 +189,75 @@ contract AccountRegistration {
         _;
     }
 
-    // Function to add a Land Inspector
-    function addLandInspector(
-        address _inspector,
-        string memory _username,
-        uint256 _aadhar
-    ) public onlyDeployerOrSecondLevelAuthority {
-        require(
-            aadharToUser[_aadhar] == address(0),
-            "Aadhar number already registered"
-        );
-        require(validateAadhar(_aadhar), "Invalid Aadhar number");
+// Function to add a Land Inspector
+function addLandInspector(
+    address _inspector,
+    string memory _username,
+    uint256 _aadhar
+) public onlyDeployerOrSecondLevelAuthority {
+    require(
+        aadharToUser[_aadhar] == address(0),
+        "Aadhar number already registered"
+    );
+    require(validateAadhar(_aadhar), "Invalid Aadhar number");
 
-        userAccounts.push(
-            UserAccount(_username, false, 1, block.timestamp, _aadhar)
-        );
-        userAccountsMap[_inspector] = userAccounts[userAccounts.length - 1];
-        aadharToUser[_aadhar] = _inspector;
-    }
+    // Create a new UserAccount instance for the Land Inspector
+    UserAccount memory newInspector = UserAccount({
+        username: _username,
+        isUserVerified: true,
+        designation: 1, // Land Inspector designation
+        registrationDate: block.timestamp,
+        aadharNumber: _aadhar
+    });
+
+    // Store user details in the mapping
+    userAccountsByAadharNumber[_aadhar] = newInspector;
+
+    // Store user details in the userAccounts array (optional)
+    userAccounts.push(newInspector);
+
+    // Link Aadhar number to the Ethereum address
+    aadharToUser[_aadhar] = _inspector;
+
+    // Link Ethereum address to the user details
+    userAccountsMap[_inspector] = newInspector;
+}
+
 
     // Function to add a Second-Level Authority
     function addSecondLevelAuthority(
-        address _authority,
-        string memory _username,
-        uint256 _aadhar
-    ) public onlyDeployer {
-        require(
-            aadharToUser[_aadhar] == address(0),
-            "Aadhar number already registered"
-        );
-        require(validateAadhar(_aadhar), "Invalid Aadhar number");
-        userAccounts.push(
-            UserAccount(_username, false, 2, block.timestamp, _aadhar)
-        );
-        userAccountsMap[_authority] = userAccounts[userAccounts.length - 1];
-        aadharToUser[_aadhar] = _authority;
-    }
+    address _authority,
+    string memory _username,
+    uint256 _aadhar
+) public onlyDeployer {
+    require(
+        aadharToUser[_aadhar] == address(0),
+        "Aadhar number already registered"
+    );
+    require(validateAadhar(_aadhar), "Invalid Aadhar number");
+
+    // Create a new UserAccount instance for the Second-Level Authority
+    UserAccount memory newAuthority = UserAccount({
+        username: _username,
+        isUserVerified: true,
+        designation: 2, // Second-Level Authority designation
+        registrationDate: block.timestamp,
+        aadharNumber: _aadhar
+    });
+
+    // Store user details in the mapping
+    userAccountsByAadharNumber[_aadhar] = newAuthority;
+
+    // Store user details in the userAccounts array (optional)
+    userAccounts.push(newAuthority);
+
+    // Link Aadhar number to the Ethereum address
+    aadharToUser[_aadhar] = _authority;
+
+    // Link Ethereum address to the user details
+    userAccountsMap[_authority] = newAuthority;
+}
+
 
     // Function to remove a Second-Level Authority
     function removeSecondLevelAuthority(

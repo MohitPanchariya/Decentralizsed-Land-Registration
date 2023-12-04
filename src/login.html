@@ -34,7 +34,7 @@
     </div>
 
     <script>
-        const contractAddress = "0x6C3D60eA0f3796A93D18e2E75Ca440B9f8AbaCd6";
+        const contractAddress = "0x52440DF5De15d32F667F24a355475d04a7056506";
         const ganacheEndpoint = "http://127.0.0.1:8545";
 
         const web3 = new Web3(new Web3.providers.HttpProvider(ganacheEndpoint));
@@ -71,7 +71,7 @@
                     alert("Login successful!");
 
                     // Redirect to the dynamic home page
-                    window.location.href = `home.html?username=${userDetails[0]}&designation=${userDetails[2]}&registrationDate=${userDetails[3]}&aadharNumber=${userDetails[4]}`;
+                    window.location.href = `home.html?username=${userDetails[0]}&isUserVerified=${userDetails[1]}&designation=${userDetails[2]}&registrationDate=${userDetails[3]}&aadharNumber=${userDetails[4]}`;
                 } else {
                     alert("Invalid Aadhar Number. Please try again.");
                 }
