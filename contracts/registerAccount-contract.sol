@@ -5,6 +5,7 @@ contract AccountRegistration {
     address public deployer;
 
     struct UserAccount {
+        address userAddress;
         string username;
         bool isUserVerified;
         uint8 designation; // 0: no authority, 1: land inspector, 2: second-level authority, 3: deployer
@@ -13,7 +14,7 @@ contract AccountRegistration {
     }
 
     struct PendingVerification {
-        address user;
+        address userAddress;
         uint256 aadharNumber;
     }
 
@@ -29,25 +30,14 @@ contract AccountRegistration {
     // Constructor to initialize the contract and set the deployer's account
     constructor() {
         deployer = msg.sender;
-        userAccounts.push(UserAccount("Deployer", true, 3, block.timestamp, 0));
-        userAccountsMap[msg.sender] = userAccounts[0];
-        aadharToUser[0] = msg.sender;
+        addUser(deployer, "Deployer", 3, true, 123456789012);
     }
     // Function to view the list of pending verifications
     function getPendingVerifications() public view returns (PendingVerification[] memory) {
         return pendingVerifications;
     }
 
-    function requestVerification(uint256 _aadharNumber) public {
-        // Check if the user is not already verified
-        require(!userAccountsMap[msg.sender].isUserVerified, "User is already verified.");
-        
-        // Check if the provided Aadhar number is valid
-        require(validateAadhar(_aadharNumber), "Invalid Aadhar number");
-
-        // Check if the provided Aadhar number is not already registered
-        require(aadharToUser[_aadharNumber] == address(0), "Aadhar number already registered.");
-
+    function requestVerification(uint256 _aadharNumber) public {        
         // Add the request to pending verifications
         pendingVerifications.push(PendingVerification(msg.sender, _aadharNumber));
     }
@@ -70,14 +60,16 @@ contract AccountRegistration {
 
     // Function to verify an account with an Aadhar number
     function verifyAccount(uint256 _aadharNumber) public onlyDeployerOrSecondLevelAuthorityOrLandInspector {
-        require(validateAadhar(_aadharNumber), "Invalid Aadhaar number");
-        require(aadharToUser[_aadharNumber] == address(0), "Aadhar number already registered.");
-        
-        userAccountsMap[msg.sender].aadharNumber = _aadharNumber;
-        userAccountsMap[msg.sender].isUserVerified = true;
-        aadharToUser[_aadharNumber] = msg.sender;
+        // Find the Ethereum address associated with the given Aadhar number
+        address userToVerify = aadharToUser[_aadharNumber];
 
-        // Remove from pending verifications if Land Inspector verified the account
+        // Ensure that the user exists
+        require(userToVerify != address(0), "No user found for the provided Aadhar number");
+
+        // Set the isUserVerified flag to true for the user
+        userAccountsMap[userToVerify].isUserVerified = true;
+
+        // Remove from pending verifications if account is verified
         for (uint i = 0; i < pendingVerifications.length; i++) {
             if (pendingVerifications[i].aadharNumber == _aadharNumber) {
                 // Remove the pending verification entry
@@ -88,22 +80,34 @@ contract AccountRegistration {
         }
     }
 
-    // Function to set user details
-    function setUserDetails(string memory _username, uint8 _designation, uint256 _aadharNumber) public {
-        require(userAccountsMap[msg.sender].designation == 0, "User details can only be set once.");
-        require(_designation >= 0 && _designation <= 2, "Invalid designation.");
+    // Function to add a user
+    function addUser(address _user, string memory _username, uint8 _designation, bool isUserVerified, uint256 _aadharNumber) internal {
+        require(userAccountsMap[_user].userAddress == address(0), "Address already registered");
         require(validateAadhar(_aadharNumber), "Invalid Aadhar number");
         require(aadharToUser[_aadharNumber] == address(0), "Aadhar number already registered");
-        
-        userAccounts.push(UserAccount(_username, false, _designation, block.timestamp, _aadharNumber));
-        userAccountsMap[msg.sender] = userAccounts[userAccounts.length - 1];
-        aadharToUser[_aadharNumber] = msg.sender;
+
+        userAccounts.push(UserAccount(_user, _username, isUserVerified , _designation, block.timestamp, _aadharNumber));
+        userAccountsMap[_user] = userAccounts[userAccounts.length - 1];
+        aadharToUser[_aadharNumber] = _user;
     }
 
-    //Function to Check User Details
-    function getUserDetails() public view returns (string memory, bool, uint8, uint, uint256) {
-        UserAccount storage user = userAccountsMap[msg.sender];
-        return (user.username, user.isUserVerified, user.designation, user.registrationDate, user.aadharNumber);
+    // Function to set user details
+    function setUserDetails(string memory _username, uint256 _aadharNumber) public {
+        addUser(msg.sender, _username, 0, false, _aadharNumber);
+    }
+
+    // Function to Check User Details
+    function getUserDetails(uint256 _aadharNumber) public view returns (address userAddress, string memory username, bool isUserVerified, uint8 designation, uint registrationDate, uint256 aadharNumber) {
+        // Find the Ethereum address associated with the given Aadhar number
+        address userToRetrieve = aadharToUser[_aadharNumber];
+
+        // Ensure that the user exists
+        require(userToRetrieve != address(0), "No user found for the provided Aadhar number");
+
+        // Retrieve user details using the Ethereum address
+        UserAccount storage user = userAccountsMap[userToRetrieve];
+        
+        return (user.userAddress, user.username, user.isUserVerified, user.designation, user.registrationDate, user.aadharNumber);
     }
 
     // Modifier to restrict access to functions for the deployer only
@@ -126,40 +130,39 @@ contract AccountRegistration {
 
    // Function to add a Land Inspector
     function addLandInspector(address _inspector, string memory _username, uint256 _aadhar) public onlyDeployerOrSecondLevelAuthority {
-        require(aadharToUser[_aadhar] == address(0), "Aadhar number already registered");
-        
-        userAccounts.push(UserAccount(_username, false, 1, block.timestamp, _aadhar));
-        userAccountsMap[_inspector] = userAccounts[userAccounts.length - 1];
-        aadharToUser[_aadhar] = _inspector;
+        addUser(_inspector, _username, 1, true, _aadhar);
     }
 
-// Function to add a Second-Level Authority
+    // Function to add a Second-Level Authority
     function addSecondLevelAuthority(address _authority, string memory _username, uint256 _aadhar) public onlyDeployer {
-        require(aadharToUser[_aadhar] == address(0), "Aadhar number already registered");
-        
-        userAccounts.push(UserAccount(_username, false, 2, block.timestamp, _aadhar));
-        userAccountsMap[_authority] = userAccounts[userAccounts.length - 1];
-        aadharToUser[_aadhar] = _authority;
+        addUser(_authority, _username, 2, true, _aadhar);
     }
 
     // Function to remove a Second-Level Authority
     function removeSecondLevelAuthority(address _authority) public onlyDeployer {
         require(_authority != deployer, "Cannot remove deployer's Second-level Authority privileges");
-        
+
+        // Ensure that the provided address is associated with a user
+        require(userAccountsMap[_authority].userAddress != address(0), "User not found for the provided address");
+
+        // Remove the user and update the mapping
         aadharToUser[userAccountsMap[_authority].aadharNumber] = address(0);
         delete userAccountsMap[_authority];
     }
 
     // Function to remove a Land Inspector
     function removeLandInspector(address _inspector) public onlyDeployerOrSecondLevelAuthority {
-        require(_inspector != deployer, "Cannot remove deployer's privileges");
+        require(_inspector != deployer, "Cannot remove deployer's Land Inspector privileges");
 
+        // Ensure that the provided address is associated with a user
+        require(userAccountsMap[_inspector].userAddress != address(0), "User not found for the provided address");
+        
         aadharToUser[userAccountsMap[_inspector].aadharNumber] = address(0);
         delete userAccountsMap[_inspector];
     }
 
     // Function to check if a user is verified
-    function isUserVerified(address _account) public view returns (bool) {
+    function checkUserVerified(address _account) public view returns (bool) {
         return userAccountsMap[_account].isUserVerified;
     }
 
@@ -180,11 +183,26 @@ contract AccountRegistration {
 
     // Function to grant Land Inspector status
     function grantLandInspectorStatus(address _account) public onlyDeployerOrSecondLevelAuthority {
+        userAccountsMap[_account].isUserVerified = true;
         userAccountsMap[_account].designation = 1;
     }
 
     // Function to grant Second-Level Authority status
     function grantSecondLevelAuthorityStatus(address _account) public onlyDeployer {
+        userAccountsMap[_account].isUserVerified = true;
         userAccountsMap[_account].designation = 2;
+    }
+    // Function to revoke Land Inspector status
+    function revokeLandInspectorStatus(address _account) public onlyDeployerOrSecondLevelAuthority {
+        require(isLandInspector(_account), "The account is not a Land Inspector");
+        userAccountsMap[_account].isUserVerified = false;
+        userAccountsMap[_account].designation = 0;
+    }
+
+    // Function to revoke Second-Level Authority status
+    function revokeSecondLevelAuthorityStatus(address _account) public onlyDeployer {
+        require(isSecondLevelAuthority(_account), "The account is not a Second-Level Authority");
+        userAccountsMap[_account].isUserVerified = false;
+        userAccountsMap[_account].designation = 0;
     }
 }
