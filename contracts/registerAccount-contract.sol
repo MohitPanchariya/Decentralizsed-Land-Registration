@@ -59,13 +59,16 @@ contract AccountRegistration {
     }
 
     // Function to verify an account with an Aadhar number
-    function verifyAccount(uint256 _aadharNumber) public onlyDeployerOrSecondLevelAuthorityOrLandInspector {
+    function verifyAccount(uint256 _aadharNumber) public onlyDeployerOrSecondLevelAuthorityOrLandInspector {    
         // Find the Ethereum address associated with the given Aadhar number
         address userToVerify = aadharToUser[_aadharNumber];
 
         // Ensure that the user exists
         require(userToVerify != address(0), "No user found for the provided Aadhar number");
-
+        
+        // Check if the user is already verified
+        require(userAccountsMap[userToVerify].isUserVerified != true, "User account is already verified");
+        
         // Set the isUserVerified flag to true for the user
         userAccountsMap[userToVerify].isUserVerified = true;
 
