@@ -4,9 +4,8 @@ const truffleAssert = require("truffle-assertions");
 
 contract("LandRegistration", async (accounts) => {
     let AccountRegistrationInstance, landRegistrationInstance;
-    let owner, inspector, verifiedUser, secondLevelAuthority;
-    let unverified;
-    let accountDeployer;
+    let owner, verifiedUser, unVerifiedUser;
+    let deployer;
 
     before(async () => {
         //Deploy account registration contract
@@ -17,29 +16,43 @@ contract("LandRegistration", async (accounts) => {
             AccountRegistrationInstance.address
         );
 
-        accountDeployer = await AccountRegistrationInstance.deployer();
-
         //Assign addresses to these roles
-        [owner, inspector, verifiedUser, 
-        unRegisteredUser, secondLevelAuthority, unverified] = accounts;
-
-        //Add a second level authority
-        await AccountRegistrationInstance.addSecondLevelAuthority(
-            secondLevelAuthority, "testSecondLevelAuthority", 
-            101101101101,
-            {from: accountDeployer}
-        );
+        [deployer, inspector, owner, verifiedUser, unVerifiedUser] = accounts;
 
         //Add a land inspector
-        await AccountRegistrationInstance.addLandInspector(
-            inspector, "testLandInspector", 101101101102,
-            {from: accountDeployer}
+        await AccountRegistrationInstance.grantLandInspectorStatus(
+            inspector,
+            {from: deployer}
         )
 
-        //Verify a user(owner)
+        //set the user details of an owner
+        await AccountRegistrationInstance.setUserDetails(
+            "Owner", 101101101101,
+            {from: owner}
+        )
+        
+        //Verify the owner
         await AccountRegistrationInstance.verifyAccount(
             101101101101,
-            {from: accountDeployer}
+            {from: deployer}
+        )
+
+        //set the deatils of a user
+        await AccountRegistrationInstance.setUserDetails(
+            "Verified User", 101101101102,
+            {from: verifiedUser}
+        )
+
+        //Verify a user
+        await AccountRegistrationInstance.verifyAccount(
+            101101101102,
+            {from: deployer}
+        )
+
+        //set the details of a user who won't be verified
+        await AccountRegistrationInstance.setUserDetails(
+            "Uverified User", 101101101103,
+            {from: unVerifiedUser}
         )
     })
 
@@ -91,7 +104,7 @@ contract("LandRegistration", async (accounts) => {
         })
 
         it("Ensure that a land record can be added.", async () => {
-            
+
             const addLandTx = await landRegistrationInstance.addLandRecord(
                 landRecord, {from: owner}
             );
@@ -177,10 +190,10 @@ contract("LandRegistration", async (accounts) => {
     
         })
 
-        it("Ensure that a unverified user can't add a land record", async () => {
+        it("Ensure that a unVerifiedUser user can't add a land record", async () => {
             try {
                 const addLandTx = await landRegistrationInstance.addLandRecord(
-                    landRecord, {from: unverified}
+                    landRecord, {from: unVerifiedUser}
                 );
             } catch (error) {
                 assert(
@@ -242,11 +255,11 @@ contract("LandRegistration", async (accounts) => {
         })
 
         it("Only owner can request for verification", async () => {
-            landRecord.owner = unverified;
+            landRecord.owner = unVerifiedUser;
 
             try {
                 await landRegistrationInstance.landVerificationRequest(
-                    1, {from: unverified}
+                    1, {from: unVerifiedUser}
                 )
             } catch(error) {
                 assert(
@@ -352,7 +365,7 @@ contract("LandRegistration", async (accounts) => {
         it("Ensures that only an owner can put up the land for sale", async () => {
             try {
                 await landRegistrationInstance.listLandForSale(landId, {
-                    from: unverified
+                    from: unVerifiedUser
                 })
             } catch(error) {
                 assert(
@@ -408,7 +421,7 @@ contract("LandRegistration", async (accounts) => {
                 " lands for sale."
             );
 
-            const buy =await landRegistrationInstance.requestForBuy(landId);   
+            const buy = await landRegistrationInstance.requestForBuy(landId);   
 
         })
     })
@@ -444,7 +457,9 @@ contract("LandRegistration", async (accounts) => {
                 " lands for sale."
             );
 
-            const buy =await landRegistrationInstance.acceptRequest(reqId);   
+            const buy =await landRegistrationInstance.acceptRequest(
+                reqId, {from: owner}
+            );   
 
         })
     })
