@@ -148,7 +148,7 @@ async function simulateLandVerification(
 async function main() {
   const landABI = JSON.parse(fs.readFileSync("../build/contracts/LandRegistration.json")).abi;
 
-  const landContractAddress = "0x599d3F6cC9B2393DaD7975D39Fa3060D0831ab71";
+  const landContractAddress = "";
 
   //Connect to the local blockchain
   const web3 = new Web3(new Web3.providers.HttpProvider("HTTP://127.0.0.1:8545"));
