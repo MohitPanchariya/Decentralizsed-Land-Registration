@@ -38,7 +38,7 @@ contract("LandRegistration", async (accounts) => {
 
         //Verify a user(owner)
         await AccountRegistrationInstance.verifyAccount(
-            101101101100,
+            101101101101,
             {from: accountDeployer}
         )
     })

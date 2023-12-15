@@ -15,12 +15,15 @@ contract("AccountRegistration", (accounts) => {
     it("should not allow setting user details more than once", async () => {
         try {
             await accountRegistration.setUserDetails("User3", 3, 111111111111, {
-                from: accounts[0],
+                from: accounts[1],
+            });
+            await accountRegistration.setUserDetails("User3", 3, 111111111111, {
+                from: accounts[1],
             });
 
         } catch (error) {
             assert(
-                error.message.includes("User details can only be set once"),
+                error.message.includes("already registered"),
                 "Error not thrown"
             );
         }
@@ -108,7 +111,7 @@ contract("AccountRegistration", (accounts) => {
     assert.equal(inspector.designation, 0, "Inspector designation is not reset correctly");
   });
 
-    it("should not allow removing the deployer's privileges", async () => {
+    it("should not allow removing the deployer's Land Inspector privileges", async () => {
         try {
             await accountRegistration.removeLandInspector(accounts[0], {
                 from: accounts[0],
@@ -116,14 +119,14 @@ contract("AccountRegistration", (accounts) => {
 
         } catch (error) {
             assert(
-                error.message.includes("Cannot remove deployer's privileges."),
+                error.message.includes("Cannot remove deployer's Land Inspector privileges"),
                 "Error not thrown"
             );
         }
     });
 
     it("should check if a user is verified", async () => {
-        const isVerified = await accountRegistration.isUserVerified(accounts[0]);
+        const isVerified = await accountRegistration.checkUserVerified(accounts[0]);
         assert.equal(isVerified, true, "User should be verified");
     });
 
