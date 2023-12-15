@@ -47,7 +47,15 @@ async function simulateRegistrationLoad(web3, contractAddress, contract, account
   }
 
   console.log("Set user details time taken.")
-  // const results = await Promise.allSettled(promises);
+  let results = await Promise.allSettled(promises);
+    promiseCount += promises.length
+    promises = []
+    for(let result of results) {
+        if(result.status == "rejected") {
+            rejectedCount++;
+            console.log(result)
+        }
+    }
 
   const endTime = performance.now();
   console.log((endTime - startTime) / 1000 + "s")
@@ -99,6 +107,15 @@ async function simulateUserVerificationRequestLoad(
   }
 
   console.log("Request verification timestamps.")
+  let results = await Promise.allSettled(promises);
+    promiseCount += promises.length
+    promises = []
+    for(let result of results) {
+        if(result.status == "rejected") {
+            rejectedCount++;
+            console.log(result)
+        }
+  }
   const endTime = performance.now();
   console.log((endTime - startTime) / 1000 + "s")
 
@@ -110,7 +127,7 @@ async function main() {
   const { abi } = JSON.parse(fs.readFileSync("../build/contracts/AccountRegistration.json"));
   //Every time this script is executed, this contract address needs to be changed
   //to the new AccountRegistration contract address
-  const contractAddress = "0xb18eB2A24A3A31309010442D7b4ED4522C9B344E";
+  const contractAddress = "";
 
   const web3 = new Web3(new Web3.providers.HttpProvider("HTTP://127.0.0.1:8545"));
 
