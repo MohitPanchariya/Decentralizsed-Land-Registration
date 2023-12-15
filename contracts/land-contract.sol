@@ -5,7 +5,7 @@ pragma solidity ^0.8.0;
 import "./registerAccount-contract.sol";
 
 interface IAccountRegistration {
-    function isUserVerified(address _account) external returns (bool);
+    function checkUserVerified(address _account) external returns (bool);
     function isLandInspector(address _account) external returns (bool);
 }
 
@@ -135,7 +135,7 @@ contract LandRegistration {
         //Call the isVerified function from the accountRegistration contract
         bool isRegisteredUser = IAccountRegistration(
             accountRegistrationContract
-        ).isUserVerified(msg.sender);
+        ).checkUserVerified(msg.sender);
 
         require(isRegisteredUser, "Only registered user can perform this action.");
         _;
@@ -210,7 +210,7 @@ contract LandRegistration {
 
     //This function is used to add a land record
     function addLandRecord  (LandRecord memory _record) public 
-                             returns (uint) {
+                            onlyRegisteredUser returns (uint) {
 
         (bool recordExists, uint landId) = landRecordExists(_record.identifier);
 
