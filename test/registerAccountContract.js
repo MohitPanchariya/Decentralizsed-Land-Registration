@@ -14,10 +14,10 @@ contract("AccountRegistration", (accounts) => {
 
     it("should not allow setting user details more than once", async () => {
         try {
-            await accountRegistration.setUserDetails("User3", 3, 111111111111, {
+            await accountRegistration.setUserDetails("User3", 111111111111, {
                 from: accounts[1],
             });
-            await accountRegistration.setUserDetails("User3", 3, 111111111111, {
+            await accountRegistration.setUserDetails("User3", 111111111111, {
                 from: accounts[1],
             });
 
