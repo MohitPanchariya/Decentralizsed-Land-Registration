@@ -387,82 +387,380 @@ contract("LandRegistration", async (accounts) => {
         })
     })
 
-
-
-
-    describe("Buyer's request for a land", () => {
-        const landId  = 1;
+describe("Buyer sends a request(Acceptance case)", () => {
+        let landId;
+        let buyer;
+        let landRecord;
         
-        it("Ensures that a verified user can request to buy the land", async () => {
-
-            //list the land for sale
-            await landRegistrationInstance.listLandForSale(landId, {from: owner});
-            
-            //Get the lands for sale
-            const landsForSale = await landRegistrationInstance.getLandsForSale();    
-
-
-            //BN is a different type from BigNumber
-            //Tried casting a number to a BN and using includes but it always
-            //returns false despite the number being present.
-            //The casted number is missing a few properties. This could be the 
-            //reason for an always false return value.
-            //Using a loop is a simple solution here
-            const landIfFound = landsForSale.some(
-                (element) => {
-                    if (element.toNumber() === landId) {
-                        return true
-                    }
-                }
-            )
-
-            assert.equal(
-                true, landIfFound, "Land id 1 must be present in the list of" +
-                " lands for sale."
+        beforeEach(async () => {
+          // Add a land record
+          const area = 100, purchaseDate = 1698568923, landValueAtPurchase = 100;
+          const purchasePrice = 100, surveryNumber = 123;
+                
+           landRecord = {
+            landId: 0,
+            owner: owner,
+            identifier: {
+              state: "sample state",
+              divison: "sample division",
+              district: "sample district",
+              taluka: "sample taluka",
+              village: "sample village",
+              surveyNumber: surveryNumber,
+              subdivision: "1/A"
+            },
+            area: area,
+            purchaseDate: purchaseDate,
+            purchasePrice: purchasePrice,
+            landValueAtPurchase: landValueAtPurchase,
+            previousOwners: [],
+            isVerified: true, // Set land as verified
+            isForSale: false
+          };
+    
+          await landRegistrationInstance.addLandRecord(landRecord, { from: owner });
+          landId = await landRegistrationInstance.getLandId(landRecord.identifier, { from: owner });
+          await landRegistrationInstance.landVerificationRequest(landId,{from: owner});
+          await landRegistrationInstance.verifyLand(landId,{ from: inspector});
+          await landRegistrationInstance.listLandForSale(landId,{ from: owner});
+          //console.log(landId);
+          buyer = accounts[3];
+        });
+    
+        it("Buyer can request to buy land", async () => {
+          await landRegistrationInstance.requestForBuy(landId, { from: verifiedUser });
+    
+          const sentLandRequests = await landRegistrationInstance.sentLandRequests({ from: verifiedUser });
+          const receivedLandRequests = await landRegistrationInstance.receivedLandRequests(landId, { from: owner });
+    
+          assert.equal(sentLandRequests.length, 1, "Buyer should have one sent land request");
+          assert.equal(receivedLandRequests.length, 1, "Owner should have one received land request");
+        });
+    
+        it("Buyer cannot request the same land twice", async () => {
+    
+          try {
+            await landRegistrationInstance.requestForBuy(landId, { from: verifiedUser });
+          } catch (error) {
+            assert(
+              error.message.includes("Already requested for this land")
             );
+          }
+        });
 
-            const buy = await landRegistrationInstance.requestForBuy(landId);   
-
-        })
-    })
-
-    describe("Seller accepts request from a buyer", () => {
-        const landId  = 1;
-        const reqId = 1;
-        it("Ensures that a verified owner can accept the request for a land", async () => {
-
-            //list the land for sale
-            await landRegistrationInstance.listLandForSale(landId, {from: owner});
-            
-            //Get the lands for sale
-            const landsForSale = await landRegistrationInstance.getLandsForSale();    
-
-
-            //BN is a different type from BigNumber
-            //Tried casting a number to a BN and using includes but it always
-            //returns false despite the number being present.
-            //The casted number is missing a few properties. This could be the 
-            //reason for an always false return value.
-            //Using a loop is a simple solution here
-            const landIfFound = landsForSale.some(
-                (element) => {
-                    if (element.toNumber() === landId) {
-                        return true
-                    }
-                }
+        it("Owner can accept buyer's request", async () => {
+          try {
+            const requestId = await landRegistrationInstance.landToBuyerToRequest(landId, verifiedUser);
+            await landRegistrationInstance.acceptRequest(requestId, { from: owner });
+        } catch (error) {
+            assert(
+                error.message.includes("Only owner of the land can accept the buyer request.")
             )
+        }
+        });
+    });
 
-            assert.equal(
-                true, landIfFound, "Land id 1 must be present in the list of" +
-                " lands for sale."
+    describe("Buyer sends a request(Rejection case)", () => {
+        let landId;
+        let buyer;
+        let landRecord;
+        
+        beforeEach(async () => {
+          // Add a land record
+          const area = 100, purchaseDate = 1698568923, landValueAtPurchase = 100;
+          const purchasePrice = 100, surveryNumber = 123;
+                
+           landRecord = {
+            landId: 0,
+            owner: owner,
+            identifier: {
+              state: "a sample state",
+              divison: "sample division",
+              district: "sample district",
+              taluka: "sample taluka",
+              village: "sample village",
+              surveyNumber: surveryNumber,
+              subdivision: "1/A"
+            },
+            area: area,
+            purchaseDate: purchaseDate,
+            purchasePrice: purchasePrice,
+            landValueAtPurchase: landValueAtPurchase,
+            previousOwners: [],
+            isVerified: true, // Set land as verified
+            isForSale: false
+          };
+    
+          await landRegistrationInstance.addLandRecord(landRecord, { from: owner });
+          landId = await landRegistrationInstance.getLandId(landRecord.identifier, { from: owner });
+          await landRegistrationInstance.landVerificationRequest(landId,{from: owner});
+          await landRegistrationInstance.verifyLand(landId,{ from: inspector});
+          await landRegistrationInstance.listLandForSale(landId,{ from: owner});
+          
+          buyer = accounts[3];
+        });
+    
+        it("Buyer can request to buy land", async () => {
+          await landRegistrationInstance.requestForBuy(landId, { from: verifiedUser });
+    
+          const sentLandRequests = await landRegistrationInstance.sentLandRequests({ from: verifiedUser });
+          const receivedLandRequests = await landRegistrationInstance.receivedLandRequests(landId, { from: owner });
+    
+          assert.equal(sentLandRequests.length, 2, "Buyer should have sent two land requests");
+          assert.equal(receivedLandRequests.length, 2, "Owner should have two received land requests");
+        });
+    
+        it("Buyer cannot request the same land twice", async () => {
+    
+          try {
+            await landRegistrationInstance.requestForBuy(landId, { from: verifiedUser });
+          } catch (error) {
+            assert(
+              error.message.includes("Already requested for this land")
             );
+          }
+        });
 
-            const buy =await landRegistrationInstance.acceptRequest(
-                reqId, {from: owner}
-            );   
+        it("Owner can reject buyer's request", async () => {
+          try {
+            const requestId = await landRegistrationInstance.landToBuyerToRequest(landId, verifiedUser);
+            await landRegistrationInstance.rejectRequest(requestId, { from: owner });
+        } catch (error) {
+            assert(
+                error.message.includes("Only owner of the land can reject the buyer request.")
+            )
+        }
+        });
+    });
 
+
+
+      describe("Buyer can cancel the request", () => {
+        let landId;
+        let buyer;
+        let landRecord;
+        
+        beforeEach(async () => {
+          // Add a land record
+          const area = 100, purchaseDate = 1698568923, landValueAtPurchase = 100;
+          const purchasePrice = 100, surveryNumber = 123;
+                
+           landRecord = {
+            landId: 0,
+            owner: owner,
+            identifier: {
+              state: "sample state",
+              divison: "sample division",
+              district: "sample district",
+              taluka: "a sample taluka",
+              village: "sample village",
+              surveyNumber: surveryNumber,
+              subdivision: "1/A"
+            },
+            area: area,
+            purchaseDate: purchaseDate,
+            purchasePrice: purchasePrice,
+            landValueAtPurchase: landValueAtPurchase,
+            previousOwners: [],
+            isVerified: true, // Set land as verified
+            isForSale: false
+          };
+    
+          await landRegistrationInstance.addLandRecord(landRecord, { from: owner });
+          landId = await landRegistrationInstance.getLandId(landRecord.identifier, { from: owner });
+          await landRegistrationInstance.landVerificationRequest(landId,{from: owner});
+          await landRegistrationInstance.verifyLand(landId,{ from: inspector});
+          await landRegistrationInstance.listLandForSale(landId,{ from: owner});
+    
+          buyer = accounts[3];
+        });
+
+        
+        it("Buyer can request to buy land", async () => {
+            await landRegistrationInstance.requestForBuy(landId, { from: verifiedUser });
+      
+            const sentLandRequests = await landRegistrationInstance.sentLandRequests({ from: verifiedUser });
+            const receivedLandRequests = await landRegistrationInstance.receivedLandRequests(landId, { from: owner });
+      
+            assert.equal(sentLandRequests.length, 2, "Buyer should have sent three sent land requests");
+            assert.equal(receivedLandRequests.length, 2, "Owner should have two received land requests");
+            
+          });
+
+          it("Buyer cannot request the same land twice", async () => {
+    
+            try {
+              await landRegistrationInstance.requestForBuy(landId, { from: verifiedUser });
+            } catch (error) {
+              assert(
+                error.message.includes("Already requested for this land")
+              );
+            }
+          });
+  
+
+        it("Buyer can cancel buy request", async () => {
+
+            try {
+                const requestId = await landRegistrationInstance.landToBuyerToRequest(landId, verifiedUser);
+                await landRegistrationInstance.cancelBuyerRequest(landId, { from: verifiedUser });
+                const requestStatus = await landRegistrationInstance.LandRequestMapping(requestId).requestStatus;
+
+            } catch (error) {
+                assert(
+                    assert.equal(requestStatus,rejected, "Request status should be 'rejected' (canceled by buyer)")
+                    
+                )
+            }
+          });
+
+        
+    
+    });
+
+    
+      describe("Land Transaction and Ownership Transfer", () => {
+        let landId;
+        let buyer;
+        let landRecord;
+        let paymentStatus ;
+
+        beforeEach(async () => {
+          // Add a land record
+          const area = 100, purchaseDate = 1698568923, landValueAtPurchase = 100;
+          const purchasePrice = 100, surveryNumber = 123;
+                
+           landRecord = {
+            landId: 0,
+            owner: owner,
+            identifier: {
+              state: "sample state",
+              divison: "sample division",
+              district: "sample district",
+              taluka: "sample taluka",
+              village: "a sample village",
+              surveyNumber: surveryNumber,
+              subdivision: "2/A"
+            },
+            area: area,
+            purchaseDate: purchaseDate,
+            purchasePrice: purchasePrice,
+            landValueAtPurchase: landValueAtPurchase,
+            previousOwners: [],
+            isVerified: true, // Set land as verified
+            isForSale: false
+          };
+    
+          await landRegistrationInstance.addLandRecord(landRecord, { from: owner });
+          landId = await landRegistrationInstance.getLandId(landRecord.identifier, { from: owner });
+          await landRegistrationInstance.landVerificationRequest(landId,{from: owner});
+          await landRegistrationInstance.verifyLand(landId,{ from: inspector});
+          await landRegistrationInstance.listLandForSale(landId,{ from: owner});
+          
+    
+          buyer = accounts[3];
+        });
+
+        it("Buyer can request and show interest in buying a land", async () => {
+            await landRegistrationInstance.requestForBuy(landId, { from: verifiedUser });
+      
+            const sentLandRequests = await landRegistrationInstance.sentLandRequests({ from: verifiedUser });
+            const receivedLandRequests = await landRegistrationInstance.receivedLandRequests(landId, { from: owner });
+      
+            assert.equal(sentLandRequests.length, 2, "Buyer should have sent two sent land requests");
+            assert.equal(receivedLandRequests.length, 2, "Owner should have two received land requests");
+        });
+        
+        it("Buyer cannot request the same land twice", async () => {
+    
+            try {
+              await landRegistrationInstance.requestForBuy(landId, { from: verifiedUser });
+            } catch (error) {
+              assert(
+                error.message.includes("Already requested for this land")
+              );
+            }
+          });
+
+          it("Owner can accept buyer's request", async () => {
+            try {
+              const requestId = await landRegistrationInstance.landToBuyerToRequest(landId, verifiedUser);
+              await landRegistrationInstance.acceptRequest(requestId, { from: owner });
+          } catch (error) {
+              assert(
+                  error.message.includes("Only owner of the land can accept the buyer request.")
+              )
+          }
+          });
+
+          it("Only Inspector can transfer the land ownership", async () => {
+
+            try{
+            const requestId = await landRegistrationInstance.landToBuyerToRequest(landId, verifiedUser);
+            const transferTx = await landRegistrationInstance.transferLandOwnership(requestId, {from : owner});
+        
+            truffleAssert.eventEmitted(transferTx, "LandOwnershipTransferred");
+            }
+            catch(error){
+
+                assert(
+                    error.message.includes("Only inspector can perform this action.")
+                )
+
+            }
         })
-    })
+    
+          it("Inspector can transfer ownership after seller accepts request and marks payment as done", async () => {
+            // Assume that the payment is done outside the contract
+            const paymentDone = true;
+        
+            const requestId = await landRegistrationInstance.landToBuyerToRequest(landId, verifiedUser);
+          
+            const initialPaymentStatus = await landRegistrationInstance.requestStatus(requestId);
+            
+            await landRegistrationInstance.markPaymentAsDone(requestId, landId, { from: owner });
+            const finalPaymentStatus = await landRegistrationInstance.requestStatus(requestId);
 
+            
+            
+            const transferTx = await landRegistrationInstance.transferLandOwnership(requestId, {from : inspector});
+        
+            truffleAssert.eventEmitted(transferTx, "LandOwnershipTransferred");
+
+        
+            assert.equal(await landRegistrationInstance.getOwnerAddress(landId), verifiedUser, "The new owner should be the buyer");
+        
+            assert.equal(finalPaymentStatus, paymentDone, "The payment status should be true");
+            assert.equal(initialPaymentStatus, false, "The initial payment status should be false");
+
+
+             //Get the lands for sale
+             const landsForSale = await landRegistrationInstance.getLandsForSale();    
+    
+             //BN is a different type from BigNumber
+             //Tried casting a number to a BN and using includes but it always
+             //returns false despite the number being present.
+             //The casted number is missing a few properties. This could be the 
+             //reason for an always false return value.
+             //Using a loop is a simple solution here
+             const landIfFound = landsForSale.some(
+                 (element) => {
+                     if (element.toNumber() === landId) {
+                         return true
+                     }
+                 }
+             )
      
+             assert.equal(
+                 false, landIfFound, "Land Id must not be present in the sale list")
+             
+
+            
+           
+        });
+
+      
+
+    });
+
 })
