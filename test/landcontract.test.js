@@ -429,8 +429,9 @@ describe("Buyer sends a request(Acceptance case)", () => {
     
         it("Buyer can request to buy land", async () => {
           await landRegistrationInstance.requestForBuy(landId, { from: verifiedUser });
+          const requestId = await landRegistrationInstance.landToBuyerToRequest(landId, verifiedUser);
     
-          const sentLandRequests = await landRegistrationInstance.sentLandRequests({ from: verifiedUser });
+          const sentLandRequests = await landRegistrationInstance.sentLandRequests(requestId,{ from: verifiedUser });
           const receivedLandRequests = await landRegistrationInstance.receivedLandRequests(landId, { from: owner });
     
           assert.equal(sentLandRequests.length, 1, "Buyer should have one sent land request");
@@ -502,8 +503,9 @@ describe("Buyer sends a request(Acceptance case)", () => {
     
         it("Buyer can request to buy land", async () => {
           await landRegistrationInstance.requestForBuy(landId, { from: verifiedUser });
+          const requestId = await landRegistrationInstance.landToBuyerToRequest(landId, verifiedUser);
     
-          const sentLandRequests = await landRegistrationInstance.sentLandRequests({ from: verifiedUser });
+          const sentLandRequests = await landRegistrationInstance.sentLandRequests(requestId,{ from: verifiedUser });
           const receivedLandRequests = await landRegistrationInstance.receivedLandRequests(landId, { from: owner });
     
           assert.equal(sentLandRequests.length, 2, "Buyer should have sent two land requests");
@@ -578,8 +580,9 @@ describe("Buyer sends a request(Acceptance case)", () => {
         
         it("Buyer can request to buy land", async () => {
             await landRegistrationInstance.requestForBuy(landId, { from: verifiedUser });
+            const requestId = await landRegistrationInstance.landToBuyerToRequest(landId, verifiedUser);
       
-            const sentLandRequests = await landRegistrationInstance.sentLandRequests({ from: verifiedUser });
+            const sentLandRequests = await landRegistrationInstance.sentLandRequests(requestId,{ from: verifiedUser });
             const receivedLandRequests = await landRegistrationInstance.receivedLandRequests(landId, { from: owner });
       
             assert.equal(sentLandRequests.length, 2, "Buyer should have sent three sent land requests");
@@ -663,8 +666,9 @@ describe("Buyer sends a request(Acceptance case)", () => {
 
         it("Buyer can request and show interest in buying a land", async () => {
             await landRegistrationInstance.requestForBuy(landId, { from: verifiedUser });
-      
-            const sentLandRequests = await landRegistrationInstance.sentLandRequests({ from: verifiedUser });
+            const requestId = await landRegistrationInstance.landToBuyerToRequest(landId, verifiedUser);
+
+            const sentLandRequests = await landRegistrationInstance.sentLandRequests(requestId,{ from: verifiedUser });
             const receivedLandRequests = await landRegistrationInstance.receivedLandRequests(landId, { from: owner });
       
             assert.equal(sentLandRequests.length, 2, "Buyer should have sent two sent land requests");

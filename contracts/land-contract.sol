@@ -335,8 +335,10 @@ function receivedLandRequests(uint _landId) public view returns (uint[] memory) 
     return MyReceivedLandRequests[msg.sender];
 }
 //Function that will return a list of buyers interested for a particular land and have sent requests
-function sentLandRequests() public view returns(uint[] memory)
+function sentLandRequests(uint _requestId) public view returns(uint[] memory)
 {
+     require(LandRequestMapping[_requestId].buyerId == msg.sender, "You are not the buyer of this land");
+    
     return MySentLandRequests[msg.sender];
 }
 
