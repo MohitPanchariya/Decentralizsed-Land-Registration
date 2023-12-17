@@ -684,7 +684,7 @@ describe("Buyer sends a request(Acceptance case)", () => {
                 await landRegistrationInstance.cancelBuyerRequest(landId, { from: inspector });
 
             } catch (error) {
-                assert.equal(true,inspector != owner,"Only owner can perform this.");
+                assert.equal(true,inspector != verifiedUser,"Only owner can perform this.");
             }
           });
   
