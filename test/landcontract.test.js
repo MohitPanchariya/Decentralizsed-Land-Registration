@@ -426,6 +426,17 @@ describe("Buyer sends a request(Acceptance case)", () => {
           //console.log(landId);
           buyer = accounts[3];
         });
+
+        it("An unverified user(buyer) cannot request to buy land", async () => {
+    
+            try {
+              await landRegistrationInstance.requestForBuy(landId, { from: unVerifiedUser });
+            } catch (error) {
+              assert(
+                error.message.includes("Only registered user can perform this action.")
+              );
+            }
+          });
     
         it("Buyer can request to buy land", async () => {
           await landRegistrationInstance.requestForBuy(landId, { from: verifiedUser });
@@ -447,6 +458,29 @@ describe("Buyer sends a request(Acceptance case)", () => {
             );
           }
         });
+
+        it("An unverified user(seller) cannot accept request to buy land", async () => {
+    
+            try {
+                const requestId = await landRegistrationInstance.landToBuyerToRequest(landId, verifiedUser);
+                await landRegistrationInstance.acceptRequest(requestId, { from: unVerifiedUser });
+            } catch (error) {
+                assert(
+                    error.message.includes("Only registered user can perform this action.")
+                )
+            }
+          });
+
+          it("A verified user other than the owner of the land cannot accept request to buy land", async () => {
+    
+            try {
+                const requestId = await landRegistrationInstance.landToBuyerToRequest(landId, verifiedUser);
+                await landRegistrationInstance.acceptRequest(requestId, { from: inspector });
+            } catch (error) {
+                assert.equal(true,inspector != owner,"Only owner can perform this.");
+            }
+          });
+
 
         it("Owner can accept buyer's request", async () => {
           try {
@@ -499,6 +533,17 @@ describe("Buyer sends a request(Acceptance case)", () => {
           
           buyer = accounts[3];
         });
+
+        it("An unverified user(buyer) cannot request to buy land", async () => {
+    
+            try {
+              await landRegistrationInstance.requestForBuy(landId, { from: unVerifiedUser });
+            } catch (error) {
+              assert(
+                error.message.includes("Only registered user can perform this action.")
+              );
+            }
+          });
     
         it("Buyer can request to buy land", async () => {
           await landRegistrationInstance.requestForBuy(landId, { from: verifiedUser });
@@ -520,6 +565,29 @@ describe("Buyer sends a request(Acceptance case)", () => {
             );
           }
         });
+
+        it("An unverified user(seller) cannot reject request to buy land", async () => {
+    
+            try {
+                const requestId = await landRegistrationInstance.landToBuyerToRequest(landId, verifiedUser);
+                await landRegistrationInstance.rejectRequest(requestId, { from: unVerifiedUser });
+            } catch (error) {
+                assert(
+                    error.message.includes("Only registered user can perform this action.")
+                )
+            }
+          });
+
+          it("A verified user other than the owner of the land cannot reject request to buy land", async () => {
+    
+            try {
+                const requestId = await landRegistrationInstance.landToBuyerToRequest(landId, verifiedUser);
+                await landRegistrationInstance.rejectRequest(requestId, { from: inspector });
+            } catch (error) {
+                assert.equal(true,inspector != owner,"Only owner can perform this.");
+                
+            }
+          });
 
         it("Owner can reject buyer's request", async () => {
           try {
@@ -575,6 +643,17 @@ describe("Buyer sends a request(Acceptance case)", () => {
           buyer = accounts[3];
         });
 
+        it("An unverified user(buyer) cannot request to buy land", async () => {
+    
+            try {
+              await landRegistrationInstance.requestForBuy(landId, { from: unVerifiedUser });
+            } catch (error) {
+              assert(
+                error.message.includes("Only registered user can perform this action.")
+              );
+            }
+          });
+
         
         it("Buyer can request to buy land", async () => {
             await landRegistrationInstance.requestForBuy(landId, { from: verifiedUser });
@@ -595,6 +674,17 @@ describe("Buyer sends a request(Acceptance case)", () => {
               assert(
                 error.message.includes("Already requested for this land")
               );
+            }
+          });
+
+          it("Verified user other than the actual buyer cannot cancel buy request", async () => {
+
+            try {
+                const requestId = await landRegistrationInstance.landToBuyerToRequest(landId, verifiedUser);
+                await landRegistrationInstance.cancelBuyerRequest(landId, { from: inspector });
+
+            } catch (error) {
+                assert.equal(true,inspector != owner,"Only owner can perform this.");
             }
           });
   
