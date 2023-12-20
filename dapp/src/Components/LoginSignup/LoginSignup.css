@@ -1,0 +1,90 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  width: 500px; /* Adjust the width as needed */
+  height: 470px;
+  margin: 50px auto; /* Center the form */
+  background: rgba(255, 255, 255, 0.8);
+  padding-bottom: 30px;
+  border-radius: 15px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 9px;
+  width: 100%;
+  margin-top: 30px;
+}
+
+.text {
+  color: #3887be;
+  font-size: 48px;
+  font-weight: 700;
+}
+
+.underline {
+  width: 61px;
+  height: 6px;
+  background: #3887be;
+  border-radius: 9px;
+}
+
+.inputs {
+  margin-top: 55px;
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+}
+
+.input {
+  display: flex;
+  align-items: center;
+  margin: auto;
+  width: 380px;
+  height: 80px;
+  background: rgba(122, 115, 115, 0.246); /* Set background color with transparency */
+  border-radius: 6px;
+  backdrop-filter: blur(10px); /* Add backdrop-filter for a frosted glass effect */
+}
+
+.input img {
+  margin: 0px 30px;
+}
+
+.input input {
+  height: 50px;
+  width: 200px;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: #6a5c5c;
+  font-size: 19px;
+}
+
+.submit-container {
+  display: flex;
+  gap: 30px;
+  margin: 60px auto;
+}
+
+.submit {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 180px;
+  height: 59px;
+  color: #fff;
+  background: #3887be;
+  border-radius: 50px;
+  font-size: 19px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.gray{
+  background: rgba(122, 115, 115, 0.246);
+  color:#6a5c5c;
+}
