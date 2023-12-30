@@ -6,7 +6,7 @@ import key_icon from '../Assets/key.png'
 import Web3 from "web3";
 import configuration from '../../AccountRegistration.json'
 
-const contractAddress = '0xB00EA762AE4FC2f21E564fB077EbBAff9FA6Fd53';
+const contractAddress = '0x5B7c46648Cb96c143Af1d7AFdc697634bd522cE8';
 const contractABI = configuration.abi;
 
 export const LoginSignup = () => {
@@ -14,8 +14,9 @@ export const LoginSignup = () => {
     const [username, setUsername] = useState("");
     const [aadharNumber, setAadharNumber] = useState("");
 
-    const handleSubmit = async () => {
+    const handleSubmit = async (event) => {
         try {
+            event.preventDefault();
             if (action === "Sign Up") {
                 // Request MetaMask account access
                 const accounts = await window.ethereum.request({ method: "eth_requestAccounts" });
@@ -31,12 +32,15 @@ export const LoginSignup = () => {
                 // Call the setUserDetails function on the contract
                 const gas = 2000000; // Adjust the gas limit as needed
                 const transaction = await contract.methods.setUserDetails(username, aadharNumber).send({ from: account, gas });
-
+  
                 // Check for transaction confirmation
-                if (transaction.status === true) {
+                if (transaction.status) {
                     console.log("User details set successfully!");
                 } else {
-                    console.error("Transaction failed:", transaction.errorMessage);
+                    console.error("Transaction failed:", transaction);
+                    if (transaction.message) {
+                        console.error("Error message:", transaction.message);
+                    }
                 }
             }
         } catch (error) {
