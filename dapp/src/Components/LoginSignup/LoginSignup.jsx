@@ -6,13 +6,14 @@ import key_icon from '../Assets/key.png'
 import Web3 from "web3";
 import configuration from '../../AccountRegistration.json'
 
-const contractAddress = '0x5B7c46648Cb96c143Af1d7AFdc697634bd522cE8';
+const contractAddress = '0xbDF09003d17a10DBf793DF7A47033088988BbEa2';
 const contractABI = configuration.abi;
 
 export const LoginSignup = () => {
     const [action, setAction] = useState("Sign Up");
     const [username, setUsername] = useState("");
     const [aadharNumber, setAadharNumber] = useState("");
+    const [privateKey, setPrivateKey] = useState("");
 
     const handleSubmit = async (event) => {
         try {
@@ -43,6 +44,25 @@ export const LoginSignup = () => {
                     }
                 }
             }
+            else if (action === "Login") {
+                const accounts = await window.ethereum.request({ method: "eth_requestAccounts" });
+                const account = accounts[0];
+                const web3Instance = new Web3(window.ethereum);
+                const contract = new web3Instance.eth.Contract(contractABI, contractAddress);
+                const privateKeyWithPrefix = `0x${privateKey}`;
+                const addressFromPrivateKey = await web3Instance.eth.accounts.privateKeyToAccount(privateKeyWithPrefix);
+             
+                if (account.toUpperCase() !== addressFromPrivateKey.address.toUpperCase()) {
+                    console.error("Private key does not match MetaMask address");
+                    return;
+                }
+                const userDetails = await contract.methods.getUserDetailsByAddress(account).call();
+                if (userDetails) {
+                    console.log("Login successful!");
+                } else {
+                    console.error("User does not exist");
+                }   
+            }
         } catch (error) {
             console.error("Error setting user details:", error);
         }
@@ -64,8 +84,14 @@ export const LoginSignup = () => {
                     <input type="number" placeholder='AADHAR NUMBER' value={aadharNumber} onChange={(e) => setAadharNumber(e.target.value)} />
                 </div> : <div className="input">
                     <img src={key_icon} alt="" />
-                    <input type="password" placeholder='PRIVATE KEY' />
-                </div>}
+                    <input
+                        type="password"
+                        placeholder="PRIVATE KEY"
+                        value={privateKey}
+                        onChange={(e) => setPrivateKey(e.target.value)} // Update private key state
+                    />
+                </div>
+            }
             </div>
             <div className="submit-container">
                 <button className={action === 'Login' ? "submit" : "submit"} onClick={handleSubmit}>
@@ -75,7 +101,6 @@ export const LoginSignup = () => {
                     {action === 'Login' ? 'Sign Up' : 'Login'}
                 </div>
             </div>
-
         </div>
     );
 }
