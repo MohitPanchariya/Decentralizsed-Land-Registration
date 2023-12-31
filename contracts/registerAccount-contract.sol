@@ -100,18 +100,16 @@ contract AccountRegistration {
     }
 
     // Function to Check User Details
-    function getUserDetails(uint256 _aadharNumber) public view returns (address userAddress, string memory username, bool isUserVerified, uint8 designation, uint registrationDate, uint256 aadharNumber) {
-        // Find the Ethereum address associated with the given Aadhar number
-        address userToRetrieve = aadharToUser[_aadharNumber];
-
+    function getUserDetailsByAddress(address _userAddress) public view returns (string memory username, bool isUserVerified, uint8 designation, uint registrationDate, uint256 aadharNumber) {
         // Ensure that the user exists
-        require(userToRetrieve != address(0), "No user found for the provided Aadhar number");
+        require(_userAddress != address(0), "Invalid user address");
 
         // Retrieve user details using the Ethereum address
-        UserAccount storage user = userAccountsMap[userToRetrieve];
-        
-        return (user.userAddress, user.username, user.isUserVerified, user.designation, user.registrationDate, user.aadharNumber);
+        UserAccount storage user = userAccountsMap[_userAddress];
+
+        return (user.username, user.isUserVerified, user.designation, user.registrationDate, user.aadharNumber);
     }
+
 
     // Modifier to restrict access to functions for the deployer only
     modifier onlyDeployer() {
