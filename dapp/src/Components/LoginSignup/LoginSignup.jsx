@@ -68,13 +68,14 @@ export const LoginSignup = () => {
                 </div>}
             </div>
             <div className="submit-container">
-                <button className={action === 'Login' ? "submit gray" : "submit"} onClick={handleSubmit}>
+                <button className={action === 'Login' ? "submit" : "submit"} onClick={handleSubmit}>
                     {action}
                 </button>
-                <div className={action === 'Login' ? "submit" : "submit gray"} onClick={() => setAction("Sign Up")}>
+                <div className={action === 'Sign Up' ? "submit gray" : "submit gray"} onClick={() => setAction(action === 'Login' ? 'Sign Up' : 'Login')}>
                     {action === 'Login' ? 'Sign Up' : 'Login'}
                 </div>
             </div>
+
         </div>
     );
 }
