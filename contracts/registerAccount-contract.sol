@@ -100,14 +100,14 @@ contract AccountRegistration {
     }
 
     // Function to Check User Details
-    function getUserDetailsByAddress(address _userAddress) public view returns (string memory username, bool isUserVerified, uint8 designation, uint registrationDate, uint256 aadharNumber) {
+    function getUserDetailsByAddress(address _userAddress) public view returns (string memory username, bool isUserVerified, uint8 designation, uint registrationDate, uint256 aadharNumber, address userAddress) {
         // Ensure that the user exists
         require(_userAddress != address(0), "Invalid user address");
 
         // Retrieve user details using the Ethereum address
         UserAccount storage user = userAccountsMap[_userAddress];
 
-        return (user.username, user.isUserVerified, user.designation, user.registrationDate, user.aadharNumber);
+        return (user.username, user.isUserVerified, user.designation, user.registrationDate, user.aadharNumber, user.userAddress);
     }
 
 
