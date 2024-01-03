@@ -1,11 +1,14 @@
 import './App.css';
+import React from 'react';
+import { BrowserRouter} from 'react-router-dom';
 import LoginSignup from './Components/LoginSignup/LoginSignup'
+
 
 function App() {
   return (
-    <div >
-      <LoginSignup/>
-    </div>
+    <BrowserRouter>
+      <LoginSignup />
+    </BrowserRouter>
   );
 }
 
