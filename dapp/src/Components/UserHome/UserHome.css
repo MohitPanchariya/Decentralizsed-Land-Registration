@@ -1,5 +1,5 @@
 /* Add your styles for the UserHome component */
-div {
+.userhome {
     max-width: 600px;
     padding: 5px;
     background-color: #f8f8f8;

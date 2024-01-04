@@ -41,7 +41,7 @@ const UserHome = ({ userDetails }) => {
   };
 
   return (
-    <div>
+    <div class="userhome">
       <h1>Welcome {userDetails.username}</h1>
       <p>Username: {userDetails.username}</p>
       <p>User Address: {userDetails.userAddress}</p>
