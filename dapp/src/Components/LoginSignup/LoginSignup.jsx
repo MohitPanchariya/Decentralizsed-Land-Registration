@@ -8,7 +8,7 @@ import Web3 from "web3";
 import configuration from "../../AccountRegistration.json";
 import UserHome from "../UserHome/UserHome";
 
-const contractAddress = "0xd8c70667BA1b56547069A605Da1EdFDC3c4054C7";
+const contractAddress = "0x6D3c209Dc740D703042957d6E2fc817F759DF711";
 const contractABI = configuration.abi;
 
 export const LoginSignup = () => {
@@ -20,6 +20,36 @@ export const LoginSignup = () => {
 
   const [userDetails, setUserDetails] = useState(null);
 
+  const handleConnectMetaMask = async () => {
+    try {
+      const accounts = await window.ethereum.request({
+        method: "eth_requestAccounts",
+      });
+
+      const account = accounts[0];
+      console.log("Connected with MetaMask:", account);
+      const web3Instance = new Web3(window.ethereum);
+      const contract = new web3Instance.eth.Contract(
+        contractABI,
+        contractAddress
+      );
+      const userDetails = await contract.methods
+        .getUserDetailsByAddress(account)
+        .call();
+
+      if (userDetails.aadharNumber) {
+        console.log("Login successful!");
+        setUserDetails(userDetails); // Set user details in the state
+        // Redirect to the home page
+        Navigate("/home");
+      } else {
+        console.error("User does not exist");
+      }
+    } catch (error) {
+      console.error("Error connecting with MetaMask:", error);
+    }
+  };
+
   const handleSubmit = async (event) => {
     try {
       event.preventDefault();
@@ -29,7 +59,6 @@ export const LoginSignup = () => {
           method: "eth_requestAccounts",
         });
         const account = accounts[0];
-        console.log(account);
 
         // Create a Web3 instance using the provider from MetaMask
         const web3Instance = new Web3(window.ethereum);
@@ -81,7 +110,7 @@ export const LoginSignup = () => {
           .getUserDetailsByAddress(account)
           .call();
 
-        if (userDetails) {
+        if (userDetails.aadharNumber) {
           console.log("Login successful!");
           setUserDetails(userDetails); // Set user details in the state
           // Redirect to the home page
@@ -107,7 +136,15 @@ export const LoginSignup = () => {
           </div>
           <div className="inputs">
             {action === "Login" ? (
-              <div></div>
+              <div className="input">
+                <img src={key_icon} alt="" />
+                <input
+                  type="password"
+                  placeholder="PRIVATE KEY"
+                  value={privateKey}
+                  onChange={(e) => setPrivateKey(e.target.value)} // Update private key state
+                />
+              </div>
             ) : (
               <div className="input">
                 <img src={user_icon} alt="" />
@@ -117,6 +154,13 @@ export const LoginSignup = () => {
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
                 />
+              </div>
+            )}
+            {action === "Sign Up" ? (
+              <div></div>
+            ) : (
+              <div className="or">
+                <center>OR</center>
               </div>
             )}
             {action === "Sign Up" ? (
@@ -130,14 +174,15 @@ export const LoginSignup = () => {
                 />
               </div>
             ) : (
-              <div className="input">
-                <img src={key_icon} alt="" />
-                <input
-                  type="password"
-                  placeholder="PRIVATE KEY"
-                  value={privateKey}
-                  onChange={(e) => setPrivateKey(e.target.value)} // Update private key state
-                />
+              <div className="submit-container-metamask">
+                {action === "Login" && (
+                  <div
+                    className="submit-connect-metamask"
+                    onClick={handleConnectMetaMask}
+                  >
+                    Connect with MetaMask
+                  </div>
+                )}
               </div>
             )}
           </div>

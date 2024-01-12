@@ -1,11 +1,11 @@
 .container {
   display: flex;
   flex-direction: column;
-  width: 500px; /* Adjust the width as needed */
-  height: 470px;
+  width: 530px; /* Adjust the width as needed */
+  height: 477px;
   margin: 50px auto; /* Center the form */
   background: rgba(255, 255, 255, 0.8);
-  padding-bottom: 30px;
+  padding-bottom: 40px;
   border-radius: 15px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
@@ -39,6 +39,12 @@
   gap: 25px;
 }
 
+.or {
+  color: #6a5c5c;
+  font-size: 19px;
+  font-weight: 700;
+}
+
 .input {
   display: flex;
   align-items: center;
@@ -67,7 +73,13 @@
 .submit-container {
   display: flex;
   gap: 30px;
-  margin: 60px auto;
+  margin: 40px auto;
+}
+
+.submit-container-metamask {
+  display: flex;
+  gap: 30px;
+  margin: 0px auto;
 }
 
 .submit {
@@ -75,6 +87,20 @@
   justify-content: center;
   align-items: center;
   width: 180px;
+  height: 59px;
+  color: #fff;
+  background: #3887be;
+  border-radius: 50px;
+  font-size: 19px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.submit-connect-metamask {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 6px;
+  align-items: center;
+  width: 380px;
   height: 59px;
   color: #fff;
   background: #3887be;
