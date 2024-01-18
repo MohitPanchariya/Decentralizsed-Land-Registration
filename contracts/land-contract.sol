@@ -36,7 +36,7 @@ contract LandRegistration {
             http://www.landsofmaharashtra.com/divisionsofmaharashtra.html 
         */
         string state;
-        string divison;
+        string division;
         string district;
         string taluka;
         string village;
@@ -204,7 +204,7 @@ contract LandRegistration {
 
     function landRecordExists(LandIdentifier memory _record) 
                                 private view returns (bool, uint) {
-        uint landId = landMapToId[_record.state][_record.divison]
+        uint landId = landMapToId[_record.state][_record.division]
                                 [_record.district][_record.taluka]
                                 [_record.village][_record.surveyNumber][_record.subdivision];
         if (landId == 0) {
@@ -233,7 +233,7 @@ contract LandRegistration {
         landMapping[landRecordsCount] = _record;
 
         //Also add it to the landMapToId mapping
-        landMapToId[_record.identifier.state][_record.identifier.divison]
+        landMapToId[_record.identifier.state][_record.identifier.division]
         [_record.identifier.district][_record.identifier.taluka]
         [_record.identifier.village][_record.identifier.surveyNumber]
         [_record.identifier.subdivision] = landRecordsCount;
@@ -247,7 +247,7 @@ contract LandRegistration {
 
     //Get land id
     function getLandId(LandIdentifier memory _identifier) public view returns (uint){
-        return landMapToId[_identifier.state][_identifier.divison]
+        return landMapToId[_identifier.state][_identifier.division]
         [_identifier.district][_identifier.taluka][_identifier.village]
         [_identifier.surveyNumber][_identifier.subdivision];
     }
