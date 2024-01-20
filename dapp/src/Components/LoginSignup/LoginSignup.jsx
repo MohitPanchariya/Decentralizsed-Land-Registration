@@ -6,9 +6,8 @@ import user_icon from "../Assets/user.png";
 import key_icon from "../Assets/key.png";
 import Web3 from "web3";
 import configuration from "../../AccountRegistration.json";
-import UserDetails from "../UserDetails/UserDetails";
 
-const contractAddress = "0x0e74EA4BDE49fF265DaFE9221C5428eC0Ec9205f";
+const contractAddress = "0x9F4d677872ccfEDCA1b660A2a67AAD14D49812E9";
 const contractABI = configuration.abi;
 
 export const LoginSignup = () => {
@@ -17,8 +16,6 @@ export const LoginSignup = () => {
   const [aadharNumber, setAadharNumber] = useState("");
   const [privateKey, setPrivateKey] = useState("");
   const Navigate = useNavigate();
-
-  const [userDetails, setUserDetails] = useState(null);
 
   const handleConnectMetaMask = async () => {
     try {
@@ -39,9 +36,8 @@ export const LoginSignup = () => {
 
       if (userDetails.aadharNumber) {
         console.log("Login successful!");
-        setUserDetails(userDetails); // Set user details in the state
         // Redirect to the home page
-        // Navigate("/home");
+        Navigate("/user-details");
       } else {
         console.error("User does not exist");
       }
@@ -112,9 +108,8 @@ export const LoginSignup = () => {
 
         if (userDetails.aadharNumber) {
           console.log("Login successful!");
-          setUserDetails(userDetails); // Set user details in the state
           // Redirect to the home page
-          // Navigate("/home");
+          Navigate("/user-details");
         } else {
           console.error("User does not exist");
         }
@@ -126,10 +121,6 @@ export const LoginSignup = () => {
 
   return (
     <div className="container">
-      {userDetails ? ( // Render UserDetails if userDetails is available
-        <UserDetails userDetails={userDetails} />
-      ) : (
-        <>
           <div className="header">
             <div className="text">{action}</div>
             <div className="underline"> </div>
@@ -202,8 +193,6 @@ export const LoginSignup = () => {
               {action === "Login" ? "Sign Up" : "Login"}
             </div>
           </div>
-        </>
-      )}
     </div>
   );
 };
