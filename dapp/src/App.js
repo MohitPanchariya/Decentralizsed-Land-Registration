@@ -9,7 +9,7 @@ import LandsForSale from './Components/LandsForSale/LandsForSale.jsx';
 function App() {
   return (
     <Routes>
-      <Route path='/' element={<Home/>} />
+      <Route path='/' element={<LoginSignup/>} />
       {/* <Route path='/login' element={<LoginSignup/>} /> */}
       <Route path="/home" element={<Home/>} />
       <Route path='/add-land' element={<AddLandRecord/>} />
