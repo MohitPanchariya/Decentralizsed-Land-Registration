@@ -1,0 +1,22 @@
+/* Add your styles for the UserHome component */
+.userhome {
+    max-width: 600px;
+    padding: 5px;
+    background-color: #f8f8f8;
+}
+
+button {
+    background-color: #007bff;
+    color: #fff;
+    padding: 10px 15px;
+    font-size: 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+/* Add any additional styling as needed */
