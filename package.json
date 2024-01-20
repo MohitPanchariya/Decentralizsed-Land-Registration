@@ -1,5 +1,7 @@
 {
   "dependencies": {
+    "@tanstack/react-query": "^5.17.15",
+    "@tanstack/react-query-devtools": "^5.17.18",
     "bignumber.js": "^4.0.4",
     "bn.js": "^5.2.1",
     "ethers": "^6.8.0",

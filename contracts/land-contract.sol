@@ -79,6 +79,8 @@ contract LandRegistration {
     event LandRecordAdded(uint landId);
     //Event to be emitted if the land record already exists
     event LandRecordExists(uint landId);
+    //Event to be emitted when land is listed for sale
+    event LandListedForSale(uint landId);
 
     event LandRequests(uint requestId, address landOwner, address buyer, uint landId, reqStatus status, bool someFlag);
     event LandRequestCancelled(uint requestId);
@@ -215,7 +217,7 @@ contract LandRegistration {
 
     //This function is used to add a land record
     function addLandRecord  (LandRecord memory _record) public 
-                            onlyRegisteredUser returns (uint) {
+                             returns (uint) {
 
         (bool recordExists, uint landId) = landRecordExists(_record.identifier);
 
@@ -241,6 +243,9 @@ contract LandRegistration {
         uint addedLandId = landRecordsCount;
         allLandList.push(addedLandId);
         landRecordsCount++;
+
+        //Add to the accounts list of lands
+        MyLands[msg.sender].push(addedLandId);
         emit LandRecordAdded(addedLandId);
         return addedLandId;
     }
@@ -258,8 +263,7 @@ contract LandRegistration {
     }
 
     //List land for sale
-    function listLandForSale(uint _landId) public onlyOwner(_landId) 
-    onlyVerifiedLand (_landId) {
+    function listLandForSale(uint _landId) public onlyOwner(_landId) {
         //Check if land actually exists
         //Mapping in solidity always exists and maps to a zero value
         //Hence, this check is needed.
@@ -270,6 +274,8 @@ contract LandRegistration {
 
         //Add the land to the landsForSale list
         landsForSale.push(_landId);
+
+        emit LandListedForSale(_landId);
     }
 
  // Function where a buyer can request and show interest in buying a land
@@ -436,8 +442,26 @@ function transferLandOwnership(uint _requestId) public onlylInspector {
 
 
     //Get all land ids which have been listed for sale
-    function getLandsForSale() public view returns (uint[] memory) {
-        return landsForSale;
+    //except the lands listed for sale by the caller
+    function getLandsForSale() public view returns (LandRecord[] memory) {
+        uint count = 0;
+        for(uint i = 0; i < landsForSale.length; i++) {
+            if(landMapping[landsForSale[i]].owner != msg.sender) {
+                count++;
+            }
+        }
+
+        LandRecord[] memory result = new LandRecord[](count);
+
+        uint resultIndex = 0;
+
+        for(uint i = 0; i < landsForSale.length; i++) {
+            if(landMapping[landsForSale[i]].owner != msg.sender) {
+                result[resultIndex] = landMapping[landsForSale[i]];
+                resultIndex++;
+            }
+        }
+        return result;
     }
 
 //Function to view the list of lands of a particular owner
@@ -445,6 +469,14 @@ function transferLandOwnership(uint _requestId) public onlylInspector {
         return MyLands[owner];
     }
 
+    function getMyLands() public view returns(LandRecord[] memory) {
+        LandRecord[] memory result = new LandRecord[](MyLands[msg.sender].length);
+
+        for(uint i = 0; i < MyLands[msg.sender].length; i++) {
+            result[i] = landMapping[MyLands[msg.sender][i]];
+        }
+        return result;
+    }
 
 //Function that returns a list of all lands
     function ReturnAllLandList() public view returns(uint[] memory)

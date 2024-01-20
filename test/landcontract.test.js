@@ -86,7 +86,7 @@ contract("LandRegistration", async (accounts) => {
                 owner: owner,
                 identifier: {
                     state: "sample state",
-                    divison: "sample division",
+                    division: "sample division",
                     district: "sample district",
                     taluka: "sample taluka",
                     village: "sample village",
@@ -154,7 +154,7 @@ contract("LandRegistration", async (accounts) => {
                 owner: owner,
                 identifier: {
                     state: "a different sample state",
-                    divison: "sample division",
+                    division: "sample division",
                     district: "sample district",
                     taluka: "sample taluka",
                     village: "sample village",
@@ -216,7 +216,7 @@ contract("LandRegistration", async (accounts) => {
                 owner: owner,
                 identifier: {
                     state: "sample state",
-                    divison: "sample division",
+                    division: "sample division",
                     district: "sample district",
                     taluka: "sample taluka",
                     village: "sample village",
@@ -281,7 +281,7 @@ contract("LandRegistration", async (accounts) => {
                 owner: owner,
                 identifier: {
                     state: "sample state",
-                    divison: "sample division",
+                    division: "sample division",
                     district: "sample district",
                     taluka: "sample taluka",
                     village: "sample village",
@@ -402,7 +402,7 @@ describe("Buyer sends a request(Acceptance case)", () => {
             owner: owner,
             identifier: {
               state: "sample state",
-              divison: "sample division",
+              division: "sample division",
               district: "sample district",
               taluka: "sample taluka",
               village: "sample village",
@@ -509,7 +509,7 @@ describe("Buyer sends a request(Acceptance case)", () => {
             owner: owner,
             identifier: {
               state: "a sample state",
-              divison: "sample division",
+              division: "sample division",
               district: "sample district",
               taluka: "sample taluka",
               village: "sample village",
@@ -618,7 +618,7 @@ describe("Buyer sends a request(Acceptance case)", () => {
             owner: owner,
             identifier: {
               state: "sample state",
-              divison: "sample division",
+              division: "sample division",
               district: "sample district",
               taluka: "a sample taluka",
               village: "sample village",
@@ -725,7 +725,7 @@ describe("Buyer sends a request(Acceptance case)", () => {
             owner: owner,
             identifier: {
               state: "sample state",
-              divison: "sample division",
+              division: "sample division",
               district: "sample district",
               taluka: "sample taluka",
               village: "a sample village",
