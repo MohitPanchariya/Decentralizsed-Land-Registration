@@ -6,9 +6,9 @@ import user_icon from "../Assets/user.png";
 import key_icon from "../Assets/key.png";
 import Web3 from "web3";
 import configuration from "../../AccountRegistration.json";
-import UserHome from "../UserHome/UserHome";
+import UserDetails from "../UserDetails/UserDetails";
 
-const contractAddress = "0x6D3c209Dc740D703042957d6E2fc817F759DF711";
+const contractAddress = "0x0e74EA4BDE49fF265DaFE9221C5428eC0Ec9205f";
 const contractABI = configuration.abi;
 
 export const LoginSignup = () => {
@@ -41,7 +41,7 @@ export const LoginSignup = () => {
         console.log("Login successful!");
         setUserDetails(userDetails); // Set user details in the state
         // Redirect to the home page
-        Navigate("/home");
+        // Navigate("/home");
       } else {
         console.error("User does not exist");
       }
@@ -114,7 +114,7 @@ export const LoginSignup = () => {
           console.log("Login successful!");
           setUserDetails(userDetails); // Set user details in the state
           // Redirect to the home page
-          Navigate("/home");
+          // Navigate("/home");
         } else {
           console.error("User does not exist");
         }
@@ -126,8 +126,8 @@ export const LoginSignup = () => {
 
   return (
     <div className="container">
-      {userDetails ? ( // Render UserHome if userDetails is available
-        <UserHome userDetails={userDetails} />
+      {userDetails ? ( // Render UserDetails if userDetails is available
+        <UserDetails userDetails={userDetails} />
       ) : (
         <>
           <div className="header">
