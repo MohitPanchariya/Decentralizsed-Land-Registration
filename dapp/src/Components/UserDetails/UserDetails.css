@@ -60,7 +60,7 @@ ul li:hover a {
 }
 
 .user-card {
-    margin: 7% 30%;
+    margin: 7% 28%;
     position: fixed;
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
     transition: 0.3s;
