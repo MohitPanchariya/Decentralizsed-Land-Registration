@@ -24,6 +24,9 @@ function Sidebar() {
           <Link to="/user-details" className="fas fa-link">
             User Details
           </Link>
+          <Link to="/" className="fas fa-link">
+            Log Out
+          </Link>
         </ul>
       </div>
     </>
