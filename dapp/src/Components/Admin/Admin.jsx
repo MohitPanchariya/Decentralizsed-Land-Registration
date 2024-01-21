@@ -6,7 +6,7 @@ import user_icon from "../Assets/user.png";
 import key_icon from "../Assets/key.png";
 import Web3 from "web3";
 import configuration from "../../AccountRegistration.json";
-import UserHome from "../UserHome/UserHome";
+import UserDetails from "../UserDetails/UserDetails";
 
 const contractAddress = "0x6D3c209Dc740D703042957d6E2fc817F759DF711";
 const contractABI = configuration.abi;
@@ -100,7 +100,7 @@ export const Admin = () => {
   return (
     <div className="container">
       {userDetails ? ( 
-        <UserHome userDetails={userDetails} />
+        <UserDetails userDetails={userDetails} />
       ) : (
         <>
           <div className="header">
