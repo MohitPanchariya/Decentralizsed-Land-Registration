@@ -116,19 +116,19 @@ const UserDetails = () => {
         <center>
           <h1>WELCOME {userDetails.username.toLocaleUpperCase()}!</h1>
         </center>
-        <p className="user-details">Username: {userDetails.username}</p>
-        <p className="user-details">User Address: {userDetails.userAddress}</p>
+        <p className="user-details"><b>Username: </b>{userDetails.username}</p>
+        <p className="user-details"><b>User Address: </b>{userDetails.userAddress}</p>
         <p className="user-details">
-          Aadhar Number: {String(userDetails.aadharNumber)}
+          <b>Aadhar Number: </b>{String(userDetails.aadharNumber)}
         </p>
         <p className="user-details">
-          User Verified: {String(userDetails.isUserVerified)}
+          <b>User Verified: </b>{String(userDetails.isUserVerified)}
         </p>
         <p className="user-details">
-          Designation: {String(userDetails.designation)}
+          <b>Designation: </b>{String(userDetails.designation)}
         </p>
         <p className="user-details">
-          Registration Date: {registrationDate.toLocaleString()}
+          <b>Registration Date: </b>{registrationDate.toLocaleString()}
         </p>
 
         {!userDetails.isUserVerified && (

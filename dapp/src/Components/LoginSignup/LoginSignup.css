@@ -6,12 +6,13 @@
   width: 530px;
   /* Adjust the width as needed */
   height: 477px;
-  margin: 50px auto;
+  margin: 3% 32% 5%;
   /* Center the form */
   background: #F8FAE5;
   padding-bottom: 40px;
   border-radius: 15px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  position: fixed;
 }
 
 .header {
