@@ -6,6 +6,7 @@ import {LoginSignup} from "./Components/LoginSignup/LoginSignup.jsx"
 import {AddLandRecord} from "./Components/AddLands/AddLand.jsx"
 import LandsForSale from './Components/LandsForSale/LandsForSale.jsx';
 import UserDetails from './Components/UserDetails/UserDetails.jsx';
+import Admin from './Components/Admin/Admin.jsx';
 
 function App() {
   return (
@@ -15,6 +16,7 @@ function App() {
       <Route path="/home" element={<Home/>} />
       <Route path='/add-land' element={<AddLandRecord/>} />
       <Route path="/for-sale" element={<LandsForSale/>} />
+      <Route path="/admin" element={<Admin/>} />
     </Routes>
   );
 }
