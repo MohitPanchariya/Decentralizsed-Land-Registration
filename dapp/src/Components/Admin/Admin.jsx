@@ -6,7 +6,7 @@ import user_icon from "../Assets/user.png";
 import key_icon from "../Assets/key.png";
 import Web3 from "web3";
 import configuration from "../../AccountRegistration.json";
-import UserDetails from "../UserDetails/UserDetails";
+import UserHome from "../UserHome/UserHome";
 
 const contractAddress = "0x6D3c209Dc740D703042957d6E2fc817F759DF711";
 const contractABI = configuration.abi;
@@ -18,6 +18,7 @@ export const Admin = () => {
   const [address, setAddress] = useState("");
   const [authority, setAuthority] = useState("");
   const [privateKey, setPrivateKey] = useState("");
+  const [list, setList] = useState([]);
   const Navigate = useNavigate();
 
   const [userDetails, setUserDetails] = useState(null);
@@ -96,11 +97,25 @@ export const Admin = () => {
       console.error("Error :", error);
     }
   };
+  
+  
+  const  getPendingVerifications = async() {
+  try {
+    const result = await contract.methods.getPendingVerifications().call();
+    console.log(result);
+    
+    setList(result);
+
+    
+  } catch (error) {
+    console.error(error);
+  }
+    };
 
   return (
     <div className="container">
       {userDetails ? ( 
-        <UserDetails userDetails={userDetails} />
+        <UserHome userDetails={userDetails} />
       ) : (
         <>
           <div className="header">
@@ -205,6 +220,8 @@ export const Admin = () => {
         </>
         
       )}
+      
+      <ul>{list.length > 0 && list.map((item) => <li>{item.userAddress} </li>)}</ul>
     </div>
   );
 };
