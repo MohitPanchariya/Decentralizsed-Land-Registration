@@ -1,11 +1,11 @@
 // Import necessary libraries
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import Web3 from "web3"; // Import web3 library
 import configuration from "../../AccountRegistration.json";
-import "./UserDetails.css";
 import Sidebar from "../Sidebar/Sidebar";
+import "./UserDetails.css";
 
-const UserDetails = () => {
+const UserDetails = ({accountContractAddress}) => {
   const [userDetails, setUserDetails] = useState({
     username: "",
     userAddress: "",
@@ -32,11 +32,11 @@ const UserDetails = () => {
         const userAddress = accounts[0];
 
         // Replace 'YourContractAddress' and 'YourContractABI' with the actual contract address and ABI
-        const contractAddress = "0x9F4d677872ccfEDCA1b660A2a67AAD14D49812E9";
+        // const accountContractAddress = "0x9F4d677872ccfEDCA1b660A2a67AAD14D49812E9";
         const contractABI = configuration.abi;
 
         // Create a contract instance
-        const contract = new web3.eth.Contract(contractABI, contractAddress);
+        const contract = new web3.eth.Contract(contractABI, accountContractAddress);
 
         // Call the getUserDetailsByAddress function
         const result = await contract.methods
@@ -77,11 +77,11 @@ const UserDetails = () => {
         const accounts = await web3.eth.getAccounts();
 
         // Replace 'YourContractAddress' and 'YourContractABI' with the actual contract address and ABI
-        const contractAddress = "0x9F4d677872ccfEDCA1b660A2a67AAD14D49812E9";
+        const accountContractAddress = "0x9F4d677872ccfEDCA1b660A2a67AAD14D49812E9";
         const contractABI = configuration.abi;
 
         // Create a contract instance
-        const contract = new web3.eth.Contract(contractABI, contractAddress);
+        const contract = new web3.eth.Contract(contractABI, accountContractAddress);
 
         // Call the requestVerification function
         const transaction = await contract.methods

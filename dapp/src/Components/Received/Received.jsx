@@ -4,10 +4,10 @@ import configuration from "../../LandRegistration.json";
 import Sidebar from "../Sidebar/Sidebar";
 import "./Received.css";
 
-const landContractAddress = "0xD4e46d45EAF564eb89C58e09D0A947dCd2e45008";
+// const landContractAddress = "0xD4e46d45EAF564eb89C58e09D0A947dCd2e45008";
 const contractABI = configuration.abi;
 
-function ReceivedLandRequests() {
+function ReceivedLandRequests({landContractAddress}) {
   const [receivedLandRequests, setReceivedLandRequests] = useState([]);
   const [landData, setLandData] = useState([]);
 

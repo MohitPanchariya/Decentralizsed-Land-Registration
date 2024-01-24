@@ -4,10 +4,10 @@ import configuration from "../../LandRegistration.json";
 import Sidebar from "../Sidebar/Sidebar";
 import "./LandsForSale.css";
 
-const landContractAddress = "0x76017b4E9Fe30D5b2Ba7D345B8a42aC2b85C7978";
+// const landContractAddress = "0x76017b4E9Fe30D5b2Ba7D345B8a42aC2b85C7978";
 const contractABI = configuration.abi;
 
-function LandsForSale() {
+function LandsForSale({landContractAddress}) {
   const [landsForSale, setLandsForSale] = useState([]);
   const [requestedLands, setRequestedLands] = useState([]);
   const [landStates, setLandStates] = useState({});
@@ -99,6 +99,8 @@ function LandsForSale() {
       try {
         const account = await getMetamaskAccount();
         const result = await fetchLandsForSale(account);
+        console.log("Lands for sale")
+        console.log(result);
         setLandsForSale(result);
 
         const requestedResult = await fetchRequestedLands(account);
@@ -218,7 +220,8 @@ function LandsForSale() {
 
     return <>
         <Sidebar />
-        <div className="card-container">
+          {landsForSale.length === 0 ? (<div className="card-container"><p>No Lands for Sale!</p></div>) :       
+            (<div className="card-container">
             { landsForSale.map((land, index) => (
             <div className="card" key={index}>
                 <h3>LAND {index + 1}</h3>
@@ -255,7 +258,8 @@ function LandsForSale() {
                 )}
             </div>
             )) }
-        </div>
+            </div>)
+          }
     </>
     
 }

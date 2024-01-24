@@ -1,17 +1,16 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-import aadhar_icon from "../Assets/digital.png";
-import user_icon from "../Assets/user.png";
-import key_icon from "../Assets/key.png";
 import Web3 from "web3";
 import configuration from "../../AccountRegistration.json";
-import UserHome from "../UserHome/UserHome";
+import user_icon from "../Assets/user.png";
+import UserDetails from "../UserDetails/UserDetails";
 
-const contractAddress = "0x6D3c209Dc740D703042957d6E2fc817F759DF711";
+
+// const accountContractAddress = "0x6D3c209Dc740D703042957d6E2fc817F759DF711";
 const contractABI = configuration.abi;
 
-export const Admin = () => {
+export const Admin = ({accountContractAddress}) => {
   const [action, setAction] = useState("");
   const [username, setUsername] = useState("");
   const [aadharNumber, setAadharNumber] = useState("");
@@ -35,7 +34,7 @@ export const Admin = () => {
       const web3Instance = new Web3(window.ethereum);
       const contract = new web3Instance.eth.Contract(
         contractABI,
-        contractAddress
+        accountContractAddress
       );
       const userDetails = await contract.methods
         .getUserDetailsByAddress(account)
@@ -70,7 +69,7 @@ export const Admin = () => {
 
         const contract = new web3Instance.eth.Contract(
           contractABI,
-          contractAddress
+          accountContractAddress
         );
 
         const gas = 2000000; 
@@ -99,9 +98,9 @@ export const Admin = () => {
   };
   
   
-  const  getPendingVerifications = async() {
+  const  getPendingVerifications = async() => {
   try {
-    const result = await contract.methods.getPendingVerifications().call();
+    const result = await accountContractAddress.methods.getPendingVerifications().call();
     console.log(result);
     
     setList(result);
@@ -115,7 +114,7 @@ export const Admin = () => {
   return (
     <div className="container">
       {userDetails ? ( 
-        <UserHome userDetails={userDetails} />
+        <UserDetails userDetails={userDetails} />
       ) : (
         <>
           <div className="header">

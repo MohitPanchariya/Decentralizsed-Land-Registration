@@ -4,10 +4,10 @@ import configuration from "../../LandRegistration.json";
 import Sidebar from "../Sidebar/Sidebar";
 import "./TOO.css";
 
-const landContractAddress ="0xD4e46d45EAF564eb89C58e09D0A947dCd2e45008";
+// const landContractAddress ="0xD4e46d45EAF564eb89C58e09D0A947dCd2e45008";
 const contractABI = configuration.abi;
 
-function ReceivedLandRequests() {
+function ReceivedLandRequests({landContractAddress}) {
   const [receivedLandRequests, setReceivedLandRequests] = useState([]);
   const [landData, setLandData] = useState([]);
 
@@ -191,6 +191,10 @@ function ReceivedLandRequests() {
       );
       console.log("hello")
 
+      if(reqstatus === 3) {
+        alert("Transfer of ownership is done!");
+       }
+
       // Handle the transaction success
       console.log(transaction);
 
@@ -233,30 +237,32 @@ function ReceivedLandRequests() {
       <Sidebar />
       <div className="sent-land-requests-container">
         <h1>Transfer Of Ownership</h1>
-
-        <div className="received-land-cards">
-          {landData.map((item) => (
-            // Check if the status is "Payment Done"
-  (item.status.toString() === "3" || item.status.toString() === "4")  && (
-    <div key={item.requestId} className="sent-land-card">
-      <p>Request ID: {item.requestId.toString()}</p>
-      <p>Land ID: {item.landId.toString()}</p>
-      <p>Buyer Address: {item.BuyerInfo}</p>
-      <p>Land Owner Address: {item.SellerInfo}</p>
-      <p>
-                Previous Owner Address:
-                {item.previousOwners.length > 0
-                  ? item.previousOwners.join(", ")
-                  : "No Previous Owners"}
-                </p>
-      <p>Request Status: {getStatusLabel(item.status.toString())}</p>
-      <button onClick={() => transferOwnership(item.requestId)}>
-        Transfer Ownership
-      </button>
-    </div>
-  )
-          ))}
-        </div>
+        {
+          landData.length === 0 ? (<p>No land transfer requests found!</p>) :
+          ((<div className="received-land-cards">
+            {landData.map((item) => (
+              // Check if the status is "Payment Done"
+    (item.status.toString() === "3" || item.status.toString() === "4")  && (
+      <div key={item.requestId} className="sent-land-card">
+        <p>Request ID: {item.requestId.toString()}</p>
+        <p>Land ID: {item.landId.toString()}</p>
+        <p>Buyer Address: {item.BuyerInfo}</p>
+        <p>Land Owner Address: {item.SellerInfo}</p>
+        <p>
+                  Previous Owner Address:
+                  {item.previousOwners.length > 0
+                    ? item.previousOwners.join(", ")
+                    : "No Previous Owners"}
+                  </p>
+        <p>Request Status: {getStatusLabel(item.status.toString())}</p>
+        <button onClick={() => transferOwnership(item.requestId)}>
+          Transfer Ownership
+        </button>
+      </div>
+    )
+            ))}
+          </div>))
+        }
       
     </div>
     </>
