@@ -11,8 +11,8 @@ import Sent from './Components/Sent/Sent.jsx';
 import TOO from './Components/TOO/TOO.jsx';
 import UserDetails from './Components/UserDetails/UserDetails.jsx';
 
-const accountContractAddress = "0x10bA3B891b604FE3b8b357606611ED8fAD72b42f";
-const landContractAddress = "0x5d72fF0bB0626C7a87ccf5584C6839d06385A58c";
+const accountContractAddress = "";
+const landContractAddress = "";
 
 function App() {
   return (

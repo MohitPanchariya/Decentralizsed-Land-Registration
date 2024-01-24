@@ -3,11 +3,9 @@ import { useNavigate } from "react-router-dom";
 
 import Web3 from "web3";
 import configuration from "../../AccountRegistration.json";
-import user_icon from "../Assets/user.png";
-import UserDetails from "../UserDetails/UserDetails";
+import Home from "../Home/Home";
 
-
-// const accountContractAddress = "0x6D3c209Dc740D703042957d6E2fc817F759DF711";
+const contractAddress = "0x5a9d59b36224d63766b165432Cb717DE8b723b69";
 const contractABI = configuration.abi;
 
 export const Admin = ({accountContractAddress}) => {
@@ -100,7 +98,13 @@ export const Admin = ({accountContractAddress}) => {
   
   const  getPendingVerifications = async() => {
   try {
-    const result = await accountContractAddress.methods.getPendingVerifications().call();
+  const web3Instance = new Web3(window.ethereum);
+
+        const contract = new web3Instance.eth.Contract(
+          contractABI,
+          contractAddress
+        );
+    const result = await contract.methods.getPendingVerifications().call();
     console.log(result);
     
     setList(result);
@@ -114,7 +118,7 @@ export const Admin = ({accountContractAddress}) => {
   return (
     <div className="container">
       {userDetails ? ( 
-        <UserDetails userDetails={userDetails} />
+        <Home userDetails={userDetails} />
       ) : (
         <>
           <div className="header">
