@@ -6,9 +6,9 @@ import user_icon from "../Assets/user.png";
 import key_icon from "../Assets/key.png";
 import Web3 from "web3";
 import configuration from "../../AccountRegistration.json";
-import UserHome from "../UserHome/UserHome";
+import Home from "../Home/Home";
 
-const contractAddress = "0x6D3c209Dc740D703042957d6E2fc817F759DF711";
+const contractAddress = "0x5a9d59b36224d63766b165432Cb717DE8b723b69";
 const contractABI = configuration.abi;
 
 export const Admin = () => {
@@ -99,8 +99,14 @@ export const Admin = () => {
   };
   
   
-  const  getPendingVerifications = async() {
+  const  getPendingVerifications = async() => {
   try {
+  const web3Instance = new Web3(window.ethereum);
+
+        const contract = new web3Instance.eth.Contract(
+          contractABI,
+          contractAddress
+        );
     const result = await contract.methods.getPendingVerifications().call();
     console.log(result);
     
@@ -115,7 +121,7 @@ export const Admin = () => {
   return (
     <div className="container">
       {userDetails ? ( 
-        <UserHome userDetails={userDetails} />
+        <Home userDetails={userDetails} />
       ) : (
         <>
           <div className="header">
