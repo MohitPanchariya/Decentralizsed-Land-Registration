@@ -1,94 +1,263 @@
 import React, { useEffect, useState } from "react";
-import configuration from "../../LandRegistration.json"
 import Web3 from "web3";
-import "./LandsForSale.css"
-import Sidebar from "../Sidebar/Sidebar"
+import configuration from "../../LandRegistration.json";
+import Sidebar from "../Sidebar/Sidebar";
+import "./LandsForSale.css";
 
-const landContractAddress = "0x030722FDC11E466544368d96fDEa6CD31411c282";
+const landContractAddress = "0xD4e46d45EAF564eb89C58e09D0A947dCd2e45008";
 const contractABI = configuration.abi;
 
-//Returns jsx which will display all lands owned by the user
 function LandsForSale() {
-    const [landsForSale, setLandsForSale] = useState([]);
+  const [landsForSale, setLandsForSale] = useState([]);
+  const [requestedLands, setRequestedLands] = useState([]);
+  const [landStates, setLandStates] = useState({});
 
-    const getMetamaskAccount = async() => {
-        // Request MetaMask account access
-        const accounts = await window.ethereum.request({
-            method: "eth_requestAccounts",
+  const getMetamaskAccount = async () => {
+    const accounts = await window.ethereum.request({
+      method: "eth_requestAccounts",
+    });
+    return accounts[0];
+  };
+  
+  const getPreviousOwners = async (landId) => {
+    const account = await getMetamaskAccount();
+    const web3Instance = new Web3(window.ethereum);
+    const contract = new web3Instance.eth.Contract(
+      contractABI,
+      landContractAddress
+    );
+
+    const gas = 2000000;
+    const owners = await contract.methods.getPreviousOwners(landId).call(
+      { from: account, gas }
+    );
+
+    return owners;
+  }
+  const fetchLandsForSale = async (account) => {
+    const web3Instance = new Web3(window.ethereum);
+    const contract = new web3Instance.eth.Contract(
+      contractABI,
+      landContractAddress
+    );
+
+    const gas = 2000000;
+    const result = await contract.methods.getLandsForSale().call(
+      { from: account, gas }
+    );
+    return result;
+  };
+
+  const getRequestStatus = async (requestId) => {
+    const account = await getMetamaskAccount();
+    const web3Instance = new Web3(window.ethereum);
+    const contract = new web3Instance.eth.Contract(
+      contractABI,
+      landContractAddress
+    );
+
+    const gas = 2000000;
+    const status = await contract.methods.getLandRequestStatus(requestId, account).call({ from: account, gas });
+
+    return status;
+  };
+
+  const getStatusLabel = (status) => {
+    switch (status) {
+      case "0":
+        return "Requested";
+      case "1":
+        return "Accepted";
+      case "2":
+        return "Rejected";
+      case "3":
+        return "Payment Done";
+      case "4":
+        return "Completed";
+      default:
+        return "Unknown";
+    }
+  };
+
+  const fetchRequestedLands = async (account) => {
+    const web3Instance = new Web3(window.ethereum);
+    const contract = new web3Instance.eth.Contract(
+      contractABI,
+      landContractAddress
+    );
+
+    const gas = 2000000;
+    const result = await contract.methods.sentLandRequests().call(
+      { from: account, gas }
+    );
+    console.log(result)
+    return result;
+  };
+
+  const initPage = async () => {
+    if (window.ethereum) {
+      try {
+        const account = await getMetamaskAccount();
+        const result = await fetchLandsForSale(account);
+        setLandsForSale(result);
+
+        const requestedResult = await fetchRequestedLands(account);
+        setRequestedLands(requestedResult);
+
+        const initialLandStates = {};
+        result.forEach((land) => {
+        initialLandStates[land.landId] = requestedResult.includes(land.landId);
         });
-        console.log(accounts[0]);
-        return accounts[0];
+        setLandStates(initialLandStates);
+      } catch (error) {
+        console.error("Error connecting to Metamask:", error);
+      }
+    } else {
+      console.error("Metamask not detected");
     }
+  };
 
-    const fetchLandsForSale = async (account)=> {
-        // Create a Web3 instance using the provider from MetaMask
-        const web3Instance = new Web3(window.ethereum);
+  const requestForBuy = async (landId) => {
+    const account = await getMetamaskAccount();
+    const gas = 2000000;
+    const web3Instance = new Web3(window.ethereum);
 
-        // Connect to your contract using the Web3 instance
-        const contract = new web3Instance.eth.Contract(
-            contractABI,
-            landContractAddress
-        );
+    const contract = new web3Instance.eth.Contract(
+      contractABI,
+      landContractAddress
+    );
+    try {
+      const transaction = await contract.methods.requestForBuy(landId).send(
+        { from: account, gas }
+      );
+      const transactionEvents = transaction.events;
+      if (transactionEvents.LandRequests) {
+        alert("Request is sent!!");
+        setRequestedLands((prevRequested) => [...prevRequested, landId]);
+       
+  
 
-        const gas = 2000000; 
-        // Call the getLandsForSale function on the contract
-        const result = await contract.methods.getLandsForSale().call(
-            {from: account, gas}
-        );
-        console.log(result);
-        return result;
+        // Update the state for the specific land
+        setLandStates((prevStates) => ({
+          ...prevStates,
+          [landId]: true,
+        }));
+      } else if (transactionEvents.DuplicateLandRequest) {
+        alert("Request is already sent!");
+      }
+    } catch (error) {
+      console.error(error);
+      alert("Transaction failed.");
     }
+  };
 
-    const initPage = async () => {
-        if (window.ethereum) {
-          try {
-            const account = await getMetamaskAccount();
-            console.log(account)
-            const result = await fetchLandsForSale(account);
-            setLandsForSale(result);
-        } catch (error) {
-                console.error(error)
-                console.error('Error connecting to Metamask:', error);
-            }
-        } else {
-          if(!window.ethereum) {
-            console.error("Metamask not detected")
-          } else {
-            console.log("Already connected to metamask")
-          }
-        }
-    };
+  const getRequestIdForLand = async (landId) => {
+    const account = await getMetamaskAccount();
+    const web3Instance = new Web3(window.ethereum);
+    const contract = new web3Instance.eth.Contract(
+      contractABI,
+      landContractAddress
+    );
 
-    useEffect(() => {
-        initPage();
-    }, [])
+    const gas = 2000000;
+    const requestId = await contract.methods.getRequestForLandId(landId,account).call(
+      { from: account, gas }
+    );
 
-    return <>
-        <Sidebar />
-        <div className="card-container">
-            { landsForSale.map((land, index) => (
-            <div className="card" key={index}>
-                <h3>Land {index + 1}</h3>
-                <p>Land Id: {land.landId.toString()}</p>
-                {/* Land Owner Address */}
-                <p>Land Owner Address: {land.owner}</p>
-                <p>State: {land.identifier.state}</p>
-                <p>Division: {land.identifier.division}</p>
-                <p>District: {land.identifier.district}</p>
-                <p>Taluka: {land.identifier.taluka}</p>
-                <p>Village: {land.identifier.village}</p>
-                <p>Survery Number: {land.identifier.surveyNumber.toString()}</p>
-                <p>Subdivision: {land.identifier.subdivision}</p>
-                <p>Area: {land.area.toString()}</p>
-                <p>Purchase Date: {land.purchaseDate.toString()}</p>
-                <p>Purchase Price: {land.purchasePrice.toString()}</p>                
-                <p>Land Value at Purchase: {land.landValueAtPurchase.toString()}</p>
-                <p>Land Verified: {land.isVerified.toString()}</p>
-                <p>Land for sale: {land.isForSale.toString()}</p>
-            </div>
-            )) }
-        </div>
+    return requestId;
+  };
+
+  const cancelBuyerRequest = async (landId) => {
+    const account = await getMetamaskAccount();
+    const gas = 2000000;
+    const web3Instance = new Web3(window.ethereum);
+
+    const contract = new web3Instance.eth.Contract(
+      contractABI,
+      landContractAddress
+    );
+    try {
+      const requestId = await  getRequestIdForLand(landId);
+      const requestStatus = await getRequestStatus(requestId);
+      const reqstatus= parseInt(requestStatus);
+      console.log(reqstatus)
+     
+
+    if (reqstatus === 1 || reqstatus === 3 ) {
+      alert("This request has been accepted by the land owner!! You cannot cancel.");
+      return;
+    }
+      const transaction = await contract.methods.cancelBuyerRequest(landId).send(
+        { from: account, gas }
+      );
+      const transactionEvents = transaction.events;
+
+      if (transactionEvents.BuyerRequestCancelled) {
+        alert("Cancellation is done!");
+
+        // Remove the landId from requestedLands state after cancellation
+        setRequestedLands(requestedLands.filter((id) => id !== landId));
+
+        // Update the state for the specific land
+        setLandStates((prevStates) => ({
+          ...prevStates,
+          [landId]: false,
+        }));
+      }
+    } catch (error) {
+      console.error(error);
+      alert("Transaction failed.");
+    }
+  };
+
+  useEffect(() => {
+    initPage();
+  }, []);
+
+
+
+  return (
+    <>
+      <Sidebar />
+      <div className="card-container">
+        {landsForSale.map((land, index) => (
+          <div className="card" key={index}>
+            <h3>Land {index + 1}</h3>
+             <p>Land Id: {land.landId.toString()}</p>
+                    <p>Land Owner Address: {land.owner}</p>
+                    <p>State: {land.identifier.state}</p>
+                    <p>Division: {land.identifier.division}</p>
+                    <p>District: {land.identifier.district}</p>
+                    <p>Taluka: {land.identifier.taluka}</p>
+                    <p>Village: {land.identifier.village}</p>
+                    <p>Survery Number: {land.identifier.surveyNumber.toString()}</p>
+                    <p>Subdivision: {land.identifier.subdivision}</p>
+                    <p>Area: {land.area.toString()}</p>
+                    <p>Purchase Date: {land.purchaseDate.toString()}</p>
+                    <p>Purchase Price: {land.purchasePrice.toString()}</p>
+                    <p>Land Value at Purchase: {land.landValueAtPurchase.toString()}</p>
+                    <p>Land Verified: {land.isVerified.toString()}</p>
+                    <p>Land for sale: {land.isForSale.toString()}</p>
+                    <p>
+                Previous Owner Address:
+                {land.previousOwners.length > 0
+                  ? land.previousOwners.join(", ")
+                  : "No Previous Owners"}
+                </p>
+            {landStates[land.landId] ? (
+              <button onClick={() => { cancelBuyerRequest(land.landId) }}>
+                Cancel Buy Request
+              </button>
+            ) : (
+              <button onClick={() => { requestForBuy(land.landId) }}>
+                Request for Buy
+              </button>
+            )}
+          </div>
+        ))}
+      </div>
     </>
+  );
 }
 
 export default LandsForSale;

@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import configuration from "../../LandRegistration.json"
 import Web3 from "web3";
-import "./home.css"
-import Sidebar from "../Sidebar/Sidebar"
+import configuration from "../../LandRegistration.json";
+import Sidebar from "../Sidebar/Sidebar";
+import "./home.css";
 
-const landContractAddress = "0x030722FDC11E466544368d96fDEa6CD31411c282";
+const landContractAddress = "0xD4e46d45EAF564eb89C58e09D0A947dCd2e45008";
 const contractABI = configuration.abi;
 
 //Returns jsx which will display all lands owned by the user
@@ -20,6 +19,22 @@ function Home() {
         });
         return accounts[0];
     }
+
+    const getPreviousOwners = async (landId) => {
+        const account = await getMetamaskAccount();
+        const web3Instance = new Web3(window.ethereum);
+        const contract = new web3Instance.eth.Contract(
+          contractABI,
+          landContractAddress
+        );
+    
+        const gas = 2000000;
+        const owners = await contract.methods.getPreviousOwners(landId).call(
+          { from: account, gas }
+        );
+    
+        return owners;
+      }
 
     const initPage = async () => {
         if (window.ethereum) {
@@ -87,12 +102,14 @@ function Home() {
         }
     }
 
+    
+
     useEffect(() => {
         initPage();
     }, [])
 
     return <>
-        <Sidebar />
+           <Sidebar pageWrapId={'page-wrap'} outerContainerId={'outer-container'} />
         <div className="card-container">
             { myLands.map((land, index) => (
             <div className="card" key={index}>
@@ -113,7 +130,14 @@ function Home() {
                 <p>Land Value at Purchase: {land.landValueAtPurchase.toString()}</p>
                 <p>Land Verified: {land.isVerified.toString()}</p>
                 <p>Land for sale: {land.isForSale.toString()}</p>
+                <p>
+                Previous Owner Address:
+                {land.previousOwners.length > 0
+                  ? land.previousOwners.join(", ")
+                  : "No Previous Owners"}
+                </p>
                 <button onClick={() => {listLandForSale(land.landId)}}>List Land for Sale</button>
+              
             </div>
             )) }
         </div>

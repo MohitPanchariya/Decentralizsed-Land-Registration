@@ -1,14 +1,14 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import "./LoginSignup.css";
-import aadhar_icon from "../Assets/digital.png";
-import user_icon from "../Assets/user.png";
-import key_icon from "../Assets/key.png";
 import Web3 from "web3";
 import configuration from "../../AccountRegistration.json";
+import aadhar_icon from "../Assets/digital.png";
+import key_icon from "../Assets/key.png";
+import user_icon from "../Assets/user.png";
 import UserHome from "../UserHome/UserHome";
+import "./LoginSignup.css";
 
-const contractAddress = "0x6D3c209Dc740D703042957d6E2fc817F759DF711";
+const contractAddress = "0xa4294BBc16653308fadf12FaB564fBeB6B517B9e";
 const contractABI = configuration.abi;
 
 export const LoginSignup = () => {
