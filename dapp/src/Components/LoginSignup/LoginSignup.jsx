@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Web3 from "web3";
 import configuration from "../../AccountRegistration.json";
-import aadhar_icon from "../Assets/digital.png";
+import phone_icon from "../Assets/telephone.png";
 import metamask_icon from "../Assets/metamask.png";
 import user_icon from "../Assets/user.png";
 import "./LoginSignup.css";
@@ -13,8 +13,7 @@ const contractABI = configuration.abi;
 export const LoginSignup = ({accountContractAddress}) => {
   const [action, setAction] = useState("Sign Up");
   const [username, setUsername] = useState("");
-  const [aadharNumber, setAadharNumber] = useState("");
-  const [privateKey, setPrivateKey] = useState("");
+  const [phoneNumber, setphoneNumber] = useState("");
   const Navigate = useNavigate();
 
   const handleConnectMetaMask = async () => {
@@ -34,7 +33,7 @@ export const LoginSignup = ({accountContractAddress}) => {
         .getUserDetailsByAddress(account)
         .call();
 
-      if (userDetails.aadharNumber) {
+      if (userDetails.phoneNumber) {
         console.log("Login successful!");
         alert("Login successful!");
         // Redirect to the home page
@@ -70,7 +69,7 @@ export const LoginSignup = ({accountContractAddress}) => {
         // Call the setUserDetails function on the contract
         const gas = 2000000; // Adjust the gas limit as needed
         const transaction = await contract.methods
-          .setUserDetails(username, aadharNumber)
+          .setUserDetails(username, phoneNumber)
           .send({ from: account, gas });
 
         // Check for transaction confirmation
@@ -114,12 +113,12 @@ export const LoginSignup = ({accountContractAddress}) => {
           )}
           {action === "Sign Up" && (
             <div className="input">
-              <img src={aadhar_icon} alt="" />
+              <img src={phone_icon} alt="" />
               <input
                 type="number"
-                placeholder="AADHAR NUMBER"
-                value={aadharNumber}
-                onChange={(e) => setAadharNumber(e.target.value)}
+                placeholder="PHONE NUMBER"
+                value={phoneNumber}
+                onChange={(e) => setphoneNumber(e.target.value)}
               />
             </div>
           )}

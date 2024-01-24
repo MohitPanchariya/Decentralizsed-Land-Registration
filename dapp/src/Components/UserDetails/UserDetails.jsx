@@ -9,7 +9,7 @@ const UserDetails = ({accountContractAddress}) => {
   const [userDetails, setUserDetails] = useState({
     username: "",
     userAddress: "",
-    aadharNumber: 0,
+    phoneNumber: 0,
     isUserVerified: false,
     designation: 0,
     registrationDate: 0,
@@ -51,7 +51,7 @@ const UserDetails = ({accountContractAddress}) => {
             isUserVerified: result[1],
             designation: result[2],
             registrationDate: result[3],
-            aadharNumber: result[4],
+            phoneNumber: result[4],
             userAddress: result[5],
           });
         } else {
@@ -85,7 +85,7 @@ const UserDetails = ({accountContractAddress}) => {
 
         // Call the requestVerification function
         const transaction = await contract.methods
-          .requestVerification(userDetails.aadharNumber)
+          .requestVerification(userDetails.phoneNumber)
           .send({
             from: accounts[0], // Assuming the user is using the first account
           });
@@ -120,7 +120,7 @@ const UserDetails = ({accountContractAddress}) => {
         <p className="user-details"><b>Username: </b>{userDetails.username}</p>
         <p className="user-details"><b>User Address: </b>{userDetails.userAddress}</p>
         <p className="user-details">
-          <b>Aadhar Number: </b>{String(userDetails.aadharNumber)}
+          <b>Phone Number: </b>{String(userDetails.phoneNumber)}
         </p>
         <p className="user-details">
           <b>User Verified: </b>{String(userDetails.isUserVerified)}
