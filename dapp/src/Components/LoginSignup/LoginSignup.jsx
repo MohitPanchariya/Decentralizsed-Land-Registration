@@ -2,13 +2,8 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Web3 from "web3";
 import configuration from "../../AccountRegistration.json";
-import aadhar_icon from "../Assets/digital.png";
-import key_icon from "../Assets/key.png";
-import user_icon from "../Assets/user.png";
-import UserHome from "../UserHome/UserHome";
-import "./LoginSignup.css";
 
-const contractAddress = "0xa4294BBc16653308fadf12FaB564fBeB6B517B9e";
+const contractAddress = "0x9F4d677872ccfEDCA1b660A2a67AAD14D49812E9";
 const contractABI = configuration.abi;
 
 export const LoginSignup = () => {
@@ -17,8 +12,6 @@ export const LoginSignup = () => {
   const [aadharNumber, setAadharNumber] = useState("");
   const [privateKey, setPrivateKey] = useState("");
   const Navigate = useNavigate();
-
-  const [userDetails, setUserDetails] = useState(null);
 
   const handleConnectMetaMask = async () => {
     try {
@@ -39,9 +32,8 @@ export const LoginSignup = () => {
 
       if (userDetails.aadharNumber) {
         console.log("Login successful!");
-        setUserDetails(userDetails); // Set user details in the state
         // Redirect to the home page
-        Navigate("/home");
+        Navigate("/user-details");
       } else {
         console.error("User does not exist");
       }
@@ -112,9 +104,8 @@ export const LoginSignup = () => {
 
         if (userDetails.aadharNumber) {
           console.log("Login successful!");
-          setUserDetails(userDetails); // Set user details in the state
           // Redirect to the home page
-          Navigate("/home");
+          Navigate("/user-details");
         } else {
           console.error("User does not exist");
         }
@@ -125,85 +116,79 @@ export const LoginSignup = () => {
   };
 
   return (
-    <div className="container">
-      {userDetails ? ( // Render UserHome if userDetails is available
-        <UserHome userDetails={userDetails} />
-      ) : (
-        <>
-          <div className="header">
-            <div className="text">{action}</div>
-            <div className="underline"> </div>
-          </div>
-          <div className="inputs">
-            {action === "Login" ? (
-              <div className="input">
-                <img src={key_icon} alt="" />
-                <input
-                  type="password"
-                  placeholder="PRIVATE KEY"
-                  value={privateKey}
-                  onChange={(e) => setPrivateKey(e.target.value)} // Update private key state
-                />
-              </div>
-            ) : (
-              <div className="input">
-                <img src={user_icon} alt="" />
-                <input
-                  type="text"
-                  placeholder="USER NAME"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                />
-              </div>
-            )}
-            {action === "Sign Up" ? (
-              <div></div>
-            ) : (
-              <div className="or">
-                <center>OR</center>
-              </div>
-            )}
-            {action === "Sign Up" ? (
-              <div className="input">
-                <img src={aadhar_icon} alt="" />
-                <input
-                  type="number"
-                  placeholder="AADHAR NUMBER"
-                  value={aadharNumber}
-                  onChange={(e) => setAadharNumber(e.target.value)}
-                />
-              </div>
-            ) : (
-              <div className="submit-container-metamask">
-                {action === "Login" && (
-                  <div
-                    className="submit-connect-metamask"
-                    onClick={handleConnectMetaMask}
-                  >
-                    Connect with MetaMask
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
-          <div className="submit-container">
-            <button
-              className={action === "Login" ? "submit" : "submit"}
-              onClick={handleSubmit}
-            >
-              {action}
-            </button>
-            <div
-              className={action === "Sign Up" ? "submit gray" : "submit gray"}
-              onClick={() =>
-                setAction(action === "Login" ? "Sign Up" : "Login")
-              }
-            >
-              {action === "Login" ? "Sign Up" : "Login"}
+    <div className="signUp">
+      <div className="container">
+        <div className="header">
+          <div className="text">{action}</div>
+          <div className="underline"> </div>
+        </div>
+        <div className="inputs">
+          {action === "Login" ? (
+            <div className="input">
+              <img src={key_icon} alt="" />
+              <input
+                type="password"
+                placeholder="PRIVATE KEY"
+                value={privateKey}
+                onChange={(e) => setPrivateKey(e.target.value)} // Update private key state
+              />
             </div>
+          ) : (
+            <div className="input">
+              <img src={user_icon} alt="" />
+              <input
+                type="text"
+                placeholder="USER NAME"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+              />
+            </div>
+          )}
+          {action === "Sign Up" ? (
+            <div></div>
+          ) : (
+            <div className="or">
+              <center>OR</center>
+            </div>
+          )}
+          {action === "Sign Up" ? (
+            <div className="input">
+              <img src={aadhar_icon} alt="" />
+              <input
+                type="number"
+                placeholder="AADHAR NUMBER"
+                value={aadharNumber}
+                onChange={(e) => setAadharNumber(e.target.value)}
+              />
+            </div>
+          ) : (
+            <div className="submit-container-metamask">
+              {action === "Login" && (
+                <div
+                  className="submit-connect-metamask"
+                  onClick={handleConnectMetaMask}
+                >
+                  Connect with MetaMask
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+        <div className="submit-container">
+          <button
+            className={action === "Login" ? "submit" : "submit"}
+            onClick={handleSubmit}
+          >
+            {action}
+          </button>
+          <div
+            className={action === "Sign Up" ? "submit gray" : "submit gray"}
+            onClick={() => setAction(action === "Login" ? "Sign Up" : "Login")}
+          >
+            {action === "Login" ? "Sign Up" : "Login"}
           </div>
-        </>
-      )}
+        </div>
+      </div>
     </div>
   );
 };

@@ -1,58 +1,71 @@
-/* Overall form styling */
+@import url(https://fonts.googleapis.com/css?family=Montserrat:400,700);
+
+body {
+  background: #dfd4c5;
+}
+
 form {
-    width: 500px; /* Increased width for better fit */
-    margin: 0 auto; /* Center the form */
-    padding: 60px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    background-color: #f5f5f5;
-  }
-  
-  /* Input fields */
-  label {
-    display: block;
-    margin-bottom: 5px;
-  }
-  
-  input[type="text"],
-  input[type="number"] {
-    width: 100%;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 3px;
-    margin-bottom: 10px;
-    font-size: 16px; /* Adjust font size as needed */
-  }
-  
-  /* Button styling */
-  button[type="submit"] {
-    background-color: #007bff;
-    color: #fff;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-  }
-  
-  button[type="submit"]:hover {
-    background-color: #0069d9;
-  }
-  
-  /* Additional suggestions: */
-  
-  /* Heading styling */
-  h1 {
-    text-align: center;
-    margin-bottom: 20px;
-  }
-  
-  /* Label styling */
-  label {
-    font-weight: bold;
-  }
-  
-  /* Error message styling */
-  .error-message {
-    color: red;
-    margin-top: 10px;
-  }
+  max-width: 420px;
+  margin: 50px auto;
+}
+
+h2 {
+  font-size: 25px;
+  margin-top: 15px;
+  margin-bottom: -20px;
+  text-transform: uppercase;
+  color: #76453B;
+}
+
+.feedback-input {
+  color: #76453B;
+  font-family: Helvetica, Arial, sans-serif;
+  font-weight: 500;
+  font-size: 18px;
+  border-radius: 5px;
+  line-height: 22px;
+  background-color: #F8FAE5;
+  border: 2px solid #76453B;
+  transition: all 0.3s;
+  padding: 13px;
+  margin-bottom: 15px;
+  width: 100%;
+  box-sizing: border-box;
+  outline: 0;
+}
+
+.feedback-input::placeholder {
+  color: #76453B;
+  opacity: 0.7;
+}
+
+.feedback-input:focus {
+  border: 2px solid #76453B;
+}
+
+textarea {
+  height: 150px;
+  line-height: 150%;
+  resize: vertical;
+}
+
+[type="submit"] {
+  font-family: 'Montserrat', Arial, Helvetica, sans-serif;
+  width: 100%;
+  background: #76453B;
+  border-radius: 5px;
+  border: 0;
+  cursor: pointer;
+  color: #F8FAE5;
+  font-size: 24px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  transition: all 0.3s;
+  margin-top: -4px;
+  margin-bottom: 10px;
+  font-weight: 700;
+}
+
+[type="submit"]:hover {
+  background: #76453B;
+}

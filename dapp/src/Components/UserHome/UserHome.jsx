@@ -19,7 +19,7 @@ const UserHome = ({ userDetails }) => {
       const accounts = await web3.eth.getAccounts();
 
       // Replace 'YourContractAddress' and 'YourContractABI' with the actual contract address and ABI
-      const contractAddress = "0xa4294BBc16653308fadf12FaB564fBeB6B517B9e";
+      const contractAddress = "";
       const contractABI = configuration.abi;
 
       // Create a contract instance

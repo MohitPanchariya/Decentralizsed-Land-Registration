@@ -1,13 +1,18 @@
+@import url(https://fonts.googleapis.com/css?family=Montserrat:400,700);
+
 .container {
   display: flex;
   flex-direction: column;
-  width: 530px; /* Adjust the width as needed */
+  width: 530px;
+  /* Adjust the width as needed */
   height: 477px;
-  margin: 50px auto; /* Center the form */
-  background: rgba(255, 255, 255, 0.8);
+  margin: 3% 32% 5%;
+  /* Center the form */
+  background: #F8FAE5;
   padding-bottom: 40px;
   border-radius: 15px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  position: fixed;
 }
 
 .header {
@@ -20,7 +25,7 @@
 }
 
 .text {
-  color: #3887be;
+  color: #76453B;
   font-size: 48px;
   font-weight: 700;
 }
@@ -28,7 +33,7 @@
 .underline {
   width: 61px;
   height: 6px;
-  background: #3887be;
+  background: #76453B;
   border-radius: 9px;
 }
 
@@ -40,7 +45,7 @@
 }
 
 .or {
-  color: #6a5c5c;
+  color: #76453B;
   font-size: 19px;
   font-weight: 700;
 }
@@ -51,9 +56,17 @@
   margin: auto;
   width: 380px;
   height: 80px;
-  background: rgba(122, 115, 115, 0.246); /* Set background color with transparency */
+  background-color: transparent;
   border-radius: 6px;
-  backdrop-filter: blur(10px); /* Add backdrop-filter for a frosted glass effect */
+  border: 2px solid #76453B;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(10px);
+  /* Add backdrop-filter for a frosted glass effect */
+}
+
+.input input::placeholder {
+  color: #76453B;
+  opacity: 0.;
 }
 
 .input img {
@@ -66,7 +79,7 @@
   background: transparent;
   border: none;
   outline: none;
-  color: #6a5c5c;
+  color: #76453B;
   font-size: 19px;
 }
 
@@ -89,12 +102,13 @@
   width: 180px;
   height: 59px;
   color: #fff;
-  background: #3887be;
+  background: #76453B;
   border-radius: 50px;
   font-size: 19px;
   font-weight: 700;
   cursor: pointer;
 }
+
 .submit-connect-metamask {
   display: flex;
   justify-content: center;
@@ -103,14 +117,15 @@
   width: 380px;
   height: 59px;
   color: #fff;
-  background: #3887be;
+  background: #76453B;
   border-radius: 50px;
   font-size: 19px;
   font-weight: 700;
   cursor: pointer;
+  font-family: Helvetica, Arial, sans-serif;
 }
 
-.gray{
-  background: rgba(122, 115, 115, 0.246);
-  color:#6a5c5c;
+.gray {
+  background: #e7ded4;
+  color: #76453B;
 }

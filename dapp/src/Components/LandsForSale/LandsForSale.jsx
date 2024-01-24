@@ -4,7 +4,7 @@ import configuration from "../../LandRegistration.json";
 import Sidebar from "../Sidebar/Sidebar";
 import "./LandsForSale.css";
 
-const landContractAddress = "0xD4e46d45EAF564eb89C58e09D0A947dCd2e45008";
+const landContractAddress = "0x76017b4E9Fe30D5b2Ba7D345B8a42aC2b85C7978";
 const contractABI = configuration.abi;
 
 function LandsForSale() {
@@ -216,48 +216,49 @@ function LandsForSale() {
 
 
 
-  return (
-    <>
-      <Sidebar />
-      <div className="card-container">
-        {landsForSale.map((land, index) => (
-          <div className="card" key={index}>
-            <h3>Land {index + 1}</h3>
-             <p>Land Id: {land.landId.toString()}</p>
-                    <p>Land Owner Address: {land.owner}</p>
-                    <p>State: {land.identifier.state}</p>
-                    <p>Division: {land.identifier.division}</p>
-                    <p>District: {land.identifier.district}</p>
-                    <p>Taluka: {land.identifier.taluka}</p>
-                    <p>Village: {land.identifier.village}</p>
-                    <p>Survery Number: {land.identifier.surveyNumber.toString()}</p>
-                    <p>Subdivision: {land.identifier.subdivision}</p>
-                    <p>Area: {land.area.toString()}</p>
-                    <p>Purchase Date: {land.purchaseDate.toString()}</p>
-                    <p>Purchase Price: {land.purchasePrice.toString()}</p>
-                    <p>Land Value at Purchase: {land.landValueAtPurchase.toString()}</p>
-                    <p>Land Verified: {land.isVerified.toString()}</p>
-                    <p>Land for sale: {land.isForSale.toString()}</p>
-                    <p>
+    return <>
+        <Sidebar />
+        <div className="card-container">
+            { landsForSale.map((land, index) => (
+            <div className="card" key={index}>
+                <h3>LAND {index + 1}</h3>
+                <p className="land-details" ><b>Land Id:</b> {land.landId.toString()}</p>
+                {/* Land Owner Address */}
+                <p  className="land-details"><b>Land Owner Address:</b> {land.owner}</p>
+                <p  className="land-details"><b>State:</b> {land.identifier.state}</p>
+                <p  className="land-details"><b>Division:</b> {land.identifier.division}</p>
+                <p  className="land-details"><b>District:</b> {land.identifier.district}</p>
+                <p  className="land-details"><b>Taluka: </b>{land.identifier.taluka}</p>
+                <p  className="land-details"><b>Village:</b> {land.identifier.village}</p>
+                <p  className="land-details"><b>Survery Number: </b>{land.identifier.surveyNumber.toString()}</p>
+                <p  className="land-details"><b>Subdivision:</b> {land.identifier.subdivision}</p>
+                <p  className="land-details"><b>Area: </b>{land.area.toString()}</p>
+                <p  className="land-details"><b>Purchase Date: </b>{land.purchaseDate.toString()}</p>
+                <p  className="land-details"><b>Purchase Price: </b>{land.purchasePrice.toString()}</p>
+                <p  className="land-details"><b>Land Value at Purchase: </b>{land.landValueAtPurchase.toString()}</p>
+                <p  className="land-details"><b>Land Verified:</b> {land.isVerified.toString()}</p>
+                <p  className="land-details"><b>Land for sale:</b> {land.isForSale.toString()}</p>
+                <p className = "land-details">
                 Previous Owner Address:
                 {land.previousOwners.length > 0
                   ? land.previousOwners.join(", ")
                   : "No Previous Owners"}
                 </p>
-            {landStates[land.landId] ? (
-              <button onClick={() => { cancelBuyerRequest(land.landId) }}>
-                Cancel Buy Request
-              </button>
-            ) : (
-              <button onClick={() => { requestForBuy(land.landId) }}>
-                Request for Buy
-              </button>
-            )}
-          </div>
-        ))}
-      </div>
+                {landStates[land.landId] ? (
+                  <button onClick={() => { cancelBuyerRequest(land.landId) }}>
+                    Cancel Buy Request
+                  </button>
+                ) : (
+                  <button onClick={() => { requestForBuy(land.landId) }}>
+                    Request for Buy
+                  </button>
+                )}
+            </div>
+            )) }
+        </div>
     </>
-  );
+    
 }
 
 export default LandsForSale;
+
