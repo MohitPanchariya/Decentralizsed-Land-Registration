@@ -32,7 +32,7 @@ const UserDetails = () => {
         const userAddress = accounts[0];
 
         // Replace 'YourContractAddress' and 'YourContractABI' with the actual contract address and ABI
-        const contractAddress = "0x9F4d677872ccfEDCA1b660A2a67AAD14D49812E9";
+        const contractAddress = "0xe9881Ed752ec7B584DECcD7857867cf3907Bdfc1";
         const contractABI = configuration.abi;
 
         // Create a contract instance
@@ -92,6 +92,7 @@ const UserDetails = () => {
 
         if (transaction) {
           console.log("Verification request sent successfully!");
+          alert("Verification request sent successfully!");
           // Add any additional logic or UI updates as needed
         } else {
           console.error("Error sending verification request");

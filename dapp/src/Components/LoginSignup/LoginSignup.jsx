@@ -7,7 +7,7 @@ import key_icon from "../Assets/key.png";
 import Web3 from "web3";
 import configuration from "../../AccountRegistration.json";
 
-const contractAddress = "0x9F4d677872ccfEDCA1b660A2a67AAD14D49812E9";
+const contractAddress = "0xe9881Ed752ec7B584DECcD7857867cf3907Bdfc1";
 const contractABI = configuration.abi;
 
 export const LoginSignup = () => {
@@ -36,10 +36,12 @@ export const LoginSignup = () => {
 
       if (userDetails.aadharNumber) {
         console.log("Login successful!");
+        alert("Login successful!");
         // Redirect to the home page
         Navigate("/user-details");
       } else {
         console.error("User does not exist");
+        alert("User does not exist!");
       }
     } catch (error) {
       console.error("Error connecting with MetaMask:", error);
@@ -74,6 +76,7 @@ export const LoginSignup = () => {
         // Check for transaction confirmation
         if (transaction.status) {
           console.log("User details set successfully!");
+          alert("User details set successfully!");
         } else {
           console.error("Transaction failed:", transaction);
           if (transaction.message) {
@@ -108,10 +111,12 @@ export const LoginSignup = () => {
 
         if (userDetails.aadharNumber) {
           console.log("Login successful!");
+          alert("Login Successful!");
           // Redirect to the home page
           Navigate("/user-details");
         } else {
           console.error("User does not exist");
+          alert("User does not exist");
         }
       }
     } catch (error) {

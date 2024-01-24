@@ -8,7 +8,7 @@ import Web3 from "web3";
 import configuration from "../../AccountRegistration.json";
 import UserDetails from "../UserDetails/UserDetails";
 
-const contractAddress = "0x6D3c209Dc740D703042957d6E2fc817F759DF711";
+const contractAddress = "0xe9881Ed752ec7B584DECcD7857867cf3907Bdfc1";
 const contractABI = configuration.abi;
 
 export const Admin = () => {

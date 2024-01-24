@@ -5,7 +5,7 @@ import Web3 from "web3";
 import "./home.css";
 import Sidebar from "../Sidebar/Sidebar";
 
-const landContractAddress = "0x76017b4E9Fe30D5b2Ba7D345B8a42aC2b85C7978";
+const landContractAddress = "0x94652AF41E2747234F279aa0E3b6E63Ba95376E5";
 const contractABI = configuration.abi;
 
 //Returns jsx which will display all lands owned by the user
