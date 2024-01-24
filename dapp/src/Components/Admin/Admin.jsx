@@ -1,23 +1,21 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-import aadhar_icon from "../Assets/digital.png";
-import user_icon from "../Assets/user.png";
-import key_icon from "../Assets/key.png";
 import Web3 from "web3";
 import configuration from "../../AccountRegistration.json";
-import UserDetails from "../UserDetails/UserDetails";
+import Home from "../Home/Home";
 
-const contractAddress = "0xe9881Ed752ec7B584DECcD7857867cf3907Bdfc1";
+const contractAddress = "0x5a9d59b36224d63766b165432Cb717DE8b723b69";
 const contractABI = configuration.abi;
 
-export const Admin = () => {
+export const Admin = ({accountContractAddress}) => {
   const [action, setAction] = useState("");
   const [username, setUsername] = useState("");
   const [aadharNumber, setAadharNumber] = useState("");
   const [address, setAddress] = useState("");
   const [authority, setAuthority] = useState("");
   const [privateKey, setPrivateKey] = useState("");
+  const [list, setList] = useState([]);
   const Navigate = useNavigate();
 
   const [userDetails, setUserDetails] = useState(null);
@@ -34,7 +32,7 @@ export const Admin = () => {
       const web3Instance = new Web3(window.ethereum);
       const contract = new web3Instance.eth.Contract(
         contractABI,
-        contractAddress
+        accountContractAddress
       );
       const userDetails = await contract.methods
         .getUserDetailsByAddress(account)
@@ -69,7 +67,7 @@ export const Admin = () => {
 
         const contract = new web3Instance.eth.Contract(
           contractABI,
-          contractAddress
+          accountContractAddress
         );
 
         const gas = 2000000; 
@@ -96,11 +94,31 @@ export const Admin = () => {
       console.error("Error :", error);
     }
   };
+  
+  
+  const  getPendingVerifications = async() => {
+  try {
+  const web3Instance = new Web3(window.ethereum);
+
+        const contract = new web3Instance.eth.Contract(
+          contractABI,
+          contractAddress
+        );
+    const result = await contract.methods.getPendingVerifications().call();
+    console.log(result);
+    
+    setList(result);
+
+    
+  } catch (error) {
+    console.error(error);
+  }
+    };
 
   return (
     <div className="container">
       {userDetails ? ( 
-        <UserDetails userDetails={userDetails} />
+        <Home userDetails={userDetails} />
       ) : (
         <>
           <div className="header">
@@ -205,6 +223,8 @@ export const Admin = () => {
         </>
         
       )}
+      
+      <ul>{list.length > 0 && list.map((item) => <li>{item.userAddress} </li>)}</ul>
     </div>
   );
 };

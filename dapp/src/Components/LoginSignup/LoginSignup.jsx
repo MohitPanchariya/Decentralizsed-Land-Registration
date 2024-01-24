@@ -1,16 +1,16 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import "./LoginSignup.css";
-import aadhar_icon from "../Assets/digital.png";
-import user_icon from "../Assets/user.png";
-import key_icon from "../Assets/key.png";
 import Web3 from "web3";
 import configuration from "../../AccountRegistration.json";
+import aadhar_icon from "../Assets/digital.png";
+import key_icon from "../Assets/key.png";
+import user_icon from "../Assets/user.png";
+import "./LoginSignup.css";
 
-const contractAddress = "0xe9881Ed752ec7B584DECcD7857867cf3907Bdfc1";
+//const accountContractAddress = "0x9F4d677872ccfEDCA1b660A2a67AAD14D49812E9";
 const contractABI = configuration.abi;
 
-export const LoginSignup = () => {
+export const LoginSignup = ({accountContractAddress}) => {
   const [action, setAction] = useState("Sign Up");
   const [username, setUsername] = useState("");
   const [aadharNumber, setAadharNumber] = useState("");
@@ -28,7 +28,7 @@ export const LoginSignup = () => {
       const web3Instance = new Web3(window.ethereum);
       const contract = new web3Instance.eth.Contract(
         contractABI,
-        contractAddress
+        accountContractAddress
       );
       const userDetails = await contract.methods
         .getUserDetailsByAddress(account)
@@ -64,7 +64,7 @@ export const LoginSignup = () => {
         // Connect to your contract using the Web3 instance
         const contract = new web3Instance.eth.Contract(
           contractABI,
-          contractAddress
+          accountContractAddress
         );
 
         // Call the setUserDetails function on the contract
@@ -91,7 +91,7 @@ export const LoginSignup = () => {
         const web3Instance = new Web3(window.ethereum);
         const contract = new web3Instance.eth.Contract(
           contractABI,
-          contractAddress
+          accountContractAddress
         );
         const privateKeyWithPrefix = `0x${privateKey}`;
         const addressFromPrivateKey =

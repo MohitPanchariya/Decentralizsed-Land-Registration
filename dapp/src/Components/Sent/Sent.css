@@ -1,0 +1,32 @@
+/* Sent.css */
+
+.sent-land-card {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+    padding: 20px;
+    transition: transform 0.3s ease-in-out;
+  }
+  
+  .sent-land-card:hover {
+    transform: scale(1.05);
+  }
+  
+  .sent-land-card p {
+    margin: 0;
+    padding: 5px 0;
+  }
+  
+  .sent-land-requests-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+  }
+  /* p{
+  font-size: 50px;
+  } */
+  /* Add additional styling as needed */
+  

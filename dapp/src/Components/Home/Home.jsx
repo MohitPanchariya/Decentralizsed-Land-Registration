@@ -1,24 +1,40 @@
 import React, { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import configuration from "../../LandRegistration.json";
 import Web3 from "web3";
-import "./home.css";
+import configuration from "../../LandRegistration.json";
 import Sidebar from "../Sidebar/Sidebar";
+import "./home.css";
 
-const landContractAddress = "0x94652AF41E2747234F279aa0E3b6E63Ba95376E5";
+// const landContractAddress = "0x76017b4E9Fe30D5b2Ba7D345B8a42aC2b85C7978";
 const contractABI = configuration.abi;
 
 //Returns jsx which will display all lands owned by the user
-function Home() {
+function Home({landContractAddress}) {
   const [myLands, setMyLands] = useState([]);
 
-  const getMetamaskAccount = async () => {
-    // Request MetaMask account access
-    const accounts = await window.ethereum.request({
-      method: "eth_requestAccounts",
-    });
-    return accounts[0];
-  };
+
+    const getMetamaskAccount = async() => {
+        // Request MetaMask account access
+        const accounts = await window.ethereum.request({
+            method: "eth_requestAccounts",
+        });
+        return accounts[0];
+    }
+
+    const getPreviousOwners = async (landId) => {
+        const account = await getMetamaskAccount();
+        const web3Instance = new Web3(window.ethereum);
+        const contract = new web3Instance.eth.Contract(
+          contractABI,
+          landContractAddress
+        );
+    
+        const gas = 2000000;
+        const owners = await contract.methods.getPreviousOwners(landId).call(
+          { from: account, gas }
+        );
+    
+        return owners;
+      }
 
   const initPage = async () => {
     if (window.ethereum) {
@@ -61,6 +77,7 @@ function Home() {
 
     console.log("listLandForSale called: " + landId.toString());
     const web3Instance = new Web3(window.ethereum);
+    const gas = 2000000;
 
     const contract = new web3Instance.eth.Contract(
       contractABI,
@@ -69,11 +86,14 @@ function Home() {
     try {
       const transaction = await contract.methods
         .listLandForSale(landId)
-        .send({ from: account });
+        .send({ from: account,gas });
       const transactionEvents = transaction.events;
       if (transactionEvents.LandListedForSale) {
         alert("Land listed for sale.");
-      } else {
+      } else if(transactionEvents.LandAlreadyForSale) {
+        alert("Land has already been listed for sale.")
+      }
+      else {
         console.error("No event emitted.");
         alert("No event emitted.");
       }
@@ -82,47 +102,49 @@ function Home() {
       console.error(error);
       alert("Transaction failed.");
     }
-  };
+  }
+
+    
 
   useEffect(() => {
     initPage();
   }, []);
 
-  return (
-    <>
-      <Sidebar />
-      <div className="card-container">
-        {myLands.map((land, index) => (
+    return <>
+        <Sidebar />
+          
+          { myLands.length === 0 ? (<div className="card-container"><p>No Lands to show</p></div>) :
+          ( <div className="card-container">
+            { myLands.map((land, index) => (
           <div className="card" key={index}>
-            <center><h3>LAND {index + 1}</h3></center>
-            <p className="land-details"><b>Land Id: </b>{land.landId.toString()}</p>
-            {/* Land Owner Address */}
-            <p className="land-details"><b>Land Owner Address: </b>{land.owner}</p>
-            <p className="land-details"><b>State: </b>{land.identifier.state}</p>
-            <p className="land-details"><b>Division: </b>{land.identifier.division}</p>
-            <p className="land-details"><b>District: </b>{land.identifier.district}</p>
-            <p className="land-details"><b>Taluka: </b>{land.identifier.taluka}</p>
-            <p className="land-details"><b>Village: </b>{land.identifier.village}</p>
-            <p className="land-details"><b>Survery Number: </b>{land.identifier.surveyNumber.toString()}</p>
-            <p className="land-details"><b>Subdivision: </b>{land.identifier.subdivision}</p>
-            <p className="land-details"><b>Area: </b>{land.area.toString()}</p>
-            <p className="land-details"><b>Purchase Date: </b>{land.purchaseDate.toString()}</p>
-            <p className="land-details"><b>Purchase Price: </b>{land.purchasePrice.toString()}</p>
-            <p className="land-details"><b>Land Value at Purchase: </b>{land.landValueAtPurchase.toString()}</p>
-            <p className="land-details"><b>Land Verified: </b>{land.isVerified.toString()}</p>
-            <p className="land-details"><b>Land for sale: </b>{land.isForSale.toString()}</p>
-            <button className="submit-list"
-              onClick={() => {
-                listLandForSale(land.landId);
-              }}
-            >
-              List Land for Sale
-            </button>
+              <h3>LAND {index + 1}</h3>
+              <p className="land-details"><b>Land Id: </b> {land.landId.toString()}</p>
+              {/* Land Owner Address */}
+              <p className="land-details"><b>Land Owner Address:</b> {land.owner}</p>
+              <p className="land-details"><b>State: </b>{land.identifier.state}</p>
+              <p className="land-details"><b>Division:</b> {land.identifier.division}</p>
+              <p className="land-details"><b>District:</b> {land.identifier.district}</p>
+              <p className="land-details"><b>Taluka: </b>{land.identifier.taluka}</p>
+              <p className="land-details"><b>Village: </b> {land.identifier.village}</p>
+              <p className="land-details"><b>Survery Number: </b>{land.identifier.surveyNumber.toString()}</p>
+              <p className="land-details"><b>Subdivision:</b> {land.identifier.subdivision}</p>
+              <p className="land-details"><b>Area:</b> {land.area.toString()}</p>
+              <p className="land-details"><b>Purchase Date:</b> {land.purchaseDate.toString()}</p>
+              <p className="land-details"><b>Purchase Price:</b> {land.purchasePrice.toString()}</p>                
+              <p className="land-details"><b>Land Value at Purchase:</b> {land.landValueAtPurchase.toString()}</p>
+              <p className="land-details"><b>Land Verified:</b> {land.isVerified.toString()}</p>
+              <p className="land-details"><b>Land for sale:</b> {land.isForSale.toString()}</p>
+              <p className="land-details">
+                Previous Owner Address:
+              {land.previousOwners.length > 0
+                ? land.previousOwners.join(", ")
+                : "No Previous Owners"}
+              </p>
+              <button className="submit-list" onClick={() => {listLandForSale(land.landId)}}>List Land for Sale</button>
           </div>
-        ))}
-      </div>
+          )) } </div>)}
     </>
-  );
-}
+  }
+
 
 export default Home;
