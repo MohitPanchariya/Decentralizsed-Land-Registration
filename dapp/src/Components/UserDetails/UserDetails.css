@@ -141,3 +141,8 @@ h1 {
     cursor: pointer;
     font-family: Helvetica, Arial, sans-serif;
 }
+
+.submit-verification.verification-requested {
+    background-color: #8bc34a; /* Light green */
+    cursor: not-allowed; /* Change cursor to not-allowed when verification is requested */
+  }

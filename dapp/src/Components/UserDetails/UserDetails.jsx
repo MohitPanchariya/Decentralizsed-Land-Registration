@@ -15,6 +15,9 @@ const UserDetails = ({accountContractAddress}) => {
     registrationDate: 0,
   });
 
+  
+  const [verificationRequested, setVerificationRequested] = useState(false);
+
   // Convert Unix timestamp to human-readable date
   const registrationDate = new Date(
     Number(userDetails.registrationDate) * 1000
@@ -31,8 +34,6 @@ const UserDetails = ({accountContractAddress}) => {
         const accounts = await web3.eth.getAccounts();
         const userAddress = accounts[0];
 
-        // Replace 'YourContractAddress' and 'YourContractABI' with the actual contract address and ABI
-        // const accountContractAddress = "0x9F4d677872ccfEDCA1b660A2a67AAD14D49812E9";
         const contractABI = configuration.abi;
 
         // Create a contract instance
@@ -76,8 +77,6 @@ const UserDetails = ({accountContractAddress}) => {
         // Get the user's accounts
         const accounts = await web3.eth.getAccounts();
 
-        // Replace 'YourContractAddress' and 'YourContractABI' with the actual contract address and ABI
-        const accountContractAddress = "0x9F4d677872ccfEDCA1b660A2a67AAD14D49812E9";
         const contractABI = configuration.abi;
 
         // Create a contract instance
@@ -93,6 +92,7 @@ const UserDetails = ({accountContractAddress}) => {
         if (transaction) {
           console.log("Verification request sent successfully!");
           alert("Verification request sent successfully!");
+          setVerificationRequested(true);
           // Add any additional logic or UI updates as needed
         } else {
           console.error("Error sending verification request");
@@ -106,9 +106,42 @@ const UserDetails = ({accountContractAddress}) => {
   };
 
   // useEffect to retrieve user details on component mount
-  useEffect(() => {
-    getUserDetails(); // Call the getUserDetails function
-  }, []);
+    // useEffect to retrieve user details on component mount
+    useEffect(() => {
+      const checkPendingVerification = async () => {
+        try {
+          // Connect to the user's MetaMask provider
+          if (window.ethereum) {
+            await window.ethereum.request({ method: "eth_requestAccounts" });
+            const web3 = new Web3(window.ethereum);
+  
+            // Get the user's accounts
+            const accounts = await web3.eth.getAccounts();
+            const userAddress = accounts[0];
+  
+            const contractABI = configuration.abi;
+  
+            // Create a contract instance
+            const contract = new web3.eth.Contract(contractABI, accountContractAddress);
+  
+            // Check if userAddress is in the pending verification list
+            const pendingVerificationsList = await contract.methods.getPendingVerifications().call();
+            const isUserInPendingVerifications = pendingVerificationsList.some((verification) => verification.userAddress === userAddress);
+  
+            setVerificationRequested(isUserInPendingVerifications);
+          }
+        } catch (error) {
+          console.error("Error checking pending verification:", error);
+          // Handle errors or display an error message to the user
+        }
+      };
+  
+      // Call the checkPendingVerification function on mount
+      checkPendingVerification();
+  
+      // Call the getUserDetails function
+      getUserDetails();
+    }, []);
 
   return (
     <div classname="user-card-container">
@@ -134,10 +167,10 @@ const UserDetails = ({accountContractAddress}) => {
 
         {!userDetails.isUserVerified && (
           <button
-            className="submit-verification"
+            className={`submit-verification ${verificationRequested ? 'verification-requested' : ''}`}
             onClick={handleRequestVerification}
           >
-            Request Verification
+            {verificationRequested ? 'Verification Requested' : 'Request Verification'}
           </button>
         )}
       </div>
