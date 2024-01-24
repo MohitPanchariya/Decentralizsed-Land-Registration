@@ -1,50 +1,49 @@
 /* Received.css */
 
 .sent-land-requests-container {
-    margin: 20px;
-  }
-  
-  .received-land-cards {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 20px;
-  }
-  
-  .sent-land-card {
-    border: 1px solid #ddd;
-    padding: 15px;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    transition: transform 0.3s;
-  }
-  
-  .sent-land-card:hover {
-    transform: scale(1.05);
-  }
-  
-  button {
-    margin-top: 10px;
-    padding: 10px;
-    margin-right:10px;
-    background-color: #4caf50;
-    color: #fff;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-  }
-  
-  button:hover {
-    background-color: #45a049;
-  }
-  
-  /* p{
-    font-size : 50px;
-  } */
-  /* Sidebar.css */
-  
-  /* Assuming you have a Sidebar component */
+  margin: 20px;
+}
 
-  
-  /* Add styles for other components if needed */
-  
+.received-land-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+.sent-land-card {
+  border: 1px solid #ddd;
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s;
+}
+
+.sent-land-card:hover {
+  transform: scale(1.05);
+}
+
+.received-button {
+  margin-top: 10px;
+  padding: 10px;
+  margin-right: 10px;
+  background-color: #4caf50;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.received-button:hover {
+  background-color: #45a049;
+}
+
+/* p{
+  font-size : 50px;
+} */
+/* Sidebar.css */
+
+/* Assuming you have a Sidebar component */
+
+
+/* Add styles for other components if needed */

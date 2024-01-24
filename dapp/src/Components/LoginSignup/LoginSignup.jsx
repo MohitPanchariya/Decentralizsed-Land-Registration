@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import Web3 from "web3";
 import configuration from "../../AccountRegistration.json";
 import aadhar_icon from "../Assets/digital.png";
-import key_icon from "../Assets/key.png";
+import metamask_icon from "../Assets/metamask.png";
 import user_icon from "../Assets/user.png";
 import "./LoginSignup.css";
 
@@ -83,42 +83,7 @@ export const LoginSignup = ({accountContractAddress}) => {
             console.error("Error message:", transaction.message);
           }
         }
-      } else if (action === "Login") {
-        const accounts = await window.ethereum.request({
-          method: "eth_requestAccounts",
-        });
-        const account = accounts[0];
-        const web3Instance = new Web3(window.ethereum);
-        const contract = new web3Instance.eth.Contract(
-          contractABI,
-          accountContractAddress
-        );
-        const privateKeyWithPrefix = `0x${privateKey}`;
-        const addressFromPrivateKey =
-          await web3Instance.eth.accounts.privateKeyToAccount(
-            privateKeyWithPrefix
-          );
-
-        if (
-          account.toUpperCase() !== addressFromPrivateKey.address.toUpperCase()
-        ) {
-          console.error("Private key does not match MetaMask address");
-          return;
-        }
-        const userDetails = await contract.methods
-          .getUserDetailsByAddress(account)
-          .call();
-
-        if (userDetails.aadharNumber) {
-          console.log("Login successful!");
-          alert("Login Successful!");
-          // Redirect to the home page
-          Navigate("/user-details");
-        } else {
-          console.error("User does not exist");
-          alert("User does not exist");
-        }
-      }
+      } 
     } catch (error) {
       console.error("Error setting user details:", error);
     }
@@ -133,14 +98,8 @@ export const LoginSignup = ({accountContractAddress}) => {
         </div>
         <div className="inputs">
           {action === "Login" ? (
-            <div className="input">
-              <img src={key_icon} alt="" />
-              <input
-                type="password"
-                placeholder="PRIVATE KEY"
-                value={privateKey}
-                onChange={(e) => setPrivateKey(e.target.value)} // Update private key state
-              />
+            <div className="metamask-container">
+              <img src={metamask_icon} alt="" />
             </div>
           ) : (
             <div className="input">
@@ -153,14 +112,7 @@ export const LoginSignup = ({accountContractAddress}) => {
               />
             </div>
           )}
-          {action === "Sign Up" ? (
-            <div></div>
-          ) : (
-            <div className="or">
-              <center>OR</center>
-            </div>
-          )}
-          {action === "Sign Up" ? (
+          {action === "Sign Up" && (
             <div className="input">
               <img src={aadhar_icon} alt="" />
               <input
@@ -170,28 +122,24 @@ export const LoginSignup = ({accountContractAddress}) => {
                 onChange={(e) => setAadharNumber(e.target.value)}
               />
             </div>
-          ) : (
-            <div className="submit-container-metamask">
-              {action === "Login" && (
-                <div
-                  className="submit-connect-metamask"
-                  onClick={handleConnectMetaMask}
-                >
-                  Connect with MetaMask
-                </div>
-              )}
-            </div>
           )}
         </div>
         <div className="submit-container">
-          <button
-            className={action === "Login" ? "submit" : "submit"}
-            onClick={handleSubmit}
-          >
-            {action}
-          </button>
+          {action === "Sign Up" && (
+            <button className="submit" onClick={handleSubmit}>
+              Sign Up
+            </button>
+          )}
+          {action === "Login" && (
+            <div
+              className="submit-connect-metamask"
+              onClick={handleConnectMetaMask}
+            >
+              Connect with MetaMask
+            </div>
+          )}
           <div
-            className={action === "Sign Up" ? "submit gray" : "submit gray"}
+            className={action === "Sign Up" ? "submit gray" : "submit login"}
             onClick={() => setAction(action === "Login" ? "Sign Up" : "Login")}
           >
             {action === "Login" ? "Sign Up" : "Login"}

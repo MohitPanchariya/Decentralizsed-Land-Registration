@@ -89,18 +89,18 @@
   margin: 40px auto;
 }
 
-.submit-container-metamask {
+/* .submit-container-metamask {
   display: flex;
   gap: 30px;
   margin: 0px auto;
-}
+} */
 
 .submit {
   display: flex;
   justify-content: center;
   align-items: center;
   width: 180px;
-  height: 59px;
+  height: 60px;
   color: #fff;
   background: #76453B;
   border-radius: 50px;
@@ -112,20 +112,40 @@
 .submit-connect-metamask {
   display: flex;
   justify-content: center;
-  margin-bottom: 6px;
+  margin: 10px 63px 0 10px;
   align-items: center;
   width: 380px;
   height: 59px;
   color: #fff;
   background: #76453B;
   border-radius: 50px;
-  font-size: 19px;
+  font-size: 23px;
   font-weight: 700;
   cursor: pointer;
   font-family: Helvetica, Arial, sans-serif;
 }
 
+.metamask-container{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 .gray {
   background: #e7ded4;
   color: #76453B;
+}
+
+.login{
+  background: #e7ded4;
+  color: #76453B;
+  border-radius: 50px;
+  font-size: 23px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: Helvetica, Arial, sans-serif;
+  margin: 100px 0 0 -475px;
+  align-items: center;
+  width: 380px;
+  height: 59px;
 }

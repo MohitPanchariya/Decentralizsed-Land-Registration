@@ -298,13 +298,13 @@ function ReceivedLandRequests({landContractAddress}) {
               <p>Land ID: {item.landId.toString()}</p>
               <p>Buyer Address: {item.landInfo}</p>
               <p>Request Status: {getStatusLabel(item.status.toString())}</p>
-              <button onClick={() => handleAcceptRequest(item.requestId)}>
+              <button className="received-button" onClick={() => handleAcceptRequest(item.requestId)}>
                 Accept
               </button>
-              <button onClick={() => handleRejectRequest(item.requestId)}>
+              <button className="received-button" onClick={() => handleRejectRequest(item.requestId)}>
                 Reject
               </button>
-              <button onClick={() => handleMarkPaymentAsDone(item.requestId)}>
+              <button className="received-button" onClick={() => handleMarkPaymentAsDone(item.requestId)}>
                 Mark Payment as Done
               </button>
             </div>

@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import Web3 from "web3";
 import configuration from "../../AccountRegistration.json";
 import Home from "../Home/Home";
+import user_icon from "../Assets/user.png";
 
 const contractAddress = "0x5a9d59b36224d63766b165432Cb717DE8b723b69";
 const contractABI = configuration.abi;
