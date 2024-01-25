@@ -5,6 +5,7 @@ import Web3 from "web3";
 import configuration from "../../AccountRegistration.json";
 import Home from "../Home/Home";
 import user_icon from "../Assets/user.png";
+import SidebarAdmin from "../SidebarAdmin/SidebarAdmin";
 
 const contractAddress = "0x5a9d59b36224d63766b165432Cb717DE8b723b69";
 const contractABI = configuration.abi;
@@ -117,7 +118,8 @@ export const Admin = ({accountContractAddress}) => {
     };
 
   return (
-    <div className="container">
+    <div className="admin-container">
+      <SidebarAdmin/>
       {userDetails ? ( 
         <Home userDetails={userDetails} />
       ) : (
