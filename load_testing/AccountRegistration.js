@@ -12,7 +12,7 @@ async function getAccounts(web3) {
 * not being mined in a certain number of blocks.
 */
 async function simulateRegistrationLoad(web3, contractAddress, contract, accounts) {
-  let aadharNumber = 100000000000
+  let phoneNumber = 9090909090
   let promises = [];
   let promiseCount = 0;
   let rejectedCount = 0;
@@ -23,7 +23,7 @@ async function simulateRegistrationLoad(web3, contractAddress, contract, account
     const transaction = {
       to: contractAddress,
       data: contract.methods.setUserDetails(
-        "test", 1, aadharNumber
+        "test", 1, phoneNumber
       ).encodeABI(),
       from: account,
       gas: 800000
@@ -31,7 +31,7 @@ async function simulateRegistrationLoad(web3, contractAddress, contract, account
 
     const promise = web3.eth.sendTransaction(transaction);
     promises.push(promise);
-    aadharNumber += 1;
+    phoneNumber += 1;
 
     if(promises.length >= 50) {
       const results = await Promise.allSettled(promises);
@@ -72,7 +72,7 @@ async function simulateRegistrationLoad(web3, contractAddress, contract, account
 async function simulateUserVerificationRequestLoad(
   web3, contractAddress, contract, accounts
 ) {
-  let aadharNumber = 100000000000
+  let phoneNumber = 9090909090
   let promises = [];
   let promiseCount = 0;
   let rejectedCount = 0;
@@ -83,7 +83,7 @@ async function simulateUserVerificationRequestLoad(
     const transaction = {
       to: contractAddress,
       data: contract.methods.requestVerification(
-        aadharNumber
+        phoneNumber
       ).encodeABI(),
       from: account,
     }
@@ -103,7 +103,7 @@ async function simulateUserVerificationRequestLoad(
       }
     }
 
-    aadharNumber += 1;
+    phoneNumber += 1;
   }
 
   console.log("Request verification timestamps.")
