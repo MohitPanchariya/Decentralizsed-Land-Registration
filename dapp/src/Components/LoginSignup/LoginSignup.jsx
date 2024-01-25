@@ -32,13 +32,18 @@ export const LoginSignup = ({accountContractAddress}) => {
       const userDetails = await contract.methods
         .getUserDetailsByAddress(account)
         .call();
-
-      if (userDetails.phoneNumber) {
+      console.log(userDetails.designation);
+      if (userDetails.phoneNumber && userDetails.designation.toString()!=='0') {
         console.log("Login successful!");
         alert("Login successful!");
         // Redirect to the home page
+        Navigate("/admin");
+      } else if(userDetails.phoneNumber) {
+        console.log("Login successful!");
+        alert("Login successful!");
         Navigate("/user-details");
-      } else {
+      }
+      else {
         console.error("User does not exist");
         alert("User does not exist!");
       }
