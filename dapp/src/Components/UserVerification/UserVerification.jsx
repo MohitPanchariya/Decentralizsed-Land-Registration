@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Web3 from "web3";
 import configuration from "../../AccountRegistration.json";
-import Sidebar from "../Sidebar/Sidebar";
+import SidebarAdmin from "../SidebarAdmin/SidebarAdmin";
 import "./UserVerification.css";
 
 const contractABI = configuration.abi; // Replace with your contract address
@@ -73,7 +73,7 @@ const UserVerification = ({ accountContractAddress }) => {
 
   return (
     <div className="user-verification-container">
-      <Sidebar />
+      <SidebarAdmin />
       <center><h2>Pending Verifications</h2></center>
       <div className="user-verification">
         {pendingVerifications.length > 0 ? (
