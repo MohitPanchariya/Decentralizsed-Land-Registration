@@ -27,31 +27,31 @@ contract("LandRegistration", async (accounts) => {
 
         //set the user details of an owner
         await AccountRegistrationInstance.setUserDetails(
-            "Owner", 101101101101,
+            "Owner", 9098909878,
             {from: owner}
         )
         
         //Verify the owner
         await AccountRegistrationInstance.verifyAccount(
-            101101101101,
+            9098909878,
             {from: deployer}
         )
 
         //set the deatils of a user
         await AccountRegistrationInstance.setUserDetails(
-            "Verified User", 101101101102,
+            "Verified User", 9098765456,
             {from: verifiedUser}
         )
 
         //Verify a user
         await AccountRegistrationInstance.verifyAccount(
-            101101101102,
+            9098765456,
             {from: deployer}
         )
 
         //set the details of a user who won't be verified
         await AccountRegistrationInstance.setUserDetails(
-            "Uverified User", 101101101103,
+            "Uverified User", 8876567890,
             {from: unVerifiedUser}
         )
     })

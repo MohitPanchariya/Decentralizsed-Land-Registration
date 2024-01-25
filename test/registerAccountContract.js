@@ -14,10 +14,10 @@ contract("AccountRegistration", (accounts) => {
 
     it("should not allow setting user details more than once", async () => {
         try {
-            await accountRegistration.setUserDetails("User3", 111111111111, {
+            await accountRegistration.setUserDetails("User3", 9089098909, {
                 from: accounts[1],
             });
-            await accountRegistration.setUserDetails("User3", 111111111111, {
+            await accountRegistration.setUserDetails("User3", 9089098909, {
                 from: accounts[1],
             });
 
@@ -30,15 +30,15 @@ contract("AccountRegistration", (accounts) => {
     });
 
 
-    it("should not allow adding a Land Inspector with an existing Aadhar number", async () => {
+    it("should not allow adding a Land Inspector with an existing phone number", async () => {
         try {
-            await accountRegistration.addLandInspector(accounts[2], "Inspector2", 222222222223, {
+            await accountRegistration.addLandInspector(accounts[2], "Inspector2", 9012345678, {
                 from: accounts[0],
             });
 
         } catch (error) {
             assert(
-                error.message.includes("Aadhar number already registered."),
+                error.message.includes("phone number already registered."),
                 "Error not thrown"
             );
         }
@@ -46,7 +46,7 @@ contract("AccountRegistration", (accounts) => {
 
     it("should not allow non-deployer or non-second-level authority to add a Land Inspector", async () => {
         try {
-            await accountRegistration.addLandInspector(accounts[3], "Inspector3", 333333333333, {
+            await accountRegistration.addLandInspector(accounts[3], "Inspector3", 9089098765, {
                 from: accounts[1],
             });
 
@@ -59,15 +59,15 @@ contract("AccountRegistration", (accounts) => {
     });
 
 
-    it("should not allow adding a Second-Level Authority with an existing Aadhar number", async () => {
+    it("should not allow adding a Second-Level Authority with an existing phone number", async () => {
         try {
-            await accountRegistration.addSecondLevelAuthority(accounts[5], "Authority2", 444444444444, {
+            await accountRegistration.addSecondLevelAuthority(accounts[5], "Authority2", 9876567892, {
                 from: accounts[0],
             });
 
         } catch (error) {
             assert(
-                error.message.includes("Aadhar number already registered."),
+                error.message.includes("phone number already registered."),
                 "Error not thrown"
             );
         }
@@ -75,7 +75,7 @@ contract("AccountRegistration", (accounts) => {
 
     it("should not allow non-deployer to add a Second-Level Authority", async () => {
         try {
-            await accountRegistration.addSecondLevelAuthority(accounts[6], "Authority3", 555555555555, {
+            await accountRegistration.addSecondLevelAuthority(accounts[6], "Authority3", 7657890987, {
                 from: accounts[1],
             });
 
@@ -150,14 +150,14 @@ contract("AccountRegistration", (accounts) => {
       });
       
       it("should allow the deployer to add a Second-Level Authority", async () => {
-        await accountRegistration.addSecondLevelAuthority(accounts[4], "Authority1", 333333333333, {
+        await accountRegistration.addSecondLevelAuthority(accounts[4], "Authority1", 9098909876, {
           from: accounts[0],
         });
 
         const authority = await accountRegistration.userAccountsMap(accounts[4]);
         assert.equal(authority.username, "Authority1", "Authority username is not set correctly");
         assert.equal(authority.designation, 2, "Authority designation is not set correctly");
-        assert.equal(authority.aadharNumber, 333333333333, "Authority Aadhar number is not set correctly");
+        assert.equal(authority.phoneNumber, 9098909876, "Authority phone number is not set correctly");
       });
 
     it("should not allow non-deployer or non-second-level authority to grant Land Inspector status", async () => {
