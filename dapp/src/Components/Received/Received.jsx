@@ -287,25 +287,25 @@ function ReceivedLandRequests({landContractAddress}) {
     <>
       <Sidebar />
       <div className="sent-land-requests-container">
-        <h1>Received Land Requests to sell</h1>
+        <h1>Received Land Requests to Sell</h1>
       {receivedLandRequests.length === 0 ? (
         <p>No received land requests!!</p>
       ) : (
         <div className="received-land-cards">
           {landData.map((item) => (
             <div key={item.requestId} className="sent-land-card">
-              <p>Request ID: {item.requestId.toString()}</p>
-              <p>Land ID: {item.landId.toString()}</p>
-              <p>Buyer Address: {item.landInfo}</p>
-              <p>Request Status: {getStatusLabel(item.status.toString())}</p>
+              <p className="land-details"><b>Request ID: </b>{item.requestId.toString()}</p>
+              <p className="land-details"><b>Land ID: </b>{item.landId.toString()}</p>
+              <p className="land-details"><b>Buyer Address: </b>{item.landInfo}</p>
+              <p className="land-details"><b>Request Status: </b>{getStatusLabel(item.status.toString())}</p>
               <button className="received-button" onClick={() => handleAcceptRequest(item.requestId)}>
-                Accept
+                ACCEPT
               </button>
-              <button className="received-button" onClick={() => handleRejectRequest(item.requestId)}>
-                Reject
+              <button className="received-reject-button" onClick={() => handleRejectRequest(item.requestId)}>
+                REJECT
               </button>
               <button className="received-button" onClick={() => handleMarkPaymentAsDone(item.requestId)}>
-                Mark Payment as Done
+                MARK PAYMENT AS DONE
               </button>
             </div>
           ))}

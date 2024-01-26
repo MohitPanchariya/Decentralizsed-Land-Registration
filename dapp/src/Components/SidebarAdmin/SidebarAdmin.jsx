@@ -26,7 +26,7 @@ function Sidebar() {
             Add Land
           </Link>
           <Link to="/for-sale" className="fas fa-link">
-            View Lands
+            View Lands for Sale
           </Link>
                 <Link to="/req-sent" className="fas fa-link">View Sent Land Requests</Link>
                 <Link to="/req-received" className="fas fa-link">View Received Land Requests</Link>
