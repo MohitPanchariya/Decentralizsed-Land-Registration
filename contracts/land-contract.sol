@@ -87,6 +87,15 @@ contract LandRegistration {
     event PaymentMarkedAsDone(uint requestId, uint landId);
     event LandOwnershipTransferred(uint landId, address oldOwner, address newOwner);
 
+    //Event to be emitted after land verification request has been sent
+    event LandVerificationRequestSubmitted (uint landId);
+    //Event to be emitted if land verification request already exists
+    event LandVerificationRequestExists (uint landId);
+    //Event to be emitted if land is already verified
+    event LandAlreadyVerified (uint landId);
+    //Event to be emitted when the land is verified by an inspector
+    event LandVerified(uint landId);
+
      // Event to be emitted when a user tries to request to buy the same land twice
     event DuplicateLandRequest(uint landId, address buyer);
 
@@ -215,7 +224,25 @@ event RequestRejected(uint indexed requestId, address indexed seller, address in
 
     //Function to submit a land verification request
     function landVerificationRequest(uint _landId) public onlyOwner(_landId) {
+        //Land is already verified
+        if(landMapping[_landId].isVerified) {
+            emit LandAlreadyVerified(_landId);
+            return;
+        } 
+        //Check if land verification request already exists.
+        for(uint i = 0; i < verificationRequired.length; i++) {
+            if(verificationRequired[i] == _landId) {
+                emit LandVerificationRequestExists(_landId);
+                return;
+            }
+        }
+        //Add request to the list of pending verifications
         verificationRequired.push(_landId);
+        emit LandVerificationRequestSubmitted(_landId);
+    }
+
+    function getPendingLandVerificationRequests() public view returns (uint[] memory){
+        return verificationRequired;
     }
 
     function landRecordExists(LandIdentifier memory _record) 
@@ -291,7 +318,18 @@ event RequestRejected(uint indexed requestId, address indexed seller, address in
 
     //Function to approve a land verification request
     function verifyLand(uint _landId) public onlylInspector {
+        //Set the status of the land to verified
         landMapping[_landId].isVerified = true;
+
+        //Remove land id from the verificationRequired list
+        for(uint i = 0; i < verificationRequired.length; i++) {
+            if(verificationRequired[i] == _landId) {
+                verificationRequired[i] = verificationRequired[verificationRequired.length - 1];
+                verificationRequired.pop();
+                break;
+            }
+        }
+        emit LandVerified(_landId);
     }
 
     //List land for sale
