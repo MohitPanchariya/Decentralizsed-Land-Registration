@@ -85,7 +85,7 @@ export const AddLandRecord = ({landContractAddress}) => {
       <div>
         <Sidebar />
         <center>
-          <h2>Land Registration Form</h2>
+          <p className="land-form-head">Land Registration Form </p>
         </center>
         <form onSubmit={handleSubmit}>
           <input

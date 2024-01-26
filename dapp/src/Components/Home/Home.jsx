@@ -117,7 +117,7 @@ function Home({landContractAddress}) {
           ( <div className="card-container">
             { myLands.map((land, index) => (
           <div className="card" key={index}>
-              <h3>LAND {index + 1}</h3>
+              <p className="card-title">LAND {index + 1}</p>
               <p className="land-details"><b>Land Id: </b> {land.landId.toString()}</p>
               {/* Land Owner Address */}
               <p className="land-details"><b>Land Owner Address:</b> {land.owner}</p>
@@ -134,11 +134,11 @@ function Home({landContractAddress}) {
               <p className="land-details"><b>Land Value at Purchase:</b> {land.landValueAtPurchase.toString()}</p>
               <p className="land-details"><b>Land Verified:</b> {land.isVerified.toString()}</p>
               <p className="land-details"><b>Land for sale:</b> {land.isForSale.toString()}</p>
-              <p className="land-details">
-                Previous Owner Address:
-              {land.previousOwners.length > 0
+              <p className="land-details"><b>
+                Previous Owner Address:</b>
+               {land.previousOwners.length > 0
                 ? land.previousOwners.join(", ")
-                : "No Previous Owners"}
+                : " No Previous Owners"}
               </p>
               <button className="submit-list" onClick={() => {listLandForSale(land.landId)}}>List Land for Sale</button>
           </div>

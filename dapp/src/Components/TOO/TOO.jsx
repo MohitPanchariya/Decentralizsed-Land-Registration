@@ -244,19 +244,19 @@ function ReceivedLandRequests({landContractAddress}) {
               // Check if the status is "Payment Done"
     (item.status.toString() === "3" || item.status.toString() === "4")  && (
       <div key={item.requestId} className="sent-land-card">
-        <p>Request ID: {item.requestId.toString()}</p>
-        <p>Land ID: {item.landId.toString()}</p>
-        <p>Buyer Address: {item.BuyerInfo}</p>
-        <p>Land Owner Address: {item.SellerInfo}</p>
-        <p>
-                  Previous Owner Address:
+        <p className="land-details"><b>Request ID: </b>{item.requestId.toString()}</p>
+        <p className="land-details"><b>Land ID: </b>{item.landId.toString()}</p>
+        <p className="land-details"><b>Buyer Address: </b>{item.BuyerInfo}</p>
+        <p className="land-details"><b>Land Owner Address: </b>{item.SellerInfo}</p>
+        <p className="land-details"><b>
+                  Previous Owner Address: </b>
                   {item.previousOwners.length > 0
                     ? item.previousOwners.join(", ")
                     : "No Previous Owners"}
                   </p>
-        <p>Request Status: {getStatusLabel(item.status.toString())}</p>
-        <button onClick={() => transferOwnership(item.requestId)}>
-          Transfer Ownership
+        <p className="land-details"><b>Request Status: </b>{getStatusLabel(item.status.toString())}</p>
+        <button className="transfer-button"onClick={() => transferOwnership(item.requestId)}>
+          TRANSFER OWNERSHIP
         </button>
       </div>
     )

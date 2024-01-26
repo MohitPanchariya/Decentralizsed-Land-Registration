@@ -145,17 +145,17 @@ function SentLandRequests({landContractAddress}) {
     <>
       <Sidebar />
       <div className="sent-land-requests-container">
-        <h1>Sent Land Requests to buy</h1>
+        <h1>Sent Land Requests to Buy</h1>
         {sentLandRequests.length === 0 ? (
           <p>No sent land requests!!</p>
         ) : (
           <div className="sent-land-cards">
             {landData.map((item) => (
               <div key={item.requestId} className="sent-land-card">
-                <p>Request ID: {item.requestId.toString()}</p>
-                <p>Land ID: {item.landId.toString()}</p>
-                <p>Land Owner Address: {item.landInfo}</p>
-                <p>Request Status: {getStatusLabel(item.status.toString())}</p>
+                <p className="land-details"><b>Request ID: </b>{item.requestId.toString()}</p>
+                <p className="land-details"><b>Land ID: </b>{item.landId.toString()}</p>
+                <p className="land-details"><b>Land Owner Address: </b>{item.landInfo}</p>
+                <p className="land-details"><b>Request Status: </b>{getStatusLabel(item.status.toString())}</p>
               </div>
             ))}
           </div>

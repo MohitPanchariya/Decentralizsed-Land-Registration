@@ -19,7 +19,7 @@ function Sidebar() {
             Add Land
           </Link>
           <Link to="/for-sale" className="fas fa-link">
-            View Lands
+            View Lands for Sale
           </Link>
           <Link to="/user-details" className="fas fa-link">
             User Details

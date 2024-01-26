@@ -9,12 +9,13 @@ form {
   margin: 50px auto;
 }
 
-h2 {
+.land-form-head {
   font-size: 25px;
   margin-top: 15px;
-  margin-bottom: -20px;
+  margin-bottom: -30px;
   text-transform: uppercase;
   color: #76453B;
+  font-weight: bold;
 }
 
 .feedback-input {
