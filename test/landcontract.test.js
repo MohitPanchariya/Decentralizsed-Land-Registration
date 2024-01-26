@@ -252,6 +252,8 @@ contract("LandRegistration", async (accounts) => {
             const verificationTx = await landRegistrationInstance.landVerificationRequest(
                 landId, {from: owner}
             )
+
+            truffleAssert.eventEmitted(verificationTx, "LandVerificationRequestSubmitted");
         })
 
         it("Only owner can request for verification", async () => {
@@ -266,6 +268,206 @@ contract("LandRegistration", async (accounts) => {
                     error.message.includes("Only owner can perform this operation.")
                 )
             }
+        })
+
+        it("Ensures that land verification can't be requested twice", async () => {
+            const addLandTx = await landRegistrationInstance.addLandRecord(
+                landRecord, {from: owner}
+            );
+    
+            truffleAssert.eventEmitted(addLandTx, "LandRecordExists");
+    
+            // Get the event object.
+            const event = await landRegistrationInstance.getPastEvents("LandRecordExists", {
+                filter: { landId: 1 },
+                fromBlock: addLandTx.blockNumber,
+                toBlock: addLandTx.blockNumber
+            });
+    
+            const landId  = event[0].args.landId.toNumber()
+
+            const verificationTx = await landRegistrationInstance.landVerificationRequest(
+                landId, {from: owner}
+            )
+
+            //Make sure land verification request can't be submitted twice
+            truffleAssert.eventEmitted(verificationTx, "LandVerificationRequestExists");
+        })
+
+        it("Ensures that lands can be verified", async () => {
+            const area = 100, purchaseDate = 1698568923, landValueAtPurchase = 100;
+            const purchasePrice = 100, surveryNumber = 123;
+            //Create a new land record
+            const landRecord = {
+                landId: 0,
+                owner: owner,
+                identifier: {
+                    state: "A different sample state",
+                    division: "A different sample division",
+                    district: "A different sample district",
+                    taluka: "A different sample taluka",
+                    village: "A different sample village",
+                    surveyNumber: surveryNumber,
+                    subdivision: "1/A"
+                },
+                area: area,
+                purchaseDate: purchaseDate,
+                purchasePrice: purchasePrice,
+                landValueAtPurchase: landValueAtPurchase,
+                previousOwners: [],
+                isVerified: false,
+                isForSale: false
+            }
+
+            //Add the land record
+            const addLandTx = await landRegistrationInstance.addLandRecord(
+                landRecord, {from: owner}
+            );
+
+            truffleAssert.eventEmitted(addLandTx, "LandRecordAdded");
+            // Get the event object.
+            const event = await landRegistrationInstance.getPastEvents("LandRecordAdded", {
+                filter: { landId: 3 }, //two land records have been added succesfully in the test so far
+                fromBlock: addLandTx.blockNumber,
+                toBlock: addLandTx.blockNumber
+            });
+    
+            const landId  = event[0].args.landId.toNumber();
+
+            const verificationRequestTx = await landRegistrationInstance.landVerificationRequest(
+                landId, {from: owner}
+            )
+
+            truffleAssert.eventEmitted(verificationRequestTx, "LandVerificationRequestSubmitted");
+
+            //verify the land
+            const verificationTx = await landRegistrationInstance.verifyLand(landId, {from: inspector});
+
+            //Make sure the land has been verified
+            truffleAssert.eventEmitted(verificationTx, "LandVerified");
+        })
+
+        it("Ensures that land verification requests are added to the verification required list", async () => {
+            const area = 100, purchaseDate = 1698568923, landValueAtPurchase = 100;
+            const purchasePrice = 100, surveryNumber = 123;
+            //Create a new land record
+            const landRecord = {
+                landId: 0,
+                owner: owner,
+                identifier: {
+                    state: "verification test",
+                    division: "verification test",
+                    district: "verification test",
+                    taluka: "verification test",
+                    village: "verification test",
+                    surveyNumber: surveryNumber,
+                    subdivision: "verification test"
+                },
+                area: area,
+                purchaseDate: purchaseDate,
+                purchasePrice: purchasePrice,
+                landValueAtPurchase: landValueAtPurchase,
+                previousOwners: [],
+                isVerified: false,
+                isForSale: false
+            }
+            const addLandTx = await landRegistrationInstance.addLandRecord(
+                landRecord, {from: owner}
+            );
+
+            truffleAssert.eventEmitted(addLandTx, "LandRecordAdded");
+            // Get the event object.
+            const event = await landRegistrationInstance.getPastEvents("LandRecordAdded", {
+                filter: { landId: 4 }, //three land records have been added succesfully in the test so far
+                fromBlock: addLandTx.blockNumber,
+                toBlock: addLandTx.blockNumber
+            });
+    
+            const landId  = event[0].args.landId.toNumber();
+
+            const verificationRequestTx = await landRegistrationInstance.landVerificationRequest(
+                landId, {from: owner}
+            )
+
+            truffleAssert.eventEmitted(verificationRequestTx, "LandVerificationRequestSubmitted");
+
+            const pendingVerificationRequests = await landRegistrationInstance.getPendingLandVerificationRequests(
+                {from: inspector}
+            )
+            
+            let landIdFound = false;
+            pendingVerificationRequests.forEach((landId) => {
+                if(landId == 4) {
+                    landIdFound = true;
+                    return false;
+                }
+            })
+            assert.equal(landIdFound, true, "Land id 4 must be in the pending verifications list.")
+        })
+
+        it("Ensures that land verification requests are removed from the verification required list", async () => {
+            const area = 100, purchaseDate = 1698568923, landValueAtPurchase = 100;
+            const purchasePrice = 100, surveryNumber = 123;
+            //Create a new land record
+            const landRecord = {
+                landId: 0,
+                owner: owner,
+                identifier: {
+                    state: "verification test",
+                    division: "verification test",
+                    district: "verification test",
+                    taluka: "verification test",
+                    village: "verification test",
+                    surveyNumber: surveryNumber,
+                    subdivision: "verification test"
+                },
+                area: area,
+                purchaseDate: purchaseDate,
+                purchasePrice: purchasePrice,
+                landValueAtPurchase: landValueAtPurchase,
+                previousOwners: [],
+                isVerified: false,
+                isForSale: false
+            }
+            const addLandTx = await landRegistrationInstance.addLandRecord(
+                landRecord, {from: owner}
+            );
+            
+            //Make sure land record has been added(land id 4)
+            truffleAssert.eventEmitted(addLandTx, "LandRecordExists");
+            // Get the event object.
+            const event = await landRegistrationInstance.getPastEvents("LandRecordExists", {
+                filter: { landId: 4 }, //three land records have been added succesfully in the test so far
+                fromBlock: addLandTx.blockNumber,
+                toBlock: addLandTx.blockNumber
+            });
+    
+            const landId  = event[0].args.landId.toNumber();
+
+            //Make sure the verification request has already been submitted
+            const verificationRequestTx = await landRegistrationInstance.landVerificationRequest(
+                landId, {from: owner}
+            )
+            truffleAssert.eventEmitted(verificationRequestTx, "LandVerificationRequestExists");
+
+            //verify the land
+            const verificationTx = await landRegistrationInstance.verifyLand(landId, {from: inspector});
+
+            //Make sure the land has been verified
+            truffleAssert.eventEmitted(verificationTx, "LandVerified");
+
+            //Make sure the land has been removed from the verificationRequired list
+            let landIdFound = false;
+            const pendingVerificationRequests = await landRegistrationInstance.getPendingLandVerificationRequests(
+                {from: inspector}
+            )
+            pendingVerificationRequests.forEach((landId) => {
+                if(landId == 4) {
+                    landIdFound = true;
+                    return false;
+                }
+            })
+            assert.equal(landIdFound, false, "Land id 4 must be removed from the pending verifications list.")
         })
     })
 
