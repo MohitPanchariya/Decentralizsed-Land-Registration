@@ -38,6 +38,7 @@ const LandVerification = ({ landContractAddress }) => {
           // Fetch details for each landID in the pendingLandVerifications array
           const detailsPromises = result.map(async (landId) => {
             const landDetails = await contract.methods.landMapping(landId).call();
+            console.log(landDetails);
             return { landId, ...landDetails };
           });
 
@@ -52,7 +53,7 @@ const LandVerification = ({ landContractAddress }) => {
 
     initializeWeb3();
     fetchData();
-  }, [web3, landContractAddress]);
+  }, []); // Empty dependency array ensures the effect runs only once
 
   const handleApproveClick = async (landId) => {
     try {
@@ -75,7 +76,7 @@ const LandVerification = ({ landContractAddress }) => {
   return (
     <div className="land-verification-container">
       <SidebarAdmin />
-      <center><p className="land-verification-head">PENDING LAND VERIFICATIONS</p></center>
+      <p className="land-verification-head">PENDING LAND VERIFICATIONS</p>
       <div className="land-verification">
         {landDetailsList.length > 0 ? (
           <center>
@@ -84,7 +85,17 @@ const LandVerification = ({ landContractAddress }) => {
                 <tr>
                   <th>LAND ID</th>
                   <th>OWNER'S ADDRESS</th>
+                  <th>STATE</th>
+                  <th>DIVISION</th>
+                  <th>DISTRICT</th>
+                  <th>TALUKA</th>
+                  <th>VILLAGE</th>
+                  <th>SURVEY NUMBER</th>
+                  <th>SUBDIVISION</th>
                   <th>AREA</th>
+                  <th>PURCHASE DATE</th>
+                  <th>PURCHASE PRICE</th>
+                  <th>LANDVALUE AT PURCHASE</th>
                   {/* Add more headers for other details */}
                   <th>ACTION</th>
                 </tr>
@@ -94,8 +105,17 @@ const LandVerification = ({ landContractAddress }) => {
                   <tr key={index}>
                     <td>{landDetails.landId.toString()}</td>
                     <td>{landDetails.owner}</td>
+                    <td>{landDetails.identifier.state}</td>
+                    <td>{landDetails.identifier.division}</td>
+                    <td>{landDetails.identifier.district}</td>
+                    <td>{landDetails.identifier.taluka}</td>
+                    <td>{landDetails.identifier.village}</td>
+                    <td>{landDetails.identifier.surveyNumber.toString()}</td>
+                    <td>{landDetails.identifier.subdivision}</td>
                     <td>{landDetails.area.toString()}</td>
-                    {/* Add more cells for other details */}
+                    <td>{landDetails.purchaseDate.toString()}</td>
+                    <td>{landDetails.purchasePrice.toString()}</td>
+                    <td>{landDetails.landValueAtPurchase.toString()}</td>
                     <td>
                       <button className="approve-submit" onClick={() => handleApproveClick(landDetails.landId)}>
                         Approve
