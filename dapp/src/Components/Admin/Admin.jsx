@@ -1,23 +1,24 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
+import aadhar_icon from "../Assets/digital.png";
+import user_icon from "../Assets/user.png";
+import key_icon from "../Assets/key.png";
 import Web3 from "web3";
 import configuration from "../../AccountRegistration.json";
-import Home from "../Home/Home";
-import user_icon from "../Assets/user.png";
-import SidebarAdmin from "../SidebarAdmin/SidebarAdmin";
+import UserHome from "../UserHome/UserHome";
+import "./Admin.css";
 
-const contractAddress = "0x5a9d59b36224d63766b165432Cb717DE8b723b69";
+const contractAddress = "0x6D3c209Dc740D703042957d6E2fc817F759DF711";
 const contractABI = configuration.abi;
 
-export const Admin = ({accountContractAddress}) => {
+export const Admin = () => {
   const [action, setAction] = useState("");
   const [username, setUsername] = useState("");
   const [aadharNumber, setAadharNumber] = useState("");
   const [address, setAddress] = useState("");
   const [authority, setAuthority] = useState("");
   const [privateKey, setPrivateKey] = useState("");
-  const [list, setList] = useState([]);
   const Navigate = useNavigate();
 
   const [userDetails, setUserDetails] = useState(null);
@@ -34,7 +35,7 @@ export const Admin = ({accountContractAddress}) => {
       const web3Instance = new Web3(window.ethereum);
       const contract = new web3Instance.eth.Contract(
         contractABI,
-        accountContractAddress
+        contractAddress
       );
       const userDetails = await contract.methods
         .getUserDetailsByAddress(account)
@@ -69,18 +70,25 @@ export const Admin = ({accountContractAddress}) => {
 
         const contract = new web3Instance.eth.Contract(
           contractABI,
-          accountContractAddress
+          contractAddress
         );
 
         const gas = 2000000; 
         let transaction;
+        console.log(account)
+        //const newaddress = "0x65FC1ED6FAe55B81c172f1eBc6B472E45A69C490";
+        const isValidAddress = web3Instance.utils.isAddress(address);
+        if (!isValidAddress) {
+            console.error("Invalid Ethereum address");
+            return;
+        }
         if (type == 0)
             transaction = await contract.methods
           .addSecondLevelAuthority(address, username, aadharNumber)
           .send({ from: account, gas });
         else
             transaction = await contract.methods
-          .addSecondLevelAuthority(address, username, aadharNumber)
+          .addLandInspector(address, username, aadharNumber)
           .send({ from: account, gas });
 
         if (transaction.status) {
@@ -98,30 +106,119 @@ export const Admin = ({accountContractAddress}) => {
   };
   
   
-  const  getPendingVerifications = async() => {
-  try {
-  const web3Instance = new Web3(window.ethereum);
+  const remove = async (event, type) => {
+    try {
+    
+    console.log(username)
+    console.log(address)
+    console.log(aadharNumber)
+    console.log(type)
+      event.preventDefault();
+        const accounts = await window.ethereum.request({
+          method: "eth_requestAccounts",
+        });
+        const account = accounts[0];
+
+        const web3Instance = new Web3(window.ethereum);
 
         const contract = new web3Instance.eth.Contract(
           contractABI,
           contractAddress
         );
-    const result = await contract.methods.getPendingVerifications().call();
-    console.log(result);
-    
-    setList(result);
 
+        const gas = 2000000; 
+        let transaction;
+        console.log(account)
+        //const newaddress = "0x65FC1ED6FAe55B81c172f1eBc6B472E45A69C490";
+        const isValidAddress = web3Instance.utils.isAddress(address);
+        if (!isValidAddress) {
+            console.error("Invalid Ethereum address");
+            return;
+        }
+        if (type == 0)
+            transaction = await contract.methods
+          .removeSecondLevelAuthority(address)
+          .send({ from: account, gas });
+        else
+            transaction = await contract.methods
+          .removeLandInspector(address)
+          .send({ from: account, gas });
+
+        if (transaction.status) {
+          console.log("Removed successfully!");
+        } else {
+          console.error("Transaction failed:", transaction);
+          if (transaction.message) {
+            console.error("Error message:", transaction.message);
+          }
+        }
+ 
+    } catch (error) {
+      console.error("Error :", error);
+    }
+  };
+  
+  
+  const grantAuthority = async (event, type) => {
+    try {
     
-  } catch (error) {
-    console.error(error);
-  }
-    };
+    console.log(username)
+    console.log(address)
+    console.log(aadharNumber)
+    console.log(type)
+      event.preventDefault();
+        const accounts = await window.ethereum.request({
+          method: "eth_requestAccounts",
+        });
+        const account = accounts[0];
+
+        const web3Instance = new Web3(window.ethereum);
+
+        const contract = new web3Instance.eth.Contract(
+          contractABI,
+          contractAddress
+        );
+
+        const gas = 2000000; 
+        let transaction;
+        console.log(account)
+        //const newaddress = "0x65FC1ED6FAe55B81c172f1eBc6B472E45A69C490";
+        
+        const isValidAddress = web3Instance.utils.isAddress(address);
+        if (!isValidAddress) {
+            console.error("Invalid Ethereum address");
+            return;
+        }
+        
+        if (type == 0)
+            transaction = await contract.methods
+          .grantSecondLevelAuthorityStatus(address)
+          .send({ from: account, gas });
+        else
+            transaction = await contract.methods
+          .grantLandInspectorStatus(address)
+          .send({ from: account, gas });
+
+        if (transaction.status) {
+          console.log("Granted successfully!");
+        } else {
+          console.error("Transaction failed:", transaction);
+          if (transaction.message) {
+            console.error("Error message:", transaction.message);
+          }
+        }
+ 
+    } catch (error) {
+      console.error("Error :", error);
+    }
+  };
+  
+  
 
   return (
-    <div className="admin-container">
-      <SidebarAdmin/>
+    <div className="container">
       {userDetails ? ( 
-        <Home userDetails={userDetails} />
+        <UserHome userDetails={userDetails} />
       ) : (
         <>
           <div className="header">
@@ -175,6 +272,71 @@ export const Admin = ({accountContractAddress}) => {
           </div>
           
           <div className="header">
+            <div className="text">Remove Second Level Authority</div>
+            <div className="underline"> </div>
+          </div>
+          <div className="inputs">
+            {
+              <div className="input">
+                <img src={user_icon} alt="" />
+                <input
+                  type="text"
+                  placeholder="Address"
+                  onChange={(e) => setAddress(e.target.value)}
+                />
+              </div>
+              
+            }
+            
+          </div>
+          <div className="submit-container">
+            <button
+              className={"submit"}
+              onClick={(e) => remove(e, 0)}
+            >
+              Add
+            </button>
+            
+          </div>
+          
+          
+          
+          <div className="header">
+            <div className="text">Grant Second Level Authority status</div>
+            <div className="underline"> </div>
+          </div>
+          <div className="inputs">
+            {
+              <div className="input">
+                <img src={user_icon} alt="" />
+                <input
+                  type="text"
+                  placeholder="Address"
+                  onChange={(e) => setAddress(e.target.value)}
+                />
+              </div>
+              
+            }
+            
+          </div>
+          <div className="submit-container">
+            <button
+              className={"submit"}
+              onClick={(e) => grantAuthority(e, 0)}
+            >
+              Add
+            </button>
+            
+          </div>
+          
+          
+          
+          
+          
+          
+          
+          
+          <div className="header">
             <div className="text">Add Land Inspector</div>
             <div className="underline"> </div>
           </div>
@@ -223,11 +385,66 @@ export const Admin = ({accountContractAddress}) => {
             </button>
             
           </div>
+          
+          <div className="header">
+            <div className="text">Remove Second Level Authority</div>
+            <div className="underline"> </div>
+          </div>
+          <div className="inputs">
+            {
+              <div className="input">
+                <img src={user_icon} alt="" />
+                <input
+                  type="text"
+                  placeholder="Address"
+                  onChange={(e) => setAddress(e.target.value)}
+                />
+              </div>
+              
+            }
+            
+          </div>
+          <div className="submit-container">
+            <button
+              className={"submit"}
+              onClick={(e) => remove(e, 1)}
+            >
+              Add
+            </button>
+            
+          </div>
+          
+          
+          <div className="header">
+            <div className="text">Grant Land Inspector status</div>
+            <div className="underline"> </div>
+          </div>
+          <div className="inputs">
+            {
+              <div className="input">
+                <img src={user_icon} alt="" />
+                <input
+                  type="text"
+                  placeholder="Address"
+                  onChange={(e) => setAddress(e.target.value)}
+                />
+              </div>
+              
+            }
+            
+          </div>
+          <div className="submit-container">
+            <button
+              className={"submit"}
+              onClick={(e) => grantAuthority(e, 1)}
+            >
+              Add
+            </button>
+            
+          </div>
         </>
         
       )}
-      
-      <ul>{list.length > 0 && list.map((item) => <li>{item.userAddress} </li>)}</ul>
     </div>
   );
 };
