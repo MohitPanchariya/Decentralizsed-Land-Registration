@@ -12,8 +12,8 @@ import TOO from './Components/TOO/TOO.jsx';
 import UserDetails from './Components/UserDetails/UserDetails.jsx';
 import UserVerification from './Components/UserVerification/UserVerification.jsx';
 
-const accountContractAddress = "0xf5e301Ef2D7016604125329C2391e554b16AE6Ab";
-const landContractAddress = "0x02f45774e56EBf5C796Ed4241AC7e74450C8Ca24";
+const accountContractAddress = "";
+const landContractAddress = "";
 
 function App() {
   return (

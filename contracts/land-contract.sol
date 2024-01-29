@@ -223,7 +223,7 @@ event RequestRejected(uint indexed requestId, address indexed seller, address in
     uint[] verificationRequired;
 
     //Function to submit a land verification request
-    function landVerificationRequest(uint _landId) public onlyOwner(_landId) {
+    function landVerificationRequest(uint _landId) public onlyRegisteredUser() onlyOwner(_landId) {
         //Land is already verified
         if(landMapping[_landId].isVerified) {
             emit LandAlreadyVerified(_landId);
@@ -333,7 +333,7 @@ event RequestRejected(uint indexed requestId, address indexed seller, address in
     }
 
     //List land for sale
-    function listLandForSale(uint _landId) public onlyOwner(_landId) {
+    function listLandForSale(uint _landId) public onlyRegisteredUser() onlyVerifiedLand(_landId) onlyOwner(_landId) {
         //Check if land actually exists
         //Mapping in solidity always exists and maps to a zero value
         //Hence, this check is needed.
