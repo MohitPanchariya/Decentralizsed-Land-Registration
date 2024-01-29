@@ -104,7 +104,31 @@ function Home({landContractAddress}) {
     }
   }
 
-    
+  const requestLandVerification = async (landId) => {
+    const account = await getMetamaskAccount();
+
+    const web3Instance = new Web3(window.ethereum);
+
+    const contract = new web3Instance.eth.Contract(
+      contractABI,
+      landContractAddress
+    );
+
+    const gas = 2000000;
+    // Call the getMyLands function on the contract
+    const transaction = await contract.methods.landVerificationRequest(landId).send({ from: account, gas });
+
+    const events = transaction.events;
+
+    if(events.LandVerificationRequestExists) {
+      alert("Land Verification has already been requested!");
+    } else if(events.LandVerificationRequestSubmitted) {
+      alert("Land verification request submitted!");
+    } else {
+      alert("An error has occured. Check console for detailed error")
+      console.error(transaction)
+    }
+  }
 
   useEffect(() => {
     initPage();
@@ -140,7 +164,10 @@ function Home({landContractAddress}) {
                 ? land.previousOwners.join(", ")
                 : " No Previous Owners"}
               </p>
-              <button className="submit-list" onClick={() => {listLandForSale(land.landId)}}>List Land for Sale</button>
+              {(!land.isForSale) && <button className="submit-list" 
+                onClick={() => {listLandForSale(land.landId)}}>List Land for Sale</button>}
+              {(!land.isVerified) && <button className="submit-list" 
+                onClick={() => {requestLandVerification(land.landId)}}>Request Land Verification</button>}
           </div>
           )) } </div>)}
     </>
