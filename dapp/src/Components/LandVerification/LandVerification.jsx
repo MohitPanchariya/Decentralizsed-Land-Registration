@@ -1,21 +1,20 @@
 import React, { useState, useEffect } from "react";
 import Web3 from "web3";
-import configuration from "../../LandRegistration.json"; // Replace with your contract ABI
+import configuration from "../../LandRegistration.json";
 import SidebarAdmin from "../SidebarAdmin/SidebarAdmin";
 import "./LandVerification.css";
 
-const contractABI = configuration.abi; // Replace with your contract ABI
+const contractABI = configuration.abi;
 
 const LandVerification = ({ landContractAddress }) => {
   const [pendingLandVerifications, setPendingLandVerifications] = useState([]);
-  const [web3, setWeb3] = useState(null);
-  const [landDetails, setLandDetails] = useState([]);
+  const [web3, setWeb3] = useState([]);
+  const [landDetailsList, setLandDetailsList] = useState([]);
 
   useEffect(() => {
     const initializeWeb3 = async () => {
       if (window.ethereum) {
         try {
-          // Request account access if needed
           await window.ethereum.request({ method: 'eth_requestAccounts' });
           const web3Instance = new Web3(window.ethereum);
           setWeb3(web3Instance);
@@ -27,51 +26,46 @@ const LandVerification = ({ landContractAddress }) => {
       }
     };
 
-    initializeWeb3();
-  }, []);
-
-  useEffect(() => {
-    // Function to fetch pending land verifications from the smart contract
-    const fetchPendingLandVerifications = async () => {
+    const fetchData = async () => {
       try {
-        if (web3) {
+        if (web3 && landContractAddress) {
           const contract = new web3.eth.Contract(contractABI, landContractAddress);
 
-          // Call the getPendingLandVerificationRequests function on the contract
+          // Fetch pending land verifications
           const result = await contract.methods.getPendingLandVerificationRequests().call();
           setPendingLandVerifications(result);
 
-          // Fetch additional details for each land
+          // Fetch details for each landID in the pendingLandVerifications array
           const detailsPromises = result.map(async (landId) => {
             const landDetails = await contract.methods.landMapping(landId).call();
             return { landId, ...landDetails };
           });
 
-          const details = await Promise.all(detailsPromises);
-          setLandDetails(details);
+          // Wait for all details to be fetched
+          const allLandDetails = await Promise.all(detailsPromises);
+          setLandDetailsList(allLandDetails);
         }
       } catch (error) {
-        console.error("Error fetching pending land verifications:", error);
+        console.error("Error fetching data:", error);
       }
     };
 
-    // Call the fetchPendingLandVerifications function when the component mounts
-    fetchPendingLandVerifications();
-  }, [web3, landContractAddress]); // Update on web3 or landContractAddress changes
+    initializeWeb3();
+    fetchData();
+  }, [web3, landContractAddress]);
 
-  // Function to handle the "Approve" button click
   const handleApproveClick = async (landId) => {
     try {
       if (web3) {
         const contract = new web3.eth.Contract(contractABI, landContractAddress);
-
-        // Call the verifyLand function on the contract
         await contract.methods.verifyLand(landId).send({ from: (await web3.eth.getAccounts())[0] });
-
-        // Update the state to remove the verified land from the pendingLandVerifications array
         setPendingLandVerifications((prevVerifications) =>
           prevVerifications.filter((verification) => verification !== landId)
         );
+
+        // Fetch details for the approved land directly from landMapping
+        const approvedLandDetails = await contract.methods.landMapping(landId).call();
+        setLandDetailsList((prevDetailsList) => [...prevDetailsList, { landId, ...approvedLandDetails }]);
       }
     } catch (error) {
       console.error("Error approving land verification:", error);
@@ -83,47 +77,34 @@ const LandVerification = ({ landContractAddress }) => {
       <SidebarAdmin />
       <center><p className="land-verification-head">PENDING LAND VERIFICATIONS</p></center>
       <div className="land-verification">
-        {pendingLandVerifications.length > 0 ? (
-          <center><table className="land-verification-table">
-            <thead>
-              <tr>
-                <th>LAND ID</th>
-                <th>STATE</th>
-                <th>DIVISION</th>
-                <th>DISTRICT</th>
-                <th>TALUKA</th>
-                <th>VILLAGE</th>
-                <th>SURVEY NUMBER</th>
-                <th>SUBDIVISION</th>
-                <th>AREA</th>
-                <th>PURCHASE DATE</th>
-                <th>PURCHASE PRICE</th>
-                <th>ACTION</th>
-              </tr>
-            </thead>
-            <tbody>
-              {landDetails.map((landDetail, index) => (
-                <tr key={index}>
-                  <td>{landDetail.landId}</td>
-                  <td>{landDetail.state}</td>
-                  <td>{landDetail.division}</td>
-                  <td>{landDetail.district}</td>
-                  <td>{landDetail.taluka}</td>
-                  <td>{landDetail.village}</td>
-                  <td>{landDetail.surveyNumber}</td>
-                  <td>{landDetail.subdivision}</td>
-                  <td>{landDetail.area}</td>
-                  <td>{landDetail.purchaseDate}</td>
-                  <td>{landDetail.purchasePrice}</td>
-                  <td>
-                    <button className="approve-submit" onClick={() => handleApproveClick(landDetail.landId)}>
-                      Approve
-                    </button>
-                  </td>
+        {landDetailsList.length > 0 ? (
+          <center>
+            <table className="land-verification-table">
+              <thead>
+                <tr>
+                  <th>LAND ID</th>
+                  <th>OWNER'S ADDRESS</th>
+                  <th>AREA</th>
+                  {/* Add more headers for other details */}
+                  <th>ACTION</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {landDetailsList.map((landDetails, index) => (
+                  <tr key={index}>
+                    <td>{landDetails.landId.toString()}</td>
+                    <td>{landDetails.owner}</td>
+                    <td>{landDetails.area.toString()}</td>
+                    {/* Add more cells for other details */}
+                    <td>
+                      <button className="approve-submit" onClick={() => handleApproveClick(landDetails.landId)}>
+                        Approve
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </center>
         ) : (
           <center><p className="no-verifications-message">No pending land verifications</p></center>

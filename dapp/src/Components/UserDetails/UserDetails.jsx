@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import Web3 from "web3"; // Import web3 library
 import configuration from "../../AccountRegistration.json";
 import Sidebar from "../Sidebar/Sidebar";
+import SidebarAdmin from "../SidebarAdmin/SidebarAdmin";
 import "./UserDetails.css";
 
 const UserDetails = ({accountContractAddress}) => {
@@ -145,7 +146,11 @@ const UserDetails = ({accountContractAddress}) => {
 
   return (
     <div classname="user-card-container">
-      <Sidebar />
+      {userDetails.designation !== 0 ? (
+        <SidebarAdmin />
+      ) : (
+        <Sidebar />
+      )}
       <div className="user-card">
         <center>
           <h1>WELCOME {userDetails.username.toLocaleUpperCase()}!</h1>

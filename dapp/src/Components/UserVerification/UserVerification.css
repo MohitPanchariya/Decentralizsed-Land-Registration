@@ -39,14 +39,15 @@
   tbody { height: auto; }
 }
 * {
-    margin: 0;
-    padding: 0;
-    list-style: none;
-    text-decoration: none;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  text-decoration: none;
 }
 
 .user-verification-head {
   margin-top:15px;
+  margin-bottom: 15px;
   color: #76453B;
   font-size: 25px;
   font-weight:bold;
