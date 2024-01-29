@@ -11,9 +11,10 @@ import Sent from './Components/Sent/Sent.jsx';
 import TOO from './Components/TOO/TOO.jsx';
 import UserDetails from './Components/UserDetails/UserDetails.jsx';
 import UserVerification from './Components/UserVerification/UserVerification.jsx';
+import LandVerification from './Components/LandVerification/LandVerification.jsx';
 
-const accountContractAddress = "0xf5e301Ef2D7016604125329C2391e554b16AE6Ab";
-const landContractAddress = "0x02f45774e56EBf5C796Ed4241AC7e74450C8Ca24";
+const accountContractAddress = "0x570698C5a82e53eec1C1456a36781FC2D59978A9";
+const landContractAddress = "0x1BC7C27c40B76e317854730d71f7AB7a332A68d1";
 
 function App() {
   return (
@@ -28,6 +29,7 @@ function App() {
       <Route path='/req-sent' element={<Sent landContractAddress={landContractAddress}/>} />
       <Route path='/too' element={<TOO landContractAddress={landContractAddress}/>} />
       <Route path='/user-verification' element={<UserVerification accountContractAddress={accountContractAddress}/>} />
+      <Route path='/land-verification' element={<LandVerification landContractAddress={landContractAddress}/>} />
     </Routes>
   );
 }
