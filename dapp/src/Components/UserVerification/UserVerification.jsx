@@ -74,7 +74,7 @@ const UserVerification = ({ accountContractAddress }) => {
   return (
     <div className="user-verification-container">
       <SidebarAdmin />
-      <center><h2>Pending User Verifications</h2></center>
+      <center><p className="user-verification-head">PENDING USER VERIFICATIONS</p></center>
       <div className="user-verification">
         {pendingVerifications.length > 0 ? (
           <center><table className="user-verification-table">
@@ -100,7 +100,7 @@ const UserVerification = ({ accountContractAddress }) => {
           </tbody>
         </table></center>
         ) : (
-          <p className="no-verifications-message">No pending user verifications!</p>
+          <center><p className="no-verifications-message">No pending user verifications!</p></center>
         )}
       </div>
     </div>

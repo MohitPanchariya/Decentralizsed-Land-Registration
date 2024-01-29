@@ -19,6 +19,7 @@ function Sidebar() {
             User Details
           </Link>
         <Link to="/user-verification" className="fas fa-link">Pending User Verifications</Link>
+        <Link to="/land-verification" className="fas fa-link">Pending land Verifications</Link>
         <Link to="/home" className="fas fa-link">
             My Lands
           </Link>

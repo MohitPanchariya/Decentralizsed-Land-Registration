@@ -45,8 +45,16 @@
     text-decoration: none;
 }
 
-h2 {
-   margin: 30px 0 20px 0;
+.user-verification-head {
+  margin-top:15px;
+  color: #76453B;
+  font-size: 25px;
+  font-weight:bold;
+}
+
+.no-verifications-message{
+  font-size: 15px;
+  margin-top: 15px;
 }
 
 .approve-submit {
