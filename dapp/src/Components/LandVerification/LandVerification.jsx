@@ -59,14 +59,15 @@ const LandVerification = ({ landContractAddress }) => {
     try {
       if (web3) {
         const contract = new web3.eth.Contract(contractABI, landContractAddress);
-        await contract.methods.verifyLand(landId).send({ from: (await web3.eth.getAccounts())[0] });
+        const transaction= await contract.methods.verifyLand(landId).send({ from: (await web3.eth.getAccounts())[0] });
         setPendingLandVerifications((prevVerifications) =>
           prevVerifications.filter((verification) => verification !== landId)
         );
 
-        // Fetch details for the approved land directly from landMapping
-        const approvedLandDetails = await contract.methods.landMapping(landId).call();
-        setLandDetailsList((prevDetailsList) => [...prevDetailsList, { landId, ...approvedLandDetails }]);
+        if(transaction)
+        {
+          alert("Land Verified!");
+        }
       }
     } catch (error) {
       console.error("Error approving land verification:", error);
