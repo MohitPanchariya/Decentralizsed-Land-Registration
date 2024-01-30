@@ -15,7 +15,7 @@ const contractABI = configuration.abi;
 export const Admin = () => {
   const [action, setAction] = useState("");
   const [username, setUsername] = useState("");
-  const [aadharNumber, setAadharNumber] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
   const [address, setAddress] = useState("");
   const [authority, setAuthority] = useState("");
   const [privateKey, setPrivateKey] = useState("");
@@ -41,7 +41,7 @@ export const Admin = () => {
         .getUserDetailsByAddress(account)
         .call();
 
-      if (userDetails.aadharNumber) {
+      if (userDetails.phoneNumber) {
         console.log("Login successful!");
         setUserDetails(userDetails); 
         Navigate("/home");
@@ -58,7 +58,7 @@ export const Admin = () => {
     
     console.log(username)
     console.log(address)
-    console.log(aadharNumber)
+    console.log(phoneNumber)
     console.log(type)
       event.preventDefault();
         const accounts = await window.ethereum.request({
@@ -84,11 +84,11 @@ export const Admin = () => {
         }
         if (type == 0)
             transaction = await contract.methods
-          .addSecondLevelAuthority(address, username, aadharNumber)
+          .addSecondLevelAuthority(address, username, phoneNumber)
           .send({ from: account, gas });
         else
             transaction = await contract.methods
-          .addLandInspector(address, username, aadharNumber)
+          .addLandInspector(address, username, phoneNumber)
           .send({ from: account, gas });
 
         if (transaction.status) {
@@ -111,7 +111,7 @@ export const Admin = () => {
     
     console.log(username)
     console.log(address)
-    console.log(aadharNumber)
+    console.log(phoneNumber)
     console.log(type)
       event.preventDefault();
         const accounts = await window.ethereum.request({
@@ -164,7 +164,7 @@ export const Admin = () => {
     
     console.log(username)
     console.log(address)
-    console.log(aadharNumber)
+    console.log(phoneNumber)
     console.log(type)
       event.preventDefault();
         const accounts = await window.ethereum.request({
@@ -216,6 +216,7 @@ export const Admin = () => {
   
 
   return (
+  <div className="scrollable-container">
     <div className="container">
       {userDetails ? ( 
         <UserDetails userDetails={userDetails} />
@@ -253,8 +254,8 @@ export const Admin = () => {
                 <img src={user_icon} alt="" />
                 <input
                   type="text"
-                  placeholder="Aadhar"
-                  onChange={(e) => setAadharNumber(e.target.value)}
+                  placeholder="Phone"
+                  onChange={(e) => setPhoneNumber(e.target.value)}
                 />
               </div>
               
@@ -368,8 +369,8 @@ export const Admin = () => {
                 <img src={user_icon} alt="" />
                 <input
                   type="text"
-                  placeholder="Aadhar"
-                  onChange={(e) => setAadharNumber(e.target.value)}
+                  placeholder="Phone"
+                  onChange={(e) => setPhoneNumber(e.target.value)}
                 />
               </div>
               
@@ -445,6 +446,7 @@ export const Admin = () => {
         </>
         
       )}
+    </div>
     </div>
   );
 };
