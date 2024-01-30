@@ -146,7 +146,7 @@ const UserDetails = ({accountContractAddress}) => {
 
   return (
     <div classname="user-card-container">
-      {userDetails.designation !== 0 ? (
+      {userDetails.designation.toString() !== '0' ? (
         <SidebarAdmin />
       ) : (
         <Sidebar />

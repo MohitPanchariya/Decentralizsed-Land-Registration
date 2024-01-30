@@ -90,7 +90,7 @@ export const AddLandRecord = ({landContractAddress}) => {
         <form onSubmit={handleSubmit}>
           <input
             name="STATE"
-            class="feedback-input"
+            className="feedback-input"
             placeholder="STATE"
             type="text"
             value={state}
@@ -99,7 +99,7 @@ export const AddLandRecord = ({landContractAddress}) => {
           />
           <input
             name="DIVISION"
-            class="feedback-input"
+            className="feedback-input"
             placeholder="DIVISION"
             type="text"
             value={division}
@@ -108,7 +108,7 @@ export const AddLandRecord = ({landContractAddress}) => {
           />
           <input
             placeholder="DISTRICT"
-            class="feedback-input"
+            className="feedback-input"
             type="text"
             value={district}
             onChange={(e) => setDistrict(e.target.value)}
@@ -116,7 +116,7 @@ export const AddLandRecord = ({landContractAddress}) => {
           />
           <input
             placeholder="TALUKA"
-            class="feedback-input"
+            className="feedback-input"
             type="text"
             value={taluka}
             onChange={(e) => setTaluka(e.target.value)}
@@ -124,7 +124,7 @@ export const AddLandRecord = ({landContractAddress}) => {
           />
           <input
             placeholder="VILLAGE"
-            class="feedback-input"
+            className="feedback-input"
             type="text"
             value={village}
             onChange={(e) => setVillage(e.target.value)}
@@ -132,7 +132,7 @@ export const AddLandRecord = ({landContractAddress}) => {
           />
           <input
             placeholder="SURVEY NUMBER"
-            class="feedback-input"
+            className="feedback-input"
             type="number"
             value={surveyNumber === 0 ? "" : surveyNumber}
             onChange={(e) => setSurveyNumber(parseInt(e.target.value, 10))}
@@ -140,7 +140,7 @@ export const AddLandRecord = ({landContractAddress}) => {
           />
           <input
             placeholder="SUBDIVISION"
-            class="feedback-input"
+            className="feedback-input"
             type="text"
             value={subdivision}
             onChange={(e) => setSubdivision(e.target.value)}
