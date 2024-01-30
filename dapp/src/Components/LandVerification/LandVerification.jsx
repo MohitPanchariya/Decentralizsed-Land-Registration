@@ -53,7 +53,7 @@ const LandVerification = ({ landContractAddress }) => {
 
     initializeWeb3();
     fetchData();
-  }, []); // Empty dependency array ensures the effect runs only once
+  }, [web3, landContractAddress]);
 
   const handleApproveClick = async (landId) => {
     try {
