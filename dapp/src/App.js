@@ -13,8 +13,8 @@ import UserDetails from './Components/UserDetails/UserDetails.jsx';
 import UserVerification from './Components/UserVerification/UserVerification.jsx';
 import LandVerification from './Components/LandVerification/LandVerification.jsx';
 
-const accountContractAddress = "0xbF37F5cEd0461a0A40e5036a6158414A5a5D0FF3";
-const landContractAddress = "0x548FA1FA4c741C4cd829115dcC7e1272C973bb8A";
+const accountContractAddress = "0xb7b0dc723B7911cc1f876A9268bF541e099971BC";
+const landContractAddress = "0xA6cA7E618E1D4c4C6dbCB3bc5Bf388d4AEdE783b";
 
 function App() {
   return (

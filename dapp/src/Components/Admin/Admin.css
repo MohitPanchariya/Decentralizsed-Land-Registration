@@ -1,4 +1,4 @@
-.container {
+/* .container {
   overflow-y: auto;
 }
 
@@ -54,4 +54,44 @@ h3 {
     font-weight: 700;
     cursor: pointer;
     font-family: Helvetica, Arial, sans-serif;
+} */
+
+.admin-container {
+    display: flex;
+  flex-direction: column;
+  width: 530px;
+  /* Adjust the width as needed */
+  height: 87%;
+  margin: 2% 30% 5%;
+  /* Center the form */
+  background: #F8FAE5;
+  padding-bottom: 40px;
+  border-radius: 15px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  position: fixed;
 }
+
+.underline-add {
+    width: 300px;
+    height: 6px;
+    background: #76453B;
+    border-radius: 9px;
+  }
+
+.submit-admin {
+    display: flex;
+    justify-content: center;
+    margin: 10px 63px 0 80px;
+    align-items: center;
+    width: 380px;
+    height: 59px;
+    color: #fff;
+    background: #76453B;
+    border-radius: 50px;
+    font-size: 23px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: Helvetica, Arial, sans-serif;
+  }
+
+
