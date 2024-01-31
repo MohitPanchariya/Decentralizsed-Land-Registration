@@ -4,6 +4,7 @@ import configuration from "../../AccountRegistration.json";
 import "./Admin.css"
 import phone_icon from "../Assets/telephone.png";
 import user_icon from "../Assets/user.png";
+import SidebarAdmin from "../SidebarAdmin/SidebarAdmin";
 
 const contractABI = configuration.abi; // Replace with your contract ABI
 
@@ -41,6 +42,8 @@ const AddLandInspector = ({accountContractAddress}) => {
   };
 
   return (
+    <div>
+      <SidebarAdmin />
     <div className="admin-container">
       <div className="header"><div className="text">Add Land Inspector</div><div className="underline-add"> </div></div>
       <div className="inputs">
@@ -73,6 +76,7 @@ const AddLandInspector = ({accountContractAddress}) => {
             </div>
       <button className="submit-admin" onClick={handleAddLandInspector}>Add Land Inspector</button>
       </div>
+    </div>
     </div>
   );
 };
