@@ -56,6 +56,11 @@ button {
   transition: background-color 0.3s ease-in-out;
 }
 
+.land-details {
+  margin-top: 5px;
+  font-size: 13px;
+}
+
 button:hover {
   background-color: #45a049;
 }

@@ -48,9 +48,17 @@ function ReceivedLandRequests({landContractAddress}) {
         Buyer_address = await contract.methods
         .getBuyerAddressForRequest(requestId)
         .call({ from: account, gas });
+
+    // Check if the buyer address is 0x0000000000000000000000000000000000000000
+  if (Buyer_address.toLowerCase() === '0x0000000000000000000000000000000000000000') {
+    // Set a fallback value or handle the case where the buyer address is 0x0000000000000000000000000000000000000000
+    return "0"; // Assuming '0' represents the 'Rejected' status
+  }
     } catch (error) {
       console.error(error);
     }
+
+
     const status = await contract.methods.getLandRequestStatus(requestId,Buyer_address).call({ from: Buyer_address, gas });
 
     return status;
@@ -149,14 +157,19 @@ function ReceivedLandRequests({landContractAddress}) {
   }
 
       // Call the smart contract function to accept the request
-      await contract.methods.acceptRequest(requestId).send({
+      const transaction = await contract.methods.acceptRequest(requestId).send({
         from: account,
         gas,
       });
+      const transactionEvents = transaction.events;
+      if (transactionEvents.RequestAccepted) {
+        alert("Request has been accepted!");
+      } 
+      else if(transactionEvents.DuplicateAcceptanceAttempt)
+      {
+        alert("Land Record request is already accepted by you for another buyer");
+      }
 
-      alert("Request has been accepted!");
-      // Update the local state or trigger a refetch of data as needed
-      // For simplicity, let's refetch all data
       await fetchReceivedLandRequests(account);
       await fetchLandData();
     } catch (error) {
@@ -246,6 +259,10 @@ function ReceivedLandRequests({landContractAddress}) {
       });
 
       alert("Request has been rejected!");
+
+      // Remove the rejected request from the frontend
+      //setReceivedLandRequests((prevRequests) => prevRequests.filter((id) => id !== requestId));
+
       // Update the local state or trigger a refetch of data as needed
       // For simplicity, let's refetch all data
       await fetchReceivedLandRequests(account);

@@ -27,7 +27,6 @@ function Sidebar() {
           {/* <Link to="/user-verification" className="fas fa-link">User Verification</Link> */}
                 <Link to="/req-sent" className="fas fa-link">View Sent Land Requests</Link>
                 <Link to="/req-received" className="fas fa-link">View Received Land Requests</Link>
-                <Link to="/too" className="fas fa-link">Transfer Of Ownership</Link>
                 <Link to="/" className="fas fa-link">
             Log Out
           </Link>

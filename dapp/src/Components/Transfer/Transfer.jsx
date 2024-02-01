@@ -1,15 +1,17 @@
 import React, { useEffect, useState } from "react";
 import Web3 from "web3";
 import configuration from "../../LandRegistration.json";
-import Sidebar from "../Sidebar/Sidebar";
-import "./TOO.css";
+import SidebarAdmin from "../SidebarAdmin/SidebarAdmin";
+import "./Transfer.css";
 
 // const landContractAddress ="0xD4e46d45EAF564eb89C58e09D0A947dCd2e45008";
 const contractABI = configuration.abi;
 
-function ReceivedLandRequests({landContractAddress}) {
-  const [receivedLandRequests, setReceivedLandRequests] = useState([]);
+function TransferRequests({landContractAddress}) {
+  const [pendingTransferRequests, setPendingTransferRequests] = useState([]);
   const [landData, setLandData] = useState([]);
+ 
+
 
   const getMetamaskAccount = async () => {
     const accounts = await window.ethereum.request({
@@ -18,7 +20,7 @@ function ReceivedLandRequests({landContractAddress}) {
     return accounts[0];
   };
 
-  const fetchReceivedLandRequests = async (account) => {
+  const fetchReceivedTransferRequests = async (account) => {
     const web3Instance = new Web3(window.ethereum);
     const contract = new web3Instance.eth.Contract(
       contractABI,
@@ -26,11 +28,11 @@ function ReceivedLandRequests({landContractAddress}) {
     );
 
     const gas = 2000000;
-    const result = await contract.methods.receivedLandRequests().call(
+    const result = await contract.methods.getPendingTransferRequests().call(
       { from: account, gas }
     );
 
-    setReceivedLandRequests(result);
+    setPendingTransferRequests(result);
   };
 
   const getPreviousOwners = async (landId) => {
@@ -116,7 +118,7 @@ function ReceivedLandRequests({landContractAddress}) {
 
     const gas = 2000000;
 
-    const dataPromises = receivedLandRequests.map(async (requestId) => {
+    const dataPromises = pendingTransferRequests.map(async (requestId) => {
       const landId = await getLandIdForRequest(requestId);
 
       let BuyerInfo;
@@ -189,7 +191,7 @@ function ReceivedLandRequests({landContractAddress}) {
         {   from: account,
             gas, }
       );
-      console.log("hello")
+  
 
       if(reqstatus === 3) {
         alert("Transfer of ownership is done!");
@@ -210,7 +212,7 @@ function ReceivedLandRequests({landContractAddress}) {
     if (window.ethereum) {
       try {
         const account = await getMetamaskAccount();
-        await fetchReceivedLandRequests(account);
+        await fetchReceivedTransferRequests(account);
         await fetchLandData();
       } catch (error) {
         console.error("Error connecting to Metamask:", error);
@@ -230,43 +232,63 @@ function ReceivedLandRequests({landContractAddress}) {
 
   useEffect(() => {
     fetchLandData();
-  }, [receivedLandRequests]);
+  }, [pendingTransferRequests]);
 
   return (
     <>
-      <Sidebar />
-      <div className="sent-land-requests-container">
-        <h1>Transfer Of Ownership</h1>
-        {
-          landData.length === 0 ? (<p>No land transfer requests found!</p>) :
-          ((<div className="received-land-cards">
-            {landData.map((item) => (
-              // Check if the status is "Payment Done"
-    (item.status.toString() === "3" || item.status.toString() === "4")  && (
-      <div key={item.requestId} className="sent-land-card">
-        <p className="land-details"><b>Request ID: </b>{item.requestId.toString()}</p>
-        <p className="land-details"><b>Land ID: </b>{item.landId.toString()}</p>
-        <p className="land-details"><b>Buyer Address: </b>{item.BuyerInfo}</p>
-        <p className="land-details"><b>Land Owner Address: </b>{item.SellerInfo}</p>
-        <p className="land-details"><b>
-                  Previous Owner Address: </b>
-                  {item.previousOwners.length > 0
-                    ? item.previousOwners.join(", ")
-                    : "No Previous Owners"}
+    <div className="sent-land-requests-container">
+      <SidebarAdmin />
+      <h1>Transfer Of Ownership Requests</h1>
+      {landData.length === 0 ? (
+        <p>No land transfer requests found!</p>
+      ) : (
+        <div className="received-land-cards">
+          {landData.map((item) => (
+            // Check if the status is "Payment Done"
+            (item.status.toString() === "3" || item.status.toString() === "4") && (
+              <div key={item.requestId} className="sent-land-card">
+                <p className="land-details">
+                  <b>Request ID: </b>
+                  {item.requestId.toString()}
+                </p>
+                <p className="land-details">
+                  <b>Land ID: </b>
+                  {item.landId.toString()}
+                </p>
+                {/* Conditionally render Buyer Address based on transfer status */}
+                  <p className="land-details">
+                    <b>Buyer Address: </b>
+                    {item.BuyerInfo}
                   </p>
-        <p className="land-details"><b>Request Status: </b>{getStatusLabel(item.status.toString())}</p>
-        <button className="transfer-button"onClick={() => transferOwnership(item.requestId)}>
+                <p className="land-details">
+                  <b>Land Owner Address: </b>
+                  {item.SellerInfo}
+                </p>
+                <p className="land-details">
+                  <b>
+                    Previous Owner Address:{" "}
+                  </b>
+                  {item.previousOwners.length > 0
+                    ? item.previousOwners[0].length > 0
+                      ? item.previousOwners[0].join(", ")
+                      : "No Previous Owners"
+                    : "No Previous Owners"}
+                </p>
+                <p className="land-details">
+                  <b>Request Status: </b>
+                  {getStatusLabel(item.status.toString())}
+                </p>
+                <button className="transfer-button"onClick={() => transferOwnership(item.requestId)}>
           TRANSFER OWNERSHIP
         </button>
-      </div>
-    )
-            ))}
-          </div>))
-        }
-      
+              </div>
+            )
+          ))}
+        </div>
+      )}
     </div>
-    </>
+  </>
   );
 }
 
-export default ReceivedLandRequests;
+export default TransferRequests;

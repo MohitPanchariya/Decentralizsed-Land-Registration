@@ -15,6 +15,9 @@ function Sidebar() {
         <Link to="/admin" className="fas fa-link">
             Add Authorities
           </Link>
+          <Link to="/transfer-requests" className="fas fa-link">
+            Pending Land Transfer Requests
+          </Link>
         <Link to="/user-details" className="fas fa-link">
             User Details
           </Link>
