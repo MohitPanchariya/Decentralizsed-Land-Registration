@@ -8,9 +8,17 @@ import SidebarAdmin from "../SidebarAdmin/SidebarAdmin";
 
 const contractABI = configuration.abi; // Replace with your contract ABI
 
+
 const AddLandInspector = ({accountContractAddress}) => {
   const [username, setUsername] = useState("");
-  const [address, setAddress] = useState("");
+  const [addAddressLI, setAddAddressLI] = useState("");
+  const [addAddressSLA, setAddAddressSLA] = useState("");
+  const [grantAddressLI, setGrantAddressLI] = useState("");
+  const [grantAddressSLA, setGrantAddressSLA] = useState("");
+  const [revokeAddressLI, setRevokeAddressLI] = useState("");
+  const [revokeAddressSLA, setRevokeAddressSLA] = useState("");
+  const [removeAddressLI, setRemoveAddressLI] = useState("");
+  const [removeAddressSLA, setRemoveAddressSLA] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
 
   const handleAdd = async (type) => {
@@ -29,13 +37,13 @@ const AddLandInspector = ({accountContractAddress}) => {
 
       // Call the addLandInspector function on the contract
       
-      if (type == 0)
+      if (type === 0)
           await contract.methods
-            .addLandInspector(address, username, phoneNumber)
+            .addLandInspector(addAddressLI, username, phoneNumber)
             .send({ from: deployerAddress });
       else
           await contract.methods
-            .addSecondLevelAuthority(address, username, phoneNumber)
+            .addSecondLevelAuthority(addAddressSLA, username, phoneNumber)
             .send({ from: deployerAddress });
 
       // Display success message or perform additional actions
@@ -63,16 +71,15 @@ const AddLandInspector = ({accountContractAddress}) => {
       const contract = new web3.eth.Contract(contractABI, accountContractAddress);
 
       // Call the addLandInspector function on the contract
-      console.log(address);
       console.log(type);
       
-      if (type == 0)
+      if (type === 0)
           await contract.methods
-            .grantLandInspectorStatus(address)
+            .grantLandInspectorStatus(grantAddressLI)
             .send({ from: deployerAddress });
       else
           await contract.methods
-                .grantSecondLevelAuthorityStatus(address)
+                .grantSecondLevelAuthorityStatus(grantAddressSLA)
                 .send({ from: deployerAddress });
           
 
@@ -100,14 +107,13 @@ const AddLandInspector = ({accountContractAddress}) => {
       const contract = new web3.eth.Contract(contractABI, accountContractAddress);
 
       // Call the addLandInspector function on the contract
-      console.log(address);
-      if (type == 0)
+      if (type === 0)
           await contract.methods
-            .revokeLandInspectorStatus(address)
+            .revokeLandInspectorStatus(revokeAddressLI)
             .send({ from: deployerAddress });
       else
           await contract.methods
-            .revokeSecondLevelAuthorityStatus(address)
+            .revokeSecondLevelAuthorityStatus(revokeAddressSLA)
             .send({ from: deployerAddress });
 
 
@@ -136,13 +142,13 @@ const AddLandInspector = ({accountContractAddress}) => {
       const contract = new web3.eth.Contract(contractABI, accountContractAddress);
 
       // Call the addLandInspector function on the contract
-      if (type == 0)
+      if (type === 0)
           await contract.methods
-            .removeLandInspector(address)
+            .removeLandInspector(removeAddressLI)
             .send({ from: deployerAddress });
       else
         await contract.methods
-            .removeSecondLevelAuthority(address)
+            .removeSecondLevelAuthority(removeAddressSLA)
             .send({ from: deployerAddress });
 
       // Display success message or perform additional actions
@@ -160,6 +166,7 @@ const AddLandInspector = ({accountContractAddress}) => {
     <div>
       <SidebarAdmin />
     <div className="admin-container">
+    <div className="admin-card">
       <div className="header"><div className="text">Add Land Inspector</div><div className="underline-add"> </div></div>
       <div className="inputs">
       <div className="input">
@@ -176,8 +183,8 @@ const AddLandInspector = ({accountContractAddress}) => {
               <input
                 type="text"
                 placeholder="USER ADDRESS"
-                value={address}
-                onChange={(e) => setAddress(e.target.value)}
+                value={addAddressLI}
+                onChange={(e) => setAddAddressLI(e.target.value)}
               />
             </div>
       <div className="input">
@@ -191,7 +198,8 @@ const AddLandInspector = ({accountContractAddress}) => {
             </div>
       <button className="submit-admin" onClick={() => handleAdd(0)}>Add Land Inspector</button>
       </div>
-      
+      </div>
+      <div className="admin-card">
       <div className="header"><div className="text">Grant Land Inspector</div><div className="underline-add"> </div></div>
       
       <div className="inputs">
@@ -201,13 +209,13 @@ const AddLandInspector = ({accountContractAddress}) => {
               <input
                 type="text"
                 placeholder="USER ADDRESS"
-                value={address}
-                onChange={(e) => setAddress(e.target.value)}
+                value={grantAddressLI}
+                onChange={(e) => setGrantAddressLI(e.target.value)}
               />
             </div>
       <button className="submit-admin" onClick={() => handleGrant(0)}>Grant Land Inspector Status</button>
       </div>
-      
+      </div>
       <div className="header"><div className="text">Revoke Land Inspector</div><div className="underline-add"> </div></div>
       
       <div className="inputs">
@@ -217,8 +225,8 @@ const AddLandInspector = ({accountContractAddress}) => {
               <input
                 type="text"
                 placeholder="USER ADDRESS"
-                value={address}
-                onChange={(e) => setAddress(e.target.value)}
+                value={revokeAddressLI}
+                onChange={(e) => setRevokeAddressLI(e.target.value)}
               />
             </div>
       <button className="submit-admin" onClick={() => handleRevoke(0)}>Revoke Land Inspector Status</button>
@@ -233,8 +241,8 @@ const AddLandInspector = ({accountContractAddress}) => {
               <input
                 type="text"
                 placeholder="USER ADDRESS"
-                value={address}
-                onChange={(e) => setAddress(e.target.value)}
+                value={removeAddressLI}
+                onChange={(e) => setRemoveAddressLI(e.target.value)}
               />
             </div>
       <button className="submit-admin" onClick={() => handleRemove(0)}>Remove Land Inspector</button>
@@ -256,8 +264,8 @@ const AddLandInspector = ({accountContractAddress}) => {
               <input
                 type="text"
                 placeholder="USER ADDRESS"
-                value={address}
-                onChange={(e) => setAddress(e.target.value)}
+                value={addAddressSLA}
+                onChange={(e) => setAddAddressSLA(e.target.value)}
               />
             </div>
       <div className="input">
@@ -281,8 +289,8 @@ const AddLandInspector = ({accountContractAddress}) => {
               <input
                 type="text"
                 placeholder="USER ADDRESS"
-                value={address}
-                onChange={(e) => setAddress(e.target.value)}
+                value={grantAddressSLA}
+                onChange={(e) => setGrantAddressSLA(e.target.value)}
               />
             </div>
       <button className="submit-admin" onClick={() => handleGrant(1)}>Grant Second Level Authority Status</button>
@@ -297,8 +305,8 @@ const AddLandInspector = ({accountContractAddress}) => {
               <input
                 type="text"
                 placeholder="USER ADDRESS"
-                value={address}
-                onChange={(e) => setAddress(e.target.value)}
+                value={revokeAddressSLA}
+                onChange={(e) => setRevokeAddressSLA(e.target.value)}
               />
             </div>
       <button className="submit-admin" onClick={() => handleRevoke(1)}>Revoke Second Level Authority Status</button>
@@ -313,8 +321,8 @@ const AddLandInspector = ({accountContractAddress}) => {
               <input
                 type="text"
                 placeholder="USER ADDRESS"
-                value={address}
-                onChange={(e) => setAddress(e.target.value)}
+                value={removeAddressSLA}
+                onChange={(e) => setRemoveAddressSLA(e.target.value)}
               />
             </div>
       <button className="submit-admin" onClick={() => handleRemove(1)}>Remove Second Level Authority</button>
